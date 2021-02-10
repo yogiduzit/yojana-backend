@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Represents an employee.
@@ -17,6 +19,7 @@ import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "Employee")
+@XmlRootElement(name = "employee")
 public class Employee {
 	
     /**
@@ -71,6 +74,7 @@ public class Employee {
      *
      * @return fullName
      */
+    @XmlElement
     public String getFullName() {
         return fullName;
     }
@@ -89,6 +93,7 @@ public class Employee {
      *
      * @return username
      */
+    @XmlElement
     public String getUsername() {
         return username;
     }
@@ -102,6 +107,7 @@ public class Employee {
         username = id;
     }
 
+    @XmlElement
 	public int getId() {
 		return id;
 	}
