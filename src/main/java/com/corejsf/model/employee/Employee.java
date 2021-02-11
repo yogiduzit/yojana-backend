@@ -1,12 +1,17 @@
 package com.corejsf.model.employee;
 
+import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
+
+import org.hibernate.annotations.Type;
 
 /**
  * Represents an employee.
@@ -22,21 +27,21 @@ public class Employee {
     /**
      * Represents the employee id
      */
-
 	@Id
     @Column(name = "EmpID", unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotBlank
-    private String id;
+	@Type(type="uuid-char")
+    private UUID id;
 	
     /**
      * Represents the first name of the employee
      */
 	
 	@Column(name = "EmpName")
-	@NotBlank
-	
     private String fullName;
+	
+	@OneToOne(mappedBy = "emp", fetch = FetchType.LAZY)
+	private Credential credential;
 
     /**
      * no parameter constructor
@@ -52,36 +57,32 @@ public class Employee {
      * @param empName
      * @param id
      */
-    public Employee(final String empId, final String empName) {
+    public Employee(final UUID empId, final String empName) {
         this.id = empId;
         this.fullName = empName;
     }
 
-    /**
-     * Getter for employee full name
-     *
-     * @return fullName
-     */
-    public String getFullName() {
-        return fullName;
-    }
-
-    /**
-     * Setter for employee full name
-     *
-     * @param fullName
-     */
-    public void setFullName(final String empName) {
-        fullName = empName;
-    }
-
-	public String getId() {
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(String empId) {
-		this.id = empId;
+	public void setId(UUID id) {
+		this.id = id;
 	}
-	
-	
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	public Credential getCredential() {
+		return credential;
+	}
+
+	public void setCredential(Credential credential) {
+		this.credential = credential;
+	}
 }

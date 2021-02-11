@@ -1,6 +1,8 @@
 package com.corejsf.access;
 
 import java.io.Serializable;
+import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
 import javax.persistence.PersistenceContext;
@@ -20,7 +22,6 @@ public class EmployeeManager implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@PersistenceContext(unitName="comp4911-pms-rest-jpa") EntityManager em;
-
 	
 	public EmployeeManager() {}
 	
@@ -49,7 +50,7 @@ public class EmployeeManager implements Serializable{
 	public Employee[] getAll() {       
 		TypedQuery<Employee> query = em.createQuery("select e from Employee e",
                 Employee.class); 
-        java.util.List<Employee> employees = query.getResultList();
+        List<Employee> employees = query.getResultList();
         Employee[] suparray = new Employee[employees.size()];
         for (int i=0; i < suparray.length; i++) {
             suparray[i] = employees.get(i);

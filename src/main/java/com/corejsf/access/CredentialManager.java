@@ -5,11 +5,16 @@ package com.corejsf.access;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.UUID;
 
 import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.Dependent;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 
 import com.corejsf.model.employee.Credential;
 
@@ -20,11 +25,8 @@ import com.corejsf.model.employee.Credential;
  * @version 1.0
  *
  */
-@Named("CredentialManager")
-@ConversationScoped
+@Dependent
 public class CredentialManager implements Serializable {
-	
-//    private PasswordHelper passwordHelper;
 
     /**
      * Variable for implementing serializable
@@ -33,62 +35,13 @@ public class CredentialManager implements Serializable {
 
     @PersistenceContext(unitName="comp4911-pms-rest-jpa") EntityManager em;
 
-    public CredentialManager() {
-//        try {
-//            passwordHelper = new PasswordHelper();
-//        } catch (final NoSuchAlgorithmException e) {
-//            passwordHelper = null;
-//            e.printStackTrace();
-//        }
-    }
+    public CredentialManager() {}
 
-//    /**
-//     * Method to get the Credential by employee number
-//     *
-//     * @param empNumber, number of the employee whose Credential need to be found
-//     * @return Credential, username and password of the employee
-//     * @return null, if the emp does not exist
-//     * @throws SQLException
-//     * @throws DecoderException
-//     */
-//    public Credential findByToken(String token) throws SQLException, DecoderException {
-//        Connection connection = null;
-//        PreparedStatement stmt = null;
-//        try {
-//            try {
-//                connection = dataSource.getConnection();
-//                try {
-//                    stmt = connection.prepareStatement("SELECT * FROM Credential WHERE EmpToken = ?");
-//                    stmt.setBytes(1, Hex.decodeHex(token));
-//                    final ResultSet result = stmt.executeQuery();
-//                    if (result.next()) {
-//                        final String password = Hex.encodeHexString(result.getBytes("EmpToken"));
-//                        final Credential Credential = new Credential(result.getString("EmpUserName"), password);
-//                        Credential.setEmpNumber(result.getInt("EmpNo"));
-//                        return Credential;
-//                    }
-//                } finally {
-//                    if (stmt != null) {
-//                        stmt.close();
-//                    }
-//                }
-//            } finally {
-//                if (connection != null) {
-//                    connection.close();
-//                }
-//            }
-//        } catch (final SQLException ex) {
-//            ex.printStackTrace();
-//            throw ex;
-//        }
-//        return null;
-//    }
-
-    public Credential find(int credId) throws SQLException {
-    	return em.find(Credential.class, credId);
+    public Credential find(UUID id) {
+    	return em.find(Credential.class, id);
     }
     
-    public Credential find(String empUserName) throws SQLException {
+    public Credential find(String empUserName) {
     	return (Credential) em.createNamedQuery("Credential.findByUsername")
     			.setParameter("username", empUserName)
     			.getSingleResult();
@@ -100,7 +53,9 @@ public class CredentialManager implements Serializable {
      * @param Credential, Credential object containing username and password
      * @throws SQLException
      */
-    public void insert(Credential Credential) throws SQLException {
+    @Transactional
+    public void persist(Credential credential) {
+        em.persist(credential);
     }
 
     /**
@@ -109,8 +64,19 @@ public class CredentialManager implements Serializable {
      * @param Credential, Credential object containing username and password
      * @throws SQLException
      */
-    public void merge(Credential Credential, int id) throws SQLException {
-        
+    public void merge(Credential credential) {
+        em.merge(credential);
+    }
+    
+    public void remove(Credential credential) {
+        credential = find(credential.getId());
+        em.remove(credential);
+    }
+    
+    public List<Credential> getAll() {
+        TypedQuery<Credential> q = em.createQuery("SELECT c FROM Credential c", Credential.class);
+        List<Credential> creds = q.getResultList();
+        return creds;
     }
 
 }
