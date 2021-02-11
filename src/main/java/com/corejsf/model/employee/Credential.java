@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
@@ -21,7 +22,7 @@ import javax.validation.constraints.NotBlank;
 @Entity
 @Table(name = "Credential")
 @NamedQueries({
-	@NamedQuery(name = "Credential.findByUsername", query = "SELECT c FROM Credential c WHERE c.username = :username")
+	@NamedQuery(name = "Credential.findByUsername", query = "SELECT c FROM Credential c WHERE c.emp.username = :username")
 })
 public class Credential {
 
@@ -37,11 +38,11 @@ public class Credential {
 
 	/**
 	 * Represents the username of the login phase
+	 * Foreign key reference to the employee table's EmpUserName column
 	 */
 
-	@Column(name = "EmpUserName", unique = true)
-	@NotBlank
-	private String username;
+	@OneToOne(mappedBy="credentials")
+	private Employee emp;
 	/**
 	 * Represents the passowrd of the login phase
 	 */
@@ -56,8 +57,8 @@ public class Credential {
 	public Credential() {
 	}
 
-	public Credential(int empNumber, String username, String password) {
-		this.username = username;
+	public Credential(int empNumber, Employee emp, String password) {
+		this.emp = emp;
 		this.password = password;
 	}
 
@@ -68,26 +69,18 @@ public class Credential {
 	public void setCredId(int credId) {
 		this.credId = credId;
 	}
+	
+	
 
-	/**
-	 * Getter for username
-	 *
-	 * @return username
-	 */
-	public String getUsername() {
-		return username;
-	}
+	public Employee getEmp() {
+        return emp;
+    }
 
-	/**
-	 * Setter for username
-	 *
-	 * @param username
-	 */
-	public void setUsername(final String id) {
-		username = id;
-	}
+    public void setEmp(Employee emp) {
+        this.emp = emp;
+    }
 
-	/**
+    /**
 	 * Getter for password
 	 *
 	 * @return password
