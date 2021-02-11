@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
@@ -33,9 +35,18 @@ public class Employee {
      * Represents the user name of the employee
      */
 	
-	@Column(name = "EmpUserName", unique = true)
+	@Column(name = "EmpUserName")
 	@NotBlank
-    private String username;
+	private String username;
+	
+	/**
+	 * Credentials use the employee username as a reference
+	 * for the foreign key
+	 */
+	@OneToOne
+	@JoinColumn(name = "EmpUserName", referencedColumnName = "EmpUserName")
+	@NotBlank
+    private Credential credentials;
 	
     /**
      * Represents the first name of the employee
@@ -60,10 +71,10 @@ public class Employee {
      * @param empName
      * @param id
      */
-    public Employee(final int empId, final String empName, final String empUserName) {
+    public Employee(final int empId, final String empName, final Credential credentials) {
         this.id = empId;
         this.fullName = empName;
-        this.username = empUserName;
+        this.credentials = credentials;
     }
 
     /**
@@ -85,29 +96,50 @@ public class Employee {
     }
 
     /**
-     * Getter for username
-     *
-     * @return username
+     * Getter for employee credentials
+     * @return credentials
      */
+	public Credential getCredentials() {
+        return credentials;
+    }
+
+	/**
+	 * Setter for employee credentials
+	 * @param credentials
+	 */
+    public void setCredentials(Credential credentials) {
+        this.credentials = credentials;
+    }
+
+    /**
+     * Getter of employee ID
+     * @return id
+     */
+    public int getId() {
+		return id;
+	}
+
+    /**
+     * Setter of employee ID
+     * @param empId
+     */
+	public void setId(int empId) {
+		this.id = empId;
+	}
+
+	/**
+	 * Getter of employee user name
+	 * @return username
+	 */
     public String getUsername() {
         return username;
     }
 
     /**
-     * Setter for username
-     *
+     * Setter of employee user name
      * @param username
      */
-    public void setUsername(final String id) {
-        username = id;
+    public void setUsername(String username) {
+        this.username = username;
     }
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int empId) {
-		this.id = empId;
-	}
-
 }

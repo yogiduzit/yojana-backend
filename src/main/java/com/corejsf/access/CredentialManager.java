@@ -5,11 +5,15 @@ package com.corejsf.access;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 
 import com.corejsf.model.employee.Credential;
 
@@ -100,7 +104,9 @@ public class CredentialManager implements Serializable {
      * @param Credential, Credential object containing username and password
      * @throws SQLException
      */
-    public void insert(Credential Credential) throws SQLException {
+    @Transactional
+    public void persist(Credential credential) throws SQLException {
+        em.persist(credential);
     }
 
     /**
@@ -109,8 +115,19 @@ public class CredentialManager implements Serializable {
      * @param Credential, Credential object containing username and password
      * @throws SQLException
      */
-    public void merge(Credential Credential, int id) throws SQLException {
-        
+    public void merge(Credential credential) throws SQLException {
+        em.merge(credential);
+    }
+    
+    public void remove(Credential credential) throws SQLException {
+        credential = find(credential.getCredId());
+        em.remove(credential);
+    }
+    
+    public List<Credential> getAll() {
+        TypedQuery<Credential> q = em.createQuery("SELECT c FROM Credential c", Credential.class);
+        List<Credential> creds = q.getResultList();
+        return creds;
     }
 
 }
