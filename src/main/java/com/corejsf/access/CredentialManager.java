@@ -31,7 +31,10 @@ public class CredentialManager implements Serializable {
      */
     private static final long serialVersionUID = -6478292740340769939L;
 
-    @PersistenceContext(unitName="comp4911-pms-rest-jpa") EntityManager em;
+//    @PersistenceContext(unitName="comp4911-pms-rest-jpa") EntityManager em;
+    
+    @PersistenceContext(unitName="MySQLDS-jpa") EntityManager em;
+
 
     public CredentialManager() {
 //        try {
