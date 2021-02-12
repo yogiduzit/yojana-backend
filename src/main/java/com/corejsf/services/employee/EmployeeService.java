@@ -22,11 +22,13 @@ import com.corejsf.model.employee.Employee;
 public class EmployeeService {
 
 	@Inject
+	// Provides access to the employee table
 	private EmployeeManager employeeManager;
 	
 	@GET
     @Path("/{id}")
     @Produces("application/xml")
+	// Finds an employee
 	public Employee find(@PathParam("id") Integer id) throws SQLException {
 		Employee employee;
 		employee = employeeManager.find(id);
@@ -38,23 +40,25 @@ public class EmployeeService {
 	
 	@POST
     @Consumes("application/xml")
+	// Inserts an employee in the database
 	public Response persist(Employee employee) throws SQLException {
 		employeeManager.persist(employee);
 		return Response.created(URI.create("/employees/" + employee.getUsername())).build();
 	}
 	
-//	@PUT
-//    @Path("update-employee")
+
 	@PATCH
-	@Path("/{id}")
+	@Path("/update")
     @Consumes("application/xml")
-	public Response merge(Employee employee,@PathParam("id") Integer id) throws SQLException {
-		employeeManager.merge(employee, id);
+	// Updates an existing employee
+	public Response merge(Employee employee) throws SQLException {
+		employeeManager.merge(employee);
 		return Response.noContent().build();
 	}
 	
 	@DELETE
 	@Path("/{id}")
+	// Deletes an existing employee
 	public Response remove(Employee employee, @PathParam("id") Integer empId) throws SQLException {
 		employeeManager.remove(employee, empId);
 		return Response.ok().build();
@@ -63,6 +67,7 @@ public class EmployeeService {
 	@GET
     @Path("all")
     @Produces("application/xml")
+	// Gets a list of all employees
 	public Employee[] getAll() throws SQLException {
 		Employee[] employees;
 		employees = employeeManager.getAll();

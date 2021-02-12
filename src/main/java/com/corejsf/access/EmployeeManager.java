@@ -35,7 +35,7 @@ public class EmployeeManager implements Serializable{
     }
 	
 	/** update an employee. */
-	public void merge(Employee employee, int id) {
+	public void merge(Employee employee) {
         em.merge(employee);
     }
 	
