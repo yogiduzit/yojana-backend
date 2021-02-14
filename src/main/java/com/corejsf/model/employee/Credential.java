@@ -1,29 +1,32 @@
 package com.corejsf.model.employee;
 
+import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
+import org.hibernate.annotations.Type;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
- * This class represents credentials for employees and admin to log in to
+ * This class represents credentials for employees to log in to
  *
- * @author Sung Na and Yogesh Verma
+ * @author Yogesh Verma
  * @version 1.0
  *
  */
 
 @Entity
 @Table(name = "Credential")
-@NamedQueries({
-	@NamedQuery(name = "Credential.findByUsername", query = "SELECT c FROM Credential c WHERE c.emp.username = :username")
-})
 public class Credential {
 
 	/**
@@ -31,71 +34,49 @@ public class Credential {
 	 */
 
 	@Id
-	@Column(name = "CredID", unique = true)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotBlank
-	private int credId;
+	@Column(name = "CredID", unique = true, columnDefinition = "uuid", updatable = false)
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Type(type="uuid-char")
+	private UUID id;
 
 	/**
 	 * Represents the username of the login phase
-	 * Foreign key reference to the employee table's EmpUserName column
+	 * Foreign key reference to the employee table's EmpID column
 	 */
+	@OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "EmpID")
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private Employee employee;
 
-	@OneToOne(mappedBy="credentials")
-	private Employee emp;
 	/**
-	 * Represents the passowrd of the login phase
+	 * Represents the password of the employee's credentials
 	 */
-
 	@Column(name = "EmpPassword")
 	@NotBlank
 	private String password;
 
-	/**
-	 * no parameter constructor
-	 */
-	public Credential() {
+	public UUID getId() {
+		return id;
 	}
 
-	public Credential(int empNumber, Employee emp, String password) {
-		this.emp = emp;
-		this.password = password;
+	public void setId(UUID credId) {
+		this.id = credId;
 	}
 
-	public int getCredId() {
-		return credId;
-	}
-
-	public void setCredId(int credId) {
-		this.credId = credId;
-	}
-	
-	
-
-	public Employee getEmp() {
-        return emp;
-    }
-
-    public void setEmp(Employee emp) {
-        this.emp = emp;
-    }
-
-    /**
-	 * Getter for password
-	 *
-	 * @return password
-	 */
 	public String getPassword() {
 		return password;
 	}
 
-	/**
-	 * Setter for password
-	 *
-	 * @param password
-	 */
-	public void setPassword(final String pw) {
-		password = pw;
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Employee getEmployee() {
+		return employee;
+	}
+
+	public void setEmployee(Employee employee) {
+		this.employee = employee;
 	}
 
 }

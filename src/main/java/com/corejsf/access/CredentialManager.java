@@ -6,6 +6,7 @@ package com.corejsf.access;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.inject.Named;
@@ -46,49 +47,7 @@ public class CredentialManager implements Serializable {
 //        }
     }
 
-//    /**
-//     * Method to get the Credential by employee number
-//     *
-//     * @param empNumber, number of the employee whose Credential need to be found
-//     * @return Credential, username and password of the employee
-//     * @return null, if the emp does not exist
-//     * @throws SQLException
-//     * @throws DecoderException
-//     */
-//    public Credential findByToken(String token) throws SQLException, DecoderException {
-//        Connection connection = null;
-//        PreparedStatement stmt = null;
-//        try {
-//            try {
-//                connection = dataSource.getConnection();
-//                try {
-//                    stmt = connection.prepareStatement("SELECT * FROM Credential WHERE EmpToken = ?");
-//                    stmt.setBytes(1, Hex.decodeHex(token));
-//                    final ResultSet result = stmt.executeQuery();
-//                    if (result.next()) {
-//                        final String password = Hex.encodeHexString(result.getBytes("EmpToken"));
-//                        final Credential Credential = new Credential(result.getString("EmpUserName"), password);
-//                        Credential.setEmpNumber(result.getInt("EmpNo"));
-//                        return Credential;
-//                    }
-//                } finally {
-//                    if (stmt != null) {
-//                        stmt.close();
-//                    }
-//                }
-//            } finally {
-//                if (connection != null) {
-//                    connection.close();
-//                }
-//            }
-//        } catch (final SQLException ex) {
-//            ex.printStackTrace();
-//            throw ex;
-//        }
-//        return null;
-//    }
-
-    public Credential find(int credId) throws SQLException {
+    public Credential find(UUID credId) throws SQLException {
     	return em.find(Credential.class, credId);
     }
     
@@ -115,12 +74,14 @@ public class CredentialManager implements Serializable {
      * @param Credential, Credential object containing username and password
      * @throws SQLException
      */
+	@Transactional
     public void merge(Credential credential) throws SQLException {
         em.merge(credential);
     }
     
+	@Transactional
     public void remove(Credential credential) throws SQLException {
-        credential = find(credential.getCredId());
+        credential = find(credential.getId());
         em.remove(credential);
     }
     

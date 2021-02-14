@@ -1,0 +1,68 @@
+package com.corejsf.access;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.UUID;
+
+import javax.ejb.Stateless;
+import javax.enterprise.context.Dependent;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
+import javax.ws.rs.PathParam;
+import javax.persistence.EntityManager;
+
+import com.corejsf.model.employee.Employee;
+
+@Dependent
+@Stateless
+public class EmployeeManager implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@PersistenceContext(unitName="comp4911-pms-rest-jpa") EntityManager em;
+	
+	/** find an employee with id. */
+	public Employee find(UUID id) {
+        return em.find(Employee.class, id);
+    }
+	
+	/** find an employee with id. */
+	public Employee findByUsername(String username) {
+        TypedQuery<Employee> query = em.createQuery("select e from Employee e WHERE e.username=:username", Employee.class);
+        query.setParameter("username", username);
+        return query.getSingleResult();
+    }
+	
+	/** add an employee. */
+	@Transactional
+	public void persist(Employee employee) {
+        em.persist(employee);
+    }
+	
+	/** update an employee. */
+	@Transactional
+	public void merge(Employee employee) {
+        em.merge(employee);
+    }
+	
+	/** remove an employee. */
+	@Transactional
+	public void remove(Employee employee, UUID id) {
+        employee = find(id);
+        em.remove(employee);
+    }
+	
+	/** get all employees. */
+	public List<Employee> getAll() {       
+		TypedQuery<Employee> query = em.createQuery("select e from Employee e",
+                Employee.class); 
+        List<Employee> employees = query.getResultList();
+        return employees;
+
+    }
+	
+}

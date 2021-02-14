@@ -1,7 +1,11 @@
 package com.corejsf.model.employee;
 
+import java.util.UUID;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -9,6 +13,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+
+import org.hibernate.annotations.Type;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Represents an employee.
@@ -24,12 +32,11 @@ public class Employee {
     /**
      * Represents the employee id
      */
-
 	@Id
-    @Column(name = "EmpID", unique = true)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotBlank
-    private int id;
+    @Column(name = "EmpID", unique = true, columnDefinition = "uuid", updatable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+	@Type(type="uuid-char")
+    private UUID id;
 	
     /**
      * Represents the user name of the employee
@@ -43,9 +50,8 @@ public class Employee {
 	 * Credentials use the employee username as a reference
 	 * for the foreign key
 	 */
-	@OneToOne
-	@JoinColumn(name = "EmpUserName", referencedColumnName = "EmpUserName")
-	@NotBlank
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "employee")
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Credential credentials;
 	
     /**
@@ -54,92 +60,39 @@ public class Employee {
 	
 	@Column(name = "EmpName")
 	@NotBlank
-	
     private String fullName;
 
-    /**
-     * no parameter constructor
-     */
-    public Employee() {
-    }
-
-    /**
-     * Three parameter constructor. Creates the initial employees who have access as
-     * well as the admin
-     *
-     * @param empNum
-     * @param empName
-     * @param id
-     */
-    public Employee(final int empId, final String empName, final Credential credentials) {
-        this.id = empId;
-        this.fullName = empName;
-        this.credentials = credentials;
-    }
-
-    /**
-     * Getter for employee full name
-     *
-     * @return fullName
-     */
-    public String getFullName() {
-        return fullName;
-    }
-
-    /**
-     * Setter for employee full name
-     *
-     * @param fullName
-     */
-    public void setFullName(final String empName) {
-        fullName = empName;
-    }
-
-    /**
-     * Getter for employee credentials
-     * @return credentials
-     */
-	public Credential getCredentials() {
-        return credentials;
-    }
-
-	/**
-	 * Setter for employee credentials
-	 * @param credentials
-	 */
-    public void setCredentials(Credential credentials) {
-        this.credentials = credentials;
-    }
-
-    /**
-     * Getter of employee ID
-     * @return id
-     */
-    public int getId() {
+	public UUID getId() {
 		return id;
 	}
 
-    /**
-     * Setter of employee ID
-     * @param empId
-     */
-	public void setId(int empId) {
-		this.id = empId;
+	public void setId(UUID id) {
+		this.id = id;
 	}
 
-	/**
-	 * Getter of employee user name
-	 * @return username
-	 */
-    public String getUsername() {
-        return username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    /**
-     * Setter of employee user name
-     * @param username
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public Credential getCredentials() {
+		return credentials;
+	}
+
+	public void setCredentials(Credential credentials) {
+		this.credentials = credentials;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+    
 }
