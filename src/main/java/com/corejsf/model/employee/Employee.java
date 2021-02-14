@@ -11,8 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Type;
-
 /**
  * Represents an employee.
  *
@@ -28,9 +26,8 @@ public class Employee {
      * Represents the employee id
      */
 	@Id
-    @Column(name = "EmpID", unique = true)
+    @Column(name = "EmpID", unique = true, columnDefinition = "uuid-char")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Type(type="uuid-char")
     private UUID id;
 	
     /**
@@ -42,12 +39,8 @@ public class Employee {
 	
 	@OneToOne(mappedBy = "emp", fetch = FetchType.LAZY)
 	private Credential credential;
-
-    /**
-     * no parameter constructor
-     */
-    public Employee() {
-    }
+	
+	public Employee() {}
 
     /**
      * Three parameter constructor. Creates the initial employees who have access as

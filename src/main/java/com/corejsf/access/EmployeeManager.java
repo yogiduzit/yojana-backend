@@ -3,11 +3,13 @@ package com.corejsf.access;
 import java.io.Serializable;
 import java.util.List;
 
+import java.util.UUID;
+
 import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.ws.rs.PathParam;
+import javax.transaction.Transactional;
 import javax.persistence.EntityManager;
 
 import com.corejsf.model.employee.Employee;
@@ -23,39 +25,42 @@ public class EmployeeManager implements Serializable{
 	
 	@PersistenceContext(unitName="comp4911-pms-rest-jpa") EntityManager em;
 	
-	public EmployeeManager() {}
-	
 	/** find an employee with id. */
-	public Employee find(@PathParam("id") String id) {
+	public Employee find(UUID id) {
         return em.find(Employee.class, id);
     }
 	
+	/** find an employee with id. */
+	public Employee findByUsername(String username) {
+        TypedQuery<Employee> query = em.createQuery("select e from Employee e WHERE e.username=:username", Employee.class);
+        query.setParameter("username", username);
+        return query.getSingleResult();
+    }
+	
 	/** add an employee. */
+	@Transactional
 	public void persist(Employee employee) {
         em.persist(employee);
     }
 	
 	/** update an employee. */
+	@Transactional
 	public void merge(Employee employee) {
         em.merge(employee);
     }
 	
 	/** remove an employee. */
-	public void remove(Employee employee, String id) {
+	@Transactional
+	public void remove(Employee employee, UUID id) {
         employee = find(id);
         em.remove(employee);
     }
 	
-	/** get all employees. */
-	public Employee[] getAll() {       
+	public List<Employee> getAll() {       
 		TypedQuery<Employee> query = em.createQuery("select e from Employee e",
                 Employee.class); 
         List<Employee> employees = query.getResultList();
-        Employee[] suparray = new Employee[employees.size()];
-        for (int i=0; i < suparray.length; i++) {
-            suparray[i] = employees.get(i);
-        }
-        return suparray;
+        return employees;
 
     }
 	

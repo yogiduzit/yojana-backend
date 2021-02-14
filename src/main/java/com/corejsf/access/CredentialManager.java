@@ -8,9 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.context.Dependent;
-import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;

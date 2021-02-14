@@ -19,9 +19,9 @@ import javax.validation.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * This class represents credentials for employees and admin to log in to
+ * This class represents credentials for employees to log in to
  *
- * @author Sung Na and Yogesh Verma
+ * @author Yogesh Verma
  * @version 1.0
  *
  */
@@ -37,38 +37,34 @@ public class Credential {
 	 * Represents the id of the employee
 	 */
 	@Id
-	@Column(name = "EmpID", unique = true)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotBlank
+	@Column(name = "EmpID", unique = true, columnDefinition = "uuid-char")
 	private UUID id;
 
 	/**
 	 * Represents the username of the login phase
-	 * Foreign key reference to the employee table's EmpUserName column
+	 * Foreign key reference to the employee table's EmpID column
 	 */
 	@PrimaryKeyJoinColumn(name = "EmpID", referencedColumnName= "EmpID")
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Employee emp;
 	
+	/**
+	 * Represents the username of the login phase
+	 */
 	@Column(name = "EmpName")
 	private String username;
 	
 	/**
-	 * Represents the passwrd of the login phase
+	 * Represents the password of the login phase
 	 */
 	@Column(name = "EmpPassword")
 	@NotBlank
 	private String password;
-
-	/**
-	 * no parameter constructor
-	 */
-	public Credential() {
-	}
-
+	
+	public Credential() {}
+	
 	public Credential(String password, String username) {
-		this.id = UUID.randomUUID();
 		this.password = password;
 		this.username = username;
 	}
