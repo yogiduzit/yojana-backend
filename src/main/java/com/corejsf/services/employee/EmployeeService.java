@@ -20,7 +20,9 @@ import javax.ws.rs.core.Response;
 
 import com.corejsf.access.EmployeeManager;
 import com.corejsf.model.employee.Employee;
+import com.corejsf.security.annotations.Secured;
 
+@Secured
 @Path("/employees")
 public class EmployeeService {
 

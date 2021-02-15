@@ -8,7 +8,6 @@ import javax.persistence.TypedQuery;
 import javax.ws.rs.PathParam;
 import javax.persistence.EntityManager;
 
-import com.corejsf.model.employee.Employee;
 import com.corejsf.model.timesheet.Timesheet;
 
 @Dependent

@@ -61,7 +61,6 @@ public class EmployeeManager implements Serializable{
                 Employee.class); 
         List<Employee> employees = query.getResultList();
         return employees;
-
     }
 	
 }

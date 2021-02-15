@@ -6,8 +6,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -42,7 +40,7 @@ public class Credential {
 
 	/**
 	 * Represents the username of the login phase
-	 * Foreign key reference to the employee table's EmpID column
+	 * Foreign key reference to the credential table's EmpID column
 	 */
 	@PrimaryKeyJoinColumn(name = "EmpID", referencedColumnName= "EmpID")
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

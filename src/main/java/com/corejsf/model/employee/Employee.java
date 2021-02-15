@@ -23,7 +23,7 @@ import javax.persistence.Table;
 public class Employee {
 	
     /**
-     * Represents the employee id
+     * Represents the number of an employee
      */
 	@Id
     @Column(name = "EmpID", unique = true, columnDefinition = "uuid-char")
@@ -55,10 +55,18 @@ public class Employee {
         this.fullName = empName;
     }
 
+	/**
+	 * Get the ID of an employee
+	 * @return Id
+	 */
 	public UUID getId() {
 		return id;
 	}
 
+	/**
+	 * Set the ID of an employee
+	 * @param id
+	 */
 	public void setId(UUID id) {
 		this.id = id;
 	}
@@ -67,6 +75,10 @@ public class Employee {
 		return fullName;
 	}
 
+	/**
+	 * Set the full name of an employee
+	 * @param fullName
+	 */
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
 	}

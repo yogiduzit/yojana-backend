@@ -1,12 +1,10 @@
-package com.corejsf.services;
+package com.corejsf.services.timesheet;
 
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.naming.InitialContext;
-import javax.persistence.EntityManager;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -20,7 +18,6 @@ import javax.ws.rs.core.Response;
 
 import com.corejsf.access.EmployeeManager;
 import com.corejsf.access.TimesheetManager;
-import com.corejsf.model.employee.Employee;
 import com.corejsf.model.timesheet.Timesheet;
 
 @Path("/timesheets")
@@ -48,10 +45,10 @@ public class TimesheetService {
 	}
 	
 	@POST
-	@Path("/push/{id}")
+	@Path("{id}")
     @Consumes("application/json")
-	// Inserts a timesheet in the database
-	public Response persist(@PathParam("id") String id, Timesheet timesheet) throws SQLException {
+	// Inserts a timesheet ain the database
+	public Response persist(@PathParam("id") UUID id, Timesheet timesheet) throws SQLException {
 		timesheet.setEmployee(employeeManager.find(id));
 		System.out.println(timesheet.getEmployee().getFullName());
 		UUID uuid = UUID.randomUUID();
@@ -62,10 +59,10 @@ public class TimesheetService {
 	
 
 	@PATCH
-	@Path("/update")
+	@Path("{id}")
     @Consumes("application/json")
 	// Updates a existing timesheet
-	public Response merge(Timesheet timesheet) throws SQLException {
+	public Response merge(@PathParam("id") UUID id, Timesheet timesheet) throws SQLException {
 		timesheetManager.merge(timesheet);
 		return Response.noContent().build();
 	}
