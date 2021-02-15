@@ -13,8 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
-import org.hibernate.annotations.Type;
-
 import com.corejsf.model.employee.Employee;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -34,8 +32,7 @@ public class Timesheet {
      * Represents the timesheet id
      */
 	@Id
-    @Column(name = "TimesheetID", unique = true, columnDefinition = "uuid", updatable = false)
-	@Type(type="uuid-char")
+    @Column(name = "TimesheetID", unique = true, columnDefinition = "uuid-char", updatable = false)
     private UUID tsId;
 	
     /**
@@ -76,7 +73,7 @@ public class Timesheet {
      * Represents the status of the timesheet
      */
     @Enumerated(EnumType.STRING)
-    @Column(name = "Status", columnDefinition="ENUM('pending', 'submitted', 'approved', 'denied')")
+    @Column(name = "Status", columnDefinition = "enum")
     private Status status;
     
     /**
