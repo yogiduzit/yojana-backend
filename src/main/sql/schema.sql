@@ -7,29 +7,78 @@ GRANT ALL ON project_management_system.* TO 'admin'@'localhost';
 GRANT ALL ON project_management_system.* TO 'admin'@'%';
 
 USE project_management_system;
+DROP TABLE IF EXISTS PayGrade;
+CREATE TABLE PayGrade(
+	LabourGrade VARCHAR(4),
+    ChargeRate FLOAT(5,2),
+    PRIMARY KEY(LabourGrade)
+);
 
 DROP TABLE IF EXISTS Employee;
 CREATE TABLE Employee(
-    EmpID INT(5) AUTO_INCREMENT NOT NULL UNIQUE,
+    EmpID VARCHAR(255) NOT NULL UNIQUE,
     EmpName VARCHAR(50) NOT NULL,
     EmpUserName VARCHAR(10) NOT NULL UNIQUE,
-    CONSTRAINT PKEmployee PRIMARY KEY (EmpID)
+    LabourGrade VARCHAR(4),
+    CONSTRAINT PKEmployee PRIMARY KEY (EmpID),
+    CONSTRAINT FKEmployeeLabourGrade
+		FOREIGN KEY (LabourGrade)
+			REFERENCES PayGrade(LabourGrade)
 );
 
 DROP TABLE IF EXISTS Credential;
 CREATE TABLE Credential(
-    CredID INT(5) NOT NULL UNIQUE,
-    EmpUserName VARCHAR(10) NOT NULL UNIQUE,
+    CredID VARCHAR(255) NOT NULL UNIQUE,
+    EmpID VARCHAR(255) NOT NULL UNIQUE,
     EmpPassword VARCHAR(15) NOT NULL,
-    CONSTRAINT FKCredentialEmpUserName
-        FOREIGN KEY (EmpUserName)
-            REFERENCES Employee(EmpUserName)
+    CONSTRAINT FKCredentialEmpID
+        FOREIGN KEY (EmpID)
+            REFERENCES Employee(EmpID)
             ON UPDATE CASCADE
             ON DELETE CASCADE
 );
 
-INSERT INTO Employee VALUES (1, "Bruce Link", "bdlink");
-INSERT INTO Employee VALUES (2, "Yogesh Verma", "yogiduzit");
+DROP TABLE IF EXISTS Timesheet;
+CREATE TABLE Timesheet(
+	TimesheetID VARCHAR(255) NOT NULL UNIQUE,
+    EmpID VARCHAR(255) NOT NULL,
+	EndWeek DATE NOT NULL,
+    Overtime int,
+    Flextime int,
+	Status ENUM('pending', 'submitted', 'approved', 'denied') NOT NULL DEFAULT 'pending',
+    ReviewedBy VARCHAR(255),
+    Signature TINYTEXT,
+    Feedback TINYTEXT,
+    UpdatedAt DATE,
+    ApprovedAt DATE,
+	PRIMARY KEY (TimesheetID),
+	FOREIGN KEY (ReviewedBy) REFERENCES Employee(EmpID),
+    FOREIGN KEY (EmpID) REFERENCES Employee(EmpID)
+		ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
 
-INSERT INTO Credential VALUES (1, "bdlink", "bruce");
-INSERT INTO Credential VALUES (2, "yogiduzit", "yogesh");
+DROP TABLE IF EXISTS TimesheetRow;
+CREATE TABLE TimesheetRow(
+	TimesheetID VARCHAR(255) NOT NULL,
+	ProjectID VARCHAR(20) NOT NULL,
+	WorkPackageID VARCHAR(20),
+	Notes TINYTEXT,
+	Hours FLOAT,
+	PRIMARY KEY(ProjectID, WorkPackageID, TimesheetID),
+	FOREIGN KEY (TimesheetID) REFERENCES Timesheet(TimesheetID)
+		ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+INSERT INTO PayGrade VALUES ("PS", 3.50);
+
+INSERT INTO Employee VALUES ("31000000-0000-0000-0000-000000000000", "Bruce Link", "bdlink", "PS");
+INSERT INTO Employee VALUES ("32000000-0000-0000-0000-000000000000", "Yogesh Verma", "yogiduzit", "PS");
+
+INSERT INTO Credential VALUES ("31000000-0000-0000-0000-000000000000", "31000000-0000-0000-0000-000000000000", "bruce");
+INSERT INTO Credential VALUES ("32000000-0000-0000-0000-000000000000", "32000000-0000-0000-0000-000000000000", "yogesh");
+
+INSERT INTO Timesheet (TimesheetID, EmpID, EndWeek) VALUES ("55000000-0000-0000-0000-000000000000", "31000000-0000-0000-0000-000000000000", DATE '2000/3/10');
+INSERT INTO Timesheet (TimesheetID, EmpID, EndWeek) VALUES ("26000000-0000-0000-0000-000000000000", "32000000-0000-0000-0000-000000000000", DATE '2000/3/17');
+INSERT INTO Timesheet (TimesheetID, EmpID, EndWeek) VALUES ("45700000-0000-0000-0000-000000000000", "31000000-0000-0000-0000-000000000000", DATE '2000/3/24');
