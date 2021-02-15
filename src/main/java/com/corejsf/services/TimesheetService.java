@@ -29,7 +29,7 @@ public class TimesheetService {
 	@GET
     @Path("/{id}")
     @Produces("application/xml")
-	// Finds an employee
+	// Finds a timesheet
 	public Timesheet find(@PathParam("id") String id) throws SQLException {
 		Timesheet timesheet;
 		timesheet = timesheetManager.find(id);
@@ -41,7 +41,7 @@ public class TimesheetService {
 	
 	@POST
     @Consumes("application/xml")
-	// Inserts an employee in the database
+	// Inserts a timesheet in the database
 	public Response persist(Timesheet timesheet) throws SQLException {
 		timesheetManager.persist(timesheet);
 		return Response.created(URI.create("/employees/" + timesheet.getId())).build();
@@ -51,7 +51,7 @@ public class TimesheetService {
 	@PATCH
 	@Path("/update")
     @Consumes("application/xml")
-	// Updates an existing employee
+	// Updates a existing timesheet
 	public Response merge(Timesheet timesheet) throws SQLException {
 		timesheetManager.merge(timesheet);
 		return Response.noContent().build();
@@ -59,19 +59,33 @@ public class TimesheetService {
 	
 	@DELETE
 	@Path("/{id}")
-	// Deletes an existing employee
+	// Deletes a existing timesheet
 	public Response remove(Timesheet timesheet, @PathParam("id") String empId) throws SQLException {
 		timesheetManager.remove(timesheet, empId);
 		return Response.ok().build();
 	}
 	
 	@GET
-    @Path("all")
+    @Path("/all")
     @Produces("application/json")
-	// Gets a list of all employees
+	// Gets a list of all timesheets
 	public Timesheet[] getAll() throws SQLException {
 		Timesheet[] timesheets;
 		timesheets = timesheetManager.getAll();
+		if (timesheets == null) {
+			throw new WebApplicationException("There are no timesheets somehow", Response.Status.NOT_FOUND);
+		}
+		System.out.println("heyo " + timesheets[0].getId());
+		return timesheets;
+	}
+	
+	@GET
+    @Path("/emp/{id}")
+    @Produces("application/json")
+	// Gets a list of all timesheets for an id
+	public Timesheet[] getAllForEmployee(@PathParam("id") String empId) throws SQLException {
+		Timesheet[] timesheets;
+		timesheets = timesheetManager.getAllForEmployee(empId);
 		if (timesheets == null) {
 			throw new WebApplicationException("There are no timesheets somehow", Response.Status.NOT_FOUND);
 		}
