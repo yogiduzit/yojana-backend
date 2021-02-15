@@ -27,15 +27,7 @@ public class Employee {
     @Column(name = "EmpID", unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@NotBlank
-    private int id;
-	
-    /**
-     * Represents the user name of the employee
-     */
-	
-	@Column(name = "EmpUserName", unique = true)
-	@NotBlank
-    private String username;
+    private String id;
 	
     /**
      * Represents the first name of the employee
@@ -60,10 +52,9 @@ public class Employee {
      * @param empName
      * @param id
      */
-    public Employee(final int empId, final String empName, final String empUserName) {
+    public Employee(final String empId, final String empName) {
         this.id = empId;
         this.fullName = empName;
-        this.username = empUserName;
     }
 
     /**
@@ -84,29 +75,11 @@ public class Employee {
         fullName = empName;
     }
 
-    /**
-     * Getter for username
-     *
-     * @return username
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * Setter for username
-     *
-     * @param username
-     */
-    public void setUsername(final String id) {
-        username = id;
-    }
-
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int empId) {
+	public void setId(String empId) {
 		this.id = empId;
 	}
 

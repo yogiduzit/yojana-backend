@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -57,7 +59,7 @@ public class Timesheet {
      * Represents the ID of the reviewer
      */
     @Column(name = "ReviewedBy")
-    private int reviewerID;
+    private String reviewerID;
     
     /**
      * Represents the signature of the employee
@@ -74,20 +76,21 @@ public class Timesheet {
     /**
      * Represents the status of the timesheet
      */
-    @Column(name = "Status")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "Status", columnDefinition="ENUM('pending', 'submitted', 'approved', 'denied')")
     private Status status;
     
     /**
      * Represents the overtime
      */
     @Column(name = "Overtime")
-    private int overtime;
+    private Integer overtime;
     
     /**
      * Represents the flextime
      */
     @Column(name = "Flextime")
-    private int flextime;
+    private Integer flextime;
     
     /**
      * The time it was last updated
@@ -148,28 +151,28 @@ public class Timesheet {
     /**
      * @return the overtime
      */
-    public int getOvertime() {
+    public Integer getOvertime() {
         return overtime;
     }
 
     /**
      * @param overtime the overtime to set
      */
-    public void setOvertime(int overtime) {
+    public void setOvertime(Integer overtime) {
         this.overtime = overtime;
     }
 
     /**
      * @return the flextime
      */
-    public int getFlextime() {
+    public Integer getFlextime() {
         return flextime;
     }
 
     /**
      * @param flextime the flextime to set
      */
-    public void setFlextime(int flextime) {
+    public void setFlextime(Integer flextime) {
         this.flextime = flextime;
     }
 
@@ -218,14 +221,14 @@ public class Timesheet {
     /**
      * @return the reviewerID
      */
-    public int getReviewerID() {
+    public String getReviewerID() {
         return reviewerID;
     }
 
     /**
      * @param reviewerID the reviewerID to set
      */
-    public void setReviewerID(int reviewerID) {
+    public void setReviewerID(String reviewerID) {
         this.reviewerID = reviewerID;
     }
 
@@ -260,14 +263,14 @@ public class Timesheet {
     /**
      * @return the status
      */
-    public Status getStatus() {
-        return status;
+    public String getStatus() {
+        return status.name();
     }
 
     /**
      * @param status the status to set
      */
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setStatus(String status) {
+        this.status = Status.valueOf(status);
     }
 }
