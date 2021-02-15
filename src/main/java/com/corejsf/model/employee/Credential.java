@@ -32,7 +32,6 @@ public class Credential {
 	/**
 	 * Represents the id of the credentials
 	 */
-
 	@Id
 	@Column(name = "CredID", unique = true, columnDefinition = "uuid", updatable = false)
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -41,9 +40,9 @@ public class Credential {
 
 	/**
 	 * Represents the username of the login phase
-	 * Foreign key reference to the employee table's EmpID column
+	 * Foreign key reference to the credential table's EmpID column
 	 */
-	@OneToOne(fetch = FetchType.EAGER)
+	@OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "EmpID")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Employee employee;

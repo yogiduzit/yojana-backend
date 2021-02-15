@@ -2,14 +2,12 @@ package com.corejsf.access;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.UUID;
 
 import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import javax.ws.rs.PathParam;
 import javax.persistence.EntityManager;
 
 import com.corejsf.model.employee.Employee;
@@ -26,7 +24,7 @@ public class EmployeeManager implements Serializable{
 	@PersistenceContext(unitName="comp4911-pms-rest-jpa") EntityManager em;
 	
 	/** find an employee with id. */
-	public Employee find(UUID id) {
+	public Employee find(Integer id) {
         return em.find(Employee.class, id);
     }
 	
@@ -51,7 +49,7 @@ public class EmployeeManager implements Serializable{
 	
 	/** remove an employee. */
 	@Transactional
-	public void remove(Employee employee, UUID id) {
+	public void remove(Employee employee, Integer id) {
         employee = find(id);
         em.remove(employee);
     }

@@ -3,7 +3,6 @@ package com.corejsf.services.employee;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -20,7 +19,9 @@ import javax.ws.rs.core.Response;
 
 import com.corejsf.access.EmployeeManager;
 import com.corejsf.model.employee.Employee;
+import com.corejsf.security.annotations.Secured;
 
+@Secured
 @Path("/employees")
 public class EmployeeService {
 
@@ -32,7 +33,7 @@ public class EmployeeService {
     @Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	// Finds an employee
-	public Employee find(@PathParam("id") UUID id) throws SQLException {
+	public Employee find(@PathParam("id") Integer id) throws SQLException {
 		Employee employee;
 		employee = employeeManager.find(id);
 		if (employee == null) {
@@ -56,7 +57,7 @@ public class EmployeeService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	// Updates an existing employee
-	public Response merge(Employee employee, @PathParam("id") UUID empId) throws SQLException {
+	public Response merge(Employee employee, @PathParam("id") Integer empId) throws SQLException {
 		employee.setId(empId);
 		employeeManager.merge(employee);
 		return Response.noContent().build();
@@ -67,7 +68,7 @@ public class EmployeeService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	// Deletes an existing employee
-	public Response remove(Employee employee, @PathParam("id") UUID empId) throws SQLException {
+	public Response remove(Employee employee, @PathParam("id") Integer empId) throws SQLException {
 		employeeManager.remove(employee, empId);
 		return Response.ok().build();
 	}
