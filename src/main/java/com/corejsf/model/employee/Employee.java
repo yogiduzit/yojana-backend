@@ -1,14 +1,21 @@
 package com.corejsf.model.employee;
 
+import java.util.UUID;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+
+import org.hibernate.annotations.Type;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Represents an employee.
@@ -22,14 +29,12 @@ import javax.validation.constraints.NotBlank;
 public class Employee {
 	
     /**
-     * Represents the employee id
+     * Represents the number of an employee
      */
-
 	@Id
-    @Column(name = "EmpID", unique = true)
+    @Column(name = "EmpID", unique = true, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotBlank
-    private int id;
+    private Integer id;
 	
     /**
      * Represents the user name of the employee
@@ -40,12 +45,15 @@ public class Employee {
 	private String username;
 	
 	/**
-	 * Credentials use the employee username as a reference
-	 * for the foreign key
+	 * Represents the credentials for an employee.
+	 * Whenever a GET request is made to employee endpoint,
+	 * the credentials are lazy loaded, so that we can access them
+	 * on demand, which saves time.
+	 * The access property ensures that a request to lazy-load the
+	 * credentials isn't made.
 	 */
-	@OneToOne
-	@JoinColumn(name = "EmpUserName", referencedColumnName = "EmpUserName")
-	@NotBlank
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "employee")
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Credential credentials;
 	
     /**
@@ -54,92 +62,71 @@ public class Employee {
 	
 	@Column(name = "EmpName")
 	@NotBlank
-	
     private String fullName;
 
-    /**
-     * no parameter constructor
-     */
-    public Employee() {
-    }
-
-    /**
-     * Three parameter constructor. Creates the initial employees who have access as
-     * well as the admin
-     *
-     * @param empNum
-     * @param empName
-     * @param id
-     */
-    public Employee(final int empId, final String empName, final Credential credentials) {
-        this.id = empId;
-        this.fullName = empName;
-        this.credentials = credentials;
-    }
-
-    /**
-     * Getter for employee full name
-     *
-     * @return fullName
-     */
-    public String getFullName() {
-        return fullName;
-    }
-
-    /**
-     * Setter for employee full name
-     *
-     * @param fullName
-     */
-    public void setFullName(final String empName) {
-        fullName = empName;
-    }
-
-    /**
-     * Getter for employee credentials
-     * @return credentials
-     */
-	public Credential getCredentials() {
-        return credentials;
-    }
-
 	/**
-	 * Setter for employee credentials
-	 * @param credentials
+	 * Get the ID of an employee
+	 * @return Id
 	 */
-    public void setCredentials(Credential credentials) {
-        this.credentials = credentials;
-    }
-
-    /**
-     * Getter of employee ID
-     * @return id
-     */
-    public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-    /**
-     * Setter of employee ID
-     * @param empId
-     */
-	public void setId(int empId) {
-		this.id = empId;
+	/**
+	 * Set the ID of an employee
+	 * @param id
+	 */
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	/**
-	 * Getter of employee user name
-	 * @return username
+	 * Get the username of an employee
+	 * @return string
 	 */
-    public String getUsername() {
-        return username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    /**
-     * Setter of employee user name
-     * @param username
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	/**
+	 * Set the username of an employee
+	 * @param username
+	 */
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	/**
+	 * Get the credentials of an employee
+	 * @return Credentials POJO
+	 */
+	public Credential getCredentials() {
+		return credentials;
+	}
+
+	/**
+	 * Get the credentials of an employee
+	 * @param credentials
+	 */
+	public void setCredentials(Credential credentials) {
+		this.credentials = credentials;
+	}
+
+	/**
+	 * Get the full name of an employee
+	 * @return
+	 */
+	public String getFullName() {
+		return fullName;
+	}
+
+	/**
+	 * Set the full name of an employee
+	 * @param fullName
+	 */
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+    
 }
