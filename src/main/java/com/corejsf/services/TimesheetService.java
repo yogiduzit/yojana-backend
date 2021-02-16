@@ -2,8 +2,11 @@ package com.corejsf.services;
 
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.persistence.EntityManager;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -15,6 +18,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import com.corejsf.access.EmployeeManager;
 import com.corejsf.access.TimesheetManager;
 import com.corejsf.model.employee.Employee;
 import com.corejsf.model.timesheet.Timesheet;
@@ -26,9 +30,13 @@ public class TimesheetService {
 	// Provides access to the employee table
 	private TimesheetManager timesheetManager;
 	
+	@Inject
+	// Provides access to the employee table
+	private EmployeeManager employeeManager;
+	
 	@GET
     @Path("/{id}")
-    @Produces("application/xml")
+    @Produces("application/json")
 	// Finds a timesheet
 	public Timesheet find(@PathParam("id") String id) throws SQLException {
 		Timesheet timesheet;
@@ -40,17 +48,22 @@ public class TimesheetService {
 	}
 	
 	@POST
-    @Consumes("application/xml")
+	@Path("/push/{id}")
+    @Consumes("application/json")
 	// Inserts a timesheet in the database
-	public Response persist(Timesheet timesheet) throws SQLException {
+	public Response persist(@PathParam("id") String id, Timesheet timesheet) throws SQLException {
+		timesheet.setEmployee(employeeManager.find(id));
+		System.out.println(timesheet.getEmployee().getFullName());
+		UUID uuid = UUID.randomUUID();
+		timesheet.setId(uuid);
 		timesheetManager.persist(timesheet);
-		return Response.created(URI.create("/employees/" + timesheet.getId())).build();
+		return Response.created(URI.create("/timesheets/" + timesheet.getId())).build();
 	}
 	
 
 	@PATCH
 	@Path("/update")
-    @Consumes("application/xml")
+    @Consumes("application/json")
 	// Updates a existing timesheet
 	public Response merge(Timesheet timesheet) throws SQLException {
 		timesheetManager.merge(timesheet);
@@ -75,7 +88,7 @@ public class TimesheetService {
 		if (timesheets == null) {
 			throw new WebApplicationException("There are no timesheets somehow", Response.Status.NOT_FOUND);
 		}
-		System.out.println("heyo " + timesheets[0].getId());
+		System.out.println("heyo " + timesheets[0].getEmployee().getId());
 		return timesheets;
 	}
 	
@@ -89,7 +102,7 @@ public class TimesheetService {
 		if (timesheets == null) {
 			throw new WebApplicationException("There are no timesheets somehow", Response.Status.NOT_FOUND);
 		}
-		System.out.println("heyo " + timesheets[0].getId());
+		System.out.println("heyo " + timesheets[0].getEmployee().getId());
 		return timesheets;
 	}
 }
