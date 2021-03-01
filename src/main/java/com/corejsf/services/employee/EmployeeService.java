@@ -66,7 +66,7 @@ public class EmployeeService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	// Updates an existing employee
-	public Response merge(Employee employee, @PathParam("id") UUID empId) throws SQLException {
+	public Response merge(Employee employee, @PathParam("id") UUID empId) {
 		employee.setId(empId);
 		employeeManager.merge(employee);
 		return Response.ok().entity(new APIResponse()).build();
@@ -77,7 +77,7 @@ public class EmployeeService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	// Deletes an existing employee
-	public Response remove(Employee employee, @PathParam("id") UUID empId) throws SQLException {
+	public Response remove(Employee employee, @PathParam("id") UUID empId) {
 		employeeManager.remove(employee, empId);
 		return Response.ok().entity(new APIResponse()).build();
 	}
