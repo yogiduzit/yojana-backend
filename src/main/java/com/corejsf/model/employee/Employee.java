@@ -17,6 +17,10 @@ import org.hibernate.annotations.Type;
 import com.corejsf.model.auditable.Audit;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.hibernate.annotations.Type;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Represents an employee.
  *
@@ -110,4 +114,5 @@ public class Employee {
 		this.audit = audit;
 	}
 
+    
 }
