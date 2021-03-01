@@ -52,9 +52,9 @@ public class TimesheetService {
 		timesheet.setEmployee(employeeManager.find(id));
 		System.out.println(timesheet.getEmployee().getFullName());
 		UUID uuid = UUID.randomUUID();
-		timesheet.setId(uuid);
+		timesheet.setTsId(uuid);
 		timesheetManager.persist(timesheet);
-		return Response.created(URI.create("/timesheets/" + timesheet.getId())).build();
+		return Response.created(URI.create("/timesheets/" + timesheet.getTsId())).build();
 	}
 	
 

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -14,6 +15,10 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
+import org.hibernate.annotations.Type;
+
+import com.corejsf.model.auditable.Audit;
+import com.corejsf.model.auditable.Auditable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -29,13 +34,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NamedQueries({
 	@NamedQuery(name = "Credential.findByUsername", query = "SELECT c FROM Credential c WHERE c.username = :username")
 })
-public class Credential {
+public class Credential implements Auditable {
+	
+	@Embedded
+	private Audit audit;
 
 	/**
 	 * Represents the id of the employee
 	 */
 	@Id
 	@Column(name = "EmpID", unique = true, columnDefinition = "uuid-char")
+	@Type(type="uuid-char")
 	private UUID id;
 
 	/**
@@ -50,7 +59,7 @@ public class Credential {
 	/**
 	 * Represents the username of the login phase
 	 */
-	@Column(name = "EmpName")
+	@Column(name = "EmpUserName")
 	private String username;
 	
 	/**
@@ -97,6 +106,14 @@ public class Credential {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public Audit getAudit() {
+		return audit;
+	}
+
+	public void setAudit(Audit audit) {
+		this.audit = audit;
 	}
 
 }

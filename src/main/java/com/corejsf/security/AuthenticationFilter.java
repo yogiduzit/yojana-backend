@@ -27,7 +27,7 @@ import com.corejsf.security.annotations.Secured;
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
 
-    private static final String REALM = "example";
+    private static final String REALM = "backend";
     private static final String AUTHENTICATION_SCHEME = "Bearer";
 
     @Inject

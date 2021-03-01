@@ -2,7 +2,9 @@ package com.corejsf.services.employee;
 
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -20,6 +22,7 @@ import javax.ws.rs.core.Response;
 
 import com.corejsf.access.EmployeeManager;
 import com.corejsf.model.employee.Employee;
+import com.corejsf.response.APIResponse;
 import com.corejsf.security.annotations.Secured;
 
 @Secured
@@ -34,22 +37,27 @@ public class EmployeeService {
     @Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	// Finds an employee
-	public Employee find(@PathParam("id") UUID id) throws SQLException {
+	public Response find(@PathParam("id") UUID id) {
 		Employee employee;
 		employee = employeeManager.find(id);
 		if (employee == null) {
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
-		return employee;
+    	Map<String, Object> data = new HashMap<String, Object>();
+        data.put("employee", employee);
+        return Response.ok().entity(new APIResponse(data)).build();
 	}
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	// Inserts an employee in the database
-	public Response persist(Employee employee) throws SQLException {
+	public Response persist(Employee employee) {
 		employeeManager.persist(employee);
-		return Response.created(URI.create("/employees/" + employee.getId())).build();
+		return Response
+				.created(URI.create("/employees/" + employee.getId()))
+				.entity(new APIResponse())
+				.build();
 	}
 	
 
@@ -61,7 +69,7 @@ public class EmployeeService {
 	public Response merge(Employee employee, @PathParam("id") UUID empId) throws SQLException {
 		employee.setId(empId);
 		employeeManager.merge(employee);
-		return Response.noContent().build();
+		return Response.ok().entity(new APIResponse()).build();
 	}
 	
 	@DELETE
@@ -71,17 +79,19 @@ public class EmployeeService {
 	// Deletes an existing employee
 	public Response remove(Employee employee, @PathParam("id") UUID empId) throws SQLException {
 		employeeManager.remove(employee, empId);
-		return Response.ok().build();
+		return Response.ok().entity(new APIResponse()).build();
 	}
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	// Gets a list of all employees
-	public List<Employee> getAll() throws SQLException {
+	public Response getAll() throws SQLException {
 		List<Employee> employees = employeeManager.getAll();
 		if (employees == null) {
 			throw new WebApplicationException("There are no employees at the moment", Response.Status.NOT_FOUND);
 		}
-		return employees;
+    	Map<String, Object> data = new HashMap<String, Object>();
+        data.put("employees", employees);
+        return Response.ok().entity(new APIResponse(data)).build();
 	}
 }

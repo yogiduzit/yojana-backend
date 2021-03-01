@@ -62,10 +62,12 @@ public class CredentialManager implements Serializable {
      * @param Credential, Credential object containing username and password
      * @throws SQLException
      */
+	@Transactional
     public void merge(Credential credential) {
         em.merge(credential);
     }
     
+	@Transactional
     public void remove(Credential credential) {
         credential = find(credential.getId());
         em.remove(credential);

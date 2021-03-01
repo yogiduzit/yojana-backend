@@ -1,6 +1,8 @@
 package com.corejsf.services.employee;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -17,6 +19,7 @@ import javax.ws.rs.core.Response;
 
 import com.corejsf.access.CredentialManager;
 import com.corejsf.model.employee.Credential;
+import com.corejsf.response.APIResponse;
 
 @Path("/credentials")
 public class CredentialService {
@@ -29,12 +32,8 @@ public class CredentialService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Transactional
 	public Response persist(Credential credentials) {
-		try {
-			credManager.persist(credentials);
-			return Response.noContent().build();
-		} catch (final Exception e) {
-			return Response.serverError().entity(e).build();
-		}
+		credManager.persist(credentials);
+		return Response.ok().entity(new APIResponse()).build();
 	}
 
 	@DELETE
@@ -43,19 +42,18 @@ public class CredentialService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
 	public Response remove(Credential credentials, @PathParam("id") UUID credID) {
-		try {
-			credentials.setId(credID);
-			credManager.remove(credentials);
-			return Response.noContent().build();
-		} catch (final Exception e) {
-			return Response.serverError().entity(e).build();
-		}
+		credentials.setId(credID);
+		credManager.remove(credentials);
+		return Response.ok().entity(new APIResponse()).build();
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	public List<Credential> getAll() {
-		return credManager.getAll();
+	public Response getAll() {
+		final List<Credential> credentials = credManager.getAll();
+    	Map<String, Object> data = new HashMap<String, Object>();
+        data.put("credentials", credentials);
+        return Response.ok().entity(new APIResponse(data)).build();
 	}
 }

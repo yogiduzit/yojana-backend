@@ -16,9 +16,11 @@ CREATE TABLE PayGrade(
 
 DROP TABLE IF EXISTS Employee;
 CREATE TABLE Employee(
-    EmpID INT NOT NULL UNIQUE AUTO_INCREMENT,
+    EmpID VARCHAR(255) NOT NULL UNIQUE,
     EmpName VARCHAR(50) NOT NULL,
     LabourGrade VARCHAR(4),
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT PKEmployee PRIMARY KEY (EmpID),
     CONSTRAINT FKEmployeeLabourGrade
 		FOREIGN KEY (LabourGrade)
@@ -27,14 +29,11 @@ CREATE TABLE Employee(
 
 DROP TABLE IF EXISTS Credential;
 CREATE TABLE Credential(
-<<<<<<< HEAD
     EmpID VARCHAR(255) NOT NULL UNIQUE,
 	EmpUserName VARCHAR(10) NOT NULL UNIQUE,
-=======
-    CredID VARCHAR(255) NOT NULL UNIQUE,
-    EmpID INT NOT NULL UNIQUE,
->>>>>>> 0b1d1ae... Implemented basic JWT authentication
     EmpPassword VARCHAR(15) NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT PKCredentialEmpID PRIMARY KEY (EmpID),
     CONSTRAINT FKCredentialEmpID
         FOREIGN KEY (EmpID)
@@ -46,21 +45,27 @@ CREATE TABLE Credential(
 DROP TABLE IF EXISTS Timesheet;
 CREATE TABLE Timesheet(
 	TimesheetID VARCHAR(255) NOT NULL UNIQUE,
-    EmpID INT NOT NULL,
+    EmpID VARCHAR(255) NOT NULL,
 	EndWeek DATE NOT NULL,
-    Overtime int,
-    Flextime int,
+    Overtime INT,
+    Flextime INT,
 	Status ENUM('pending', 'submitted', 'approved', 'denied') NOT NULL DEFAULT 'pending',
-    ReviewedBy INT,
+    ReviewedBy VARCHAR(255),
     Signature TINYTEXT,
     Feedback TINYTEXT,
-    UpdatedAt DATE,
-    ApprovedAt DATE,
-	PRIMARY KEY (TimesheetID),
-	FOREIGN KEY (ReviewedBy) REFERENCES Employee(EmpID),
-    FOREIGN KEY (EmpID) REFERENCES Employee(EmpID)
-		ON UPDATE CASCADE
-        ON DELETE CASCADE
+	CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ApprovedAt TIMESTAMP,
+	CONSTRAINT PKTimesheetID 
+		PRIMARY KEY (TimesheetID),
+	CONSTRAINT FKTimesheetRevieweer 
+		FOREIGN KEY (ReviewedBy) 
+			REFERENCES Employee(EmpID),
+    CONSTRAINT FKTimesheetCreator 
+    	FOREIGN KEY (EmpID) 
+    		REFERENCES Employee(EmpID)
+			ON UPDATE CASCADE
+        	ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS TimesheetRow;
@@ -70,28 +75,22 @@ CREATE TABLE TimesheetRow(
 	WorkPackageID VARCHAR(20),
 	Notes TINYTEXT,
 	Hours FLOAT,
-	PRIMARY KEY(ProjectID, WorkPackageID, TimesheetID),
-	FOREIGN KEY (TimesheetID) REFERENCES Timesheet(TimesheetID)
-		ON UPDATE CASCADE
-        ON DELETE CASCADE
+	CONSTRAINT PKTimesheetRowID 
+		PRIMARY KEY(ProjectID, WorkPackageID, TimesheetID),
+	CONSTRAINT FKTimesheetRow_Timesheet 
+		FOREIGN KEY (TimesheetID) REFERENCES Timesheet(TimesheetID)
+			ON UPDATE CASCADE
+        	ON DELETE CASCADE
 );
 
-INSERT INTO PayGrade VALUES ("PS", 3.50);
+INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
 
-<<<<<<< HEAD
-INSERT INTO Employee VALUES ("31000000-0000-0000-0000-000000000000", "Bruce Link",  "PS");
-INSERT INTO Employee VALUES ("32000000-0000-0000-0000-000000000000", "Yogesh Verma",  "PS");
+INSERT INTO Employee (EmpID, EmpName, LabourGrade) VALUES ("31000000-0000-0000-0000-000000000000", "Bruce Link",  "PS");
+INSERT INTO Employee (EmpID, EmpName, LabourGrade) VALUES ("32000000-0000-0000-0000-000000000000", "Yogesh Verma",  "PS");
 
-INSERT INTO Credential VALUES ("31000000-0000-0000-0000-000000000000","bdlink", "bruce");
-INSERT INTO Credential VALUES ("32000000-0000-0000-0000-000000000000","yogiduzit", "yogesh");
-=======
-INSERT INTO Employee VALUES (1, "Bruce Link", "bdlink", "PS");
-INSERT INTO Employee VALUES (2, "Yogesh Verma", "yogiduzit", "PS");
+INSERT INTO Credential (EmpID, EmpUserName, EmpPassword) VALUES ("31000000-0000-0000-0000-000000000000", "bdlink", "bruce");
+INSERT INTO Credential (EmpID, EmpUserName, EmpPassword) VALUES ("32000000-0000-0000-0000-000000000000", "yogiduzit", "yogesh");
 
-INSERT INTO Credential VALUES ("31000000-0000-0000-0000-000000000000", 1, "bruce");
-INSERT INTO Credential VALUES ("32000000-0000-0000-0000-000000000000", 2, "yogesh");
->>>>>>> 0b1d1ae... Implemented basic JWT authentication
-
-INSERT INTO Timesheet (TimesheetID, EmpID, EndWeek) VALUES ("55000000-0000-0000-0000-000000000000", 1, DATE '2000/3/10');
-INSERT INTO Timesheet (TimesheetID, EmpID, EndWeek) VALUES ("26000000-0000-0000-0000-000000000000", 2, DATE '2000/3/17');
-INSERT INTO Timesheet (TimesheetID, EmpID, EndWeek) VALUES ("45700000-0000-0000-0000-000000000000", 1, DATE '2000/3/24');
+INSERT INTO Timesheet (TimesheetID, EmpID, EndWeek) VALUES ("55000000-0000-0000-0000-000000000000", "31000000-0000-0000-0000-000000000000", DATE '2000/3/10');
+INSERT INTO Timesheet (TimesheetID, EmpID, EndWeek) VALUES ("26000000-0000-0000-0000-000000000000", "31000000-0000-0000-0000-000000000000", DATE '2000/3/17');
+INSERT INTO Timesheet (TimesheetID, EmpID, EndWeek) VALUES ("45700000-0000-0000-0000-000000000000", "32000000-0000-0000-0000-000000000000", DATE '2000/3/24');

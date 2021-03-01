@@ -3,6 +3,7 @@ package com.corejsf.model.employee;
 import java.util.UUID;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -10,6 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
+
+import com.corejsf.model.auditable.Audit;
 
 /**
  * Represents an employee.
@@ -22,12 +27,16 @@ import javax.persistence.Table;
 @Table(name = "Employee")
 public class Employee {
 	
+	@Embedded
+	private Audit audit;
+	
     /**
      * Represents the number of an employee
      */
 	@Id
     @Column(name = "EmpID", unique = true, columnDefinition = "uuid-char")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Type(type="uuid-char")
     private UUID id;
 	
     /**
@@ -90,4 +99,13 @@ public class Employee {
 	public void setCredential(Credential credential) {
 		this.credential = credential;
 	}
+
+	public Audit getAudit() {
+		return audit;
+	}
+
+	public void setAudit(Audit audit) {
+		this.audit = audit;
+	}
+
 }
