@@ -26,14 +26,15 @@ import javax.validation.constraints.NotBlank;
 public class Credential {
 
 	/**
-	 * Represents the id of the credentials
+	 * Represents the id of the employee
 	 */
 
 	@Id
-	@Column(name = "CredID", unique = true)
+	@Column(name = "EmpID", unique = true)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@NotBlank
-	private int credId;
+	private String empId;
+
 
 	/**
 	 * Represents the username of the login phase
@@ -61,14 +62,14 @@ public class Credential {
 		this.password = password;
 	}
 
-	public int getCredId() {
-		return credId;
+	public String getEmpId() {
+		return empId;
 	}
 
-	public void setCredId(int credId) {
-		this.credId = credId;
+	public void setEmpId(String empId) {
+		this.empId = empId;
 	}
-
+	
 	/**
 	 * Getter for username
 	 *

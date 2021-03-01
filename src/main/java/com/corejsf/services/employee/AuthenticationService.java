@@ -19,7 +19,7 @@ import com.corejsf.access.CredentialManager;
 import com.corejsf.helpers.PasswordHelper;
 import com.corejsf.model.employee.Credential;
 
-@Path("/authentication")
+@Path("/auth")
 public class AuthenticationService {
 
     @Inject

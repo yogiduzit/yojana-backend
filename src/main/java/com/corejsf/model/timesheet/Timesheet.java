@@ -4,11 +4,14 @@ import java.time.LocalDate;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -16,8 +19,10 @@ import javax.validation.constraints.NotBlank;
 import org.hibernate.annotations.Type;
 
 import com.corejsf.model.employee.Employee;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 /**
  * Represents a timesheet.
  *
@@ -34,30 +39,29 @@ public class Timesheet {
      */
 	@Id
     @Column(name = "TimesheetID", unique = true, columnDefinition = "uuid", updatable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Type(type="uuid-char")
-    private UUID id;
+    private UUID tsId;
 	
     /**
      * Represents the ID of the employee
      */
-	@OneToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "EmpID")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Employee employee;
 
     /**
      * Represents the end of the week
      */
+	@JsonDeserialize(using = LocalDateDeserializer.class)  
+	@JsonSerialize(using = LocalDateSerializer.class)  
 	@Column(name = "Endweek")
-	@NotBlank
     private LocalDate endWeek;
 
 	/**
      * Represents the ID of the reviewer
      */
     @Column(name = "ReviewedBy")
-    private int reviewerID;
+    private String reviewerID;
     
     /**
      * Represents the signature of the employee
@@ -74,20 +78,21 @@ public class Timesheet {
     /**
      * Represents the status of the timesheet
      */
-    @Column(name = "Status")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "Status", columnDefinition="ENUM('pending', 'submitted', 'approved', 'denied')")
     private Status status;
     
     /**
      * Represents the overtime
      */
     @Column(name = "Overtime")
-    private int overtime;
+    private Integer overtime;
     
     /**
      * Represents the flextime
      */
     @Column(name = "Flextime")
-    private int flextime;
+    private Integer flextime;
     
     /**
      * The time it was last updated
@@ -148,28 +153,28 @@ public class Timesheet {
     /**
      * @return the overtime
      */
-    public int getOvertime() {
+    public Integer getOvertime() {
         return overtime;
     }
 
     /**
      * @param overtime the overtime to set
      */
-    public void setOvertime(int overtime) {
+    public void setOvertime(Integer overtime) {
         this.overtime = overtime;
     }
 
     /**
      * @return the flextime
      */
-    public int getFlextime() {
+    public Integer getFlextime() {
         return flextime;
     }
 
     /**
      * @param flextime the flextime to set
      */
-    public void setFlextime(int flextime) {
+    public void setFlextime(Integer flextime) {
         this.flextime = flextime;
     }
 
@@ -177,14 +182,14 @@ public class Timesheet {
      * @return the id
      */
     public UUID getId() {
-        return id;
+        return tsId;
     }
 
     /**
      * @param id the id to set
      */
     public void setId(UUID id) {
-        this.id = id;
+        this.tsId = id;
     }
 
     /**
@@ -218,14 +223,14 @@ public class Timesheet {
     /**
      * @return the reviewerID
      */
-    public int getReviewerID() {
+    public String getReviewerID() {
         return reviewerID;
     }
 
     /**
      * @param reviewerID the reviewerID to set
      */
-    public void setReviewerID(int reviewerID) {
+    public void setReviewerID(String reviewerID) {
         this.reviewerID = reviewerID;
     }
 
@@ -260,14 +265,14 @@ public class Timesheet {
     /**
      * @return the status
      */
-    public Status getStatus() {
-        return status;
+    public String getStatus() {
+        return status.name();
     }
 
     /**
      * @param status the status to set
      */
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setStatus(String status) {
+        this.status = Status.valueOf(status);
     }
 }

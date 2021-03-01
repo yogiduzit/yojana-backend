@@ -6,6 +6,7 @@
 	    <jta-data-source>java:jboss/datasources/MySQLDS</jta-data-source>
 	    <class>com.corejsf.model.employee.Employee</class>
 	    <class>com.corejsf.model.employee.Credential</class>
+	    <class>com.corejsf.model.timesheet.Timesheet</class>
 	      
       <properties>
          <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLInnoDBDialect"/>
