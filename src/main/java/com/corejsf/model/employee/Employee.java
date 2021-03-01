@@ -1,12 +1,25 @@
 package com.corejsf.model.employee;
 
+import java.util.UUID;
+
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
+
+import org.hibernate.annotations.Type;
+
+import com.corejsf.model.auditable.Audit;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.hibernate.annotations.Type;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Represents an employee.
@@ -19,30 +32,30 @@ import javax.validation.constraints.NotBlank;
 @Table(name = "Employee")
 public class Employee {
 	
+	@Embedded
+	private Audit audit;
+	
     /**
-     * Represents the employee id
+     * Represents the number of an employee
      */
-
 	@Id
-    @Column(name = "EmpID", unique = true)
+    @Column(name = "EmpID", unique = true, columnDefinition = "uuid-char")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotBlank
-    private String id;
+	@Type(type="uuid-char")
+    private UUID id;
 	
     /**
      * Represents the first name of the employee
      */
 	
 	@Column(name = "EmpName")
-	@NotBlank
-	
     private String fullName;
-
-    /**
-     * no parameter constructor
-     */
-    public Employee() {
-    }
+	
+	@OneToOne(mappedBy = "emp", fetch = FetchType.LAZY)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private Credential credential;
+	
+	public Employee() {}
 
     /**
      * Three parameter constructor. Creates the initial employees who have access as
@@ -52,36 +65,54 @@ public class Employee {
      * @param empName
      * @param id
      */
-    public Employee(final String empId, final String empName) {
+    public Employee(final UUID empId, final String empName) {
         this.id = empId;
         this.fullName = empName;
     }
 
-    /**
-     * Getter for employee full name
-     *
-     * @return fullName
-     */
-    public String getFullName() {
-        return fullName;
-    }
-
-    /**
-     * Setter for employee full name
-     *
-     * @param fullName
-     */
-    public void setFullName(final String empName) {
-        fullName = empName;
-    }
-
-	public String getId() {
+	/**
+	 * Get the ID of an employee
+	 * @return Id
+	 */
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(String empId) {
-		this.id = empId;
+	/**
+	 * Set the ID of an employee
+	 * @param id
+	 */
+	public void setId(UUID id) {
+		this.id = id;
 	}
-	
-	
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	/**
+	 * Set the full name of an employee
+	 * @param fullName
+	 */
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	public Credential getCredential() {
+		return credential;
+	}
+
+	public void setCredential(Credential credential) {
+		this.credential = credential;
+	}
+
+	public Audit getAudit() {
+		return audit;
+	}
+
+	public void setAudit(Audit audit) {
+		this.audit = audit;
+	}
+
+    
 }
