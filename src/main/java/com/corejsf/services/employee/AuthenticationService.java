@@ -14,32 +14,31 @@ import javax.ws.rs.core.Response.Status;
 
 import com.corejsf.access.EmployeeManager;
 import com.corejsf.helpers.JWTHelper;
-import com.corejsf.model.employee.Authenticator;
 import com.corejsf.model.employee.Credential;
 
-@Path("/authentication")
+@Path("/auth")
 public class AuthenticationService {
 
 	@Inject
 	private EmployeeManager empManager;
 
 	// Helper for password encryption
-	private JWTHelper jwtHelper;
+	private JWTHelper passwordHelper;
 
 	// Provides authentication support
 	public AuthenticationService() {
-		jwtHelper = new JWTHelper();
+		passwordHelper = new JWTHelper();
 	}
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	// Authenticates a user
-	public Response authenticateUser(Authenticator auth) {
+	public Response authenticateUser(Credential auth) {
 		try {
 			authenticate(auth.getUsername(), auth.getPassword());
 
-			final String token = jwtHelper.encrypt(auth.getUsername());
+			final String token = passwordHelper.encrypt(auth.getUsername() + auth.getPassword());
 			return Response.ok(token).build();
 		} catch (final Exception e) {
 			return Response.status(Status.UNAUTHORIZED).entity(e.getLocalizedMessage()).build();
@@ -49,7 +48,7 @@ public class AuthenticationService {
 	// Helper for authentication
 	// TODO: Implement JWT
 	private void authenticate(String username, String password) throws AuthenticationException, SQLException {
-		final Credential stored = empManager.findByUsername(username).getCredentials();
+		final Credential stored = empManager.findByUsername(username).getCredential();
 		if (stored == null) {
 			throw new AuthenticationException("Cannot find user with the provided username");
 		}

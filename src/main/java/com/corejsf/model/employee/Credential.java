@@ -2,19 +2,23 @@ package com.corejsf.model.employee;
 
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.Type;
 
+import com.corejsf.model.auditable.Audit;
+import com.corejsf.model.auditable.Auditable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -27,14 +31,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "Credential")
-public class Credential {
+@NamedQueries({
+	@NamedQuery(name = "Credential.findByUsername", query = "SELECT c FROM Credential c WHERE c.username = :username")
+})
+public class Credential implements Auditable {
+	
+	@Embedded
+	private Audit audit;
 
 	/**
-	 * Represents the id of the credentials
+	 * Represents the id of the employee
 	 */
 	@Id
-	@Column(name = "CredID", unique = true, columnDefinition = "uuid", updatable = false)
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "EmpID", unique = true, columnDefinition = "uuid-char")
 	@Type(type="uuid-char")
 	private UUID id;
 
@@ -42,24 +51,53 @@ public class Credential {
 	 * Represents the username of the login phase
 	 * Foreign key reference to the credential table's EmpID column
 	 */
-	@OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "EmpID")
+	@PrimaryKeyJoinColumn(name = "EmpID", referencedColumnName= "EmpID")
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	private Employee employee;
-
+	private Employee emp;
+	
 	/**
-	 * Represents the password of the employee's credentials
+	 * Represents the username of the login phase
+	 */
+	@Column(name = "EmpUserName")
+	private String username;
+	
+	/**
+	 * Represents the password of the login phase
 	 */
 	@Column(name = "EmpPassword")
 	@NotBlank
 	private String password;
+	
+	public Credential() {}
+	
+	public Credential(String password, String username) {
+		this.password = password;
+		this.username = username;
+	}
 
 	public UUID getId() {
 		return id;
 	}
 
-	public void setId(UUID credId) {
-		this.id = credId;
+	public void setId(UUID empId) {
+		this.id = empId;
+	}
+
+	public Employee getEmp() {
+		return emp;
+	}
+
+	public void setEmp(Employee emp) {
+		this.emp = emp;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getPassword() {
@@ -70,12 +108,12 @@ public class Credential {
 		this.password = password;
 	}
 
-	public Employee getEmployee() {
-		return employee;
+	public Audit getAudit() {
+		return audit;
 	}
 
-	public void setEmployee(Employee employee) {
-		this.employee = employee;
+	public void setAudit(Audit audit) {
+		this.audit = audit;
 	}
 
 }

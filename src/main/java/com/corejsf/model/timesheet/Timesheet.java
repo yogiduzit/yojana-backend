@@ -1,25 +1,30 @@
 package com.corejsf.model.timesheet;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.Type;
 
+import com.corejsf.model.auditable.Audit;
+import com.corejsf.model.auditable.Auditable;
 import com.corejsf.model.employee.Employee;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 /**
  * Represents a timesheet.
  *
@@ -29,37 +34,50 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "Timesheet")
-public class Timesheet {
+public class Timesheet implements Auditable {
+	
+	@Embedded
+	private Audit audit;
 	
     /**
      * Represents the timesheet id
      */
 	@Id
-    @Column(name = "TimesheetID", unique = true, columnDefinition = "uuid", updatable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "TimesheetID", unique = true, columnDefinition = "uuid-char", updatable = false)
 	@Type(type="uuid-char")
-    private UUID id;
+    private UUID tsId;
 	
     /**
      * Represents the ID of the employee
      */
-	@OneToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "EmpID")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Employee employee;
+	
+	@Column(name = "EmpID", updatable = false, insertable = false)
+	@Type(type="uuid-char")
+	private UUID ownerId;
 
     /**
      * Represents the end of the week
      */
+	@JsonDeserialize(using = LocalDateDeserializer.class)  
+	@JsonSerialize(using = LocalDateSerializer.class)  
 	@Column(name = "Endweek")
-	@NotBlank
     private LocalDate endWeek;
 
 	/**
      * Represents the ID of the reviewer
      */
-    @Column(name = "ReviewedBy")
-    private int reviewerID;
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ReviewedBy")
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Employee reviewer;
+	
+	@Column(name = "ReviewedBy", updatable = false, insertable = false)
+	@Type(type="uuid-char")
+	private UUID reviewerId;
     
     /**
      * Represents the signature of the employee
@@ -84,25 +102,20 @@ public class Timesheet {
      * Represents the overtime
      */
     @Column(name = "Overtime")
-    private int overtime;
+    private Integer overtime;
     
     /**
      * Represents the flextime
      */
     @Column(name = "Flextime")
-    private int flextime;
-    
-    /**
-     * The time it was last updated
-     */
-    @Column(name = "UpdatedAt")
-    private LocalDate updatedAt;
+    private Integer flextime;
     
     /**
      * The time it was approved
      */
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "ApprovedAt")
-    private LocalDate approvedAt;
+    private Date approvedAt;
     
     /**
      * no parameter constructor
@@ -120,157 +133,117 @@ public class Timesheet {
         this.endWeek = endWeek;
     }
 
-    /**
-     * @return the updatedAt
-     */
-    public LocalDate getUpdatedAt() {
-        return updatedAt;
-    }
+    public Audit getAudit() {
+		return audit;
+	}
 
-    /**
-     * @param updatedAt the updatedAt to set
-     */
-    public void setUpdatedAt(LocalDate updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+	public void setAudit(Audit audit) {
+		this.audit = audit;
+	}
 
-    /**
-     * @return the approvedAt
-     */
-    public LocalDate getApprovedAt() {
-        return approvedAt;
-    }
+	public UUID getTsId() {
+		return tsId;
+	}
 
-    /**
-     * @param approvedAt the approvedAt to set
-     */
-    public void setApprovedAt(LocalDate approvedAt) {
-        this.approvedAt = approvedAt;
-    }
+	public void setTsId(UUID tsId) {
+		this.tsId = tsId;
+	}
 
-    /**
-     * @return the overtime
-     */
-    public int getOvertime() {
-        return overtime;
-    }
+	public Employee getEmployee() {
+		return employee;
+	}
 
-    /**
-     * @param overtime the overtime to set
-     */
-    public void setOvertime(int overtime) {
-        this.overtime = overtime;
-    }
+	public void setEmployee(Employee employee) {
+		this.employee = employee;
+	}
 
-    /**
-     * @return the flextime
-     */
-    public int getFlextime() {
-        return flextime;
-    }
+	public UUID getOwnerId() {
+		return ownerId;
+	}
 
-    /**
-     * @param flextime the flextime to set
-     */
-    public void setFlextime(int flextime) {
-        this.flextime = flextime;
-    }
+	public void setOwnerId(UUID ownerId) {
+		this.ownerId = ownerId;
+	}
 
-    /**
-     * @return the id
-     */
-    public UUID getId() {
-        return id;
-    }
+	public LocalDate getEndWeek() {
+		return endWeek;
+	}
 
-    /**
-     * @param id the id to set
-     */
-    public void setId(UUID id) {
-        this.id = id;
-    }
+	public void setEndWeek(LocalDate endWeek) {
+		this.endWeek = endWeek;
+	}
 
-    /**
-     * @return the employee
-     */
-    public Employee getEmployee() {
-        return employee;
-    }
+	public Employee getReviewer() {
+		return reviewer;
+	}
 
-    /**
-     * @param employee the employee to set
-     */
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
+	public void setReviewer(Employee reviewer) {
+		this.reviewer = reviewer;
+	}
 
-    /**
-     * @return the endWeek
-     */
-    public LocalDate getEndWeek() {
-        return endWeek;
-    }
+	public UUID getReviewerId() {
+		return reviewerId;
+	}
 
-    /**
-     * @param endWeek the endWeek to set
-     */
-    public void setEndWeek(LocalDate endWeek) {
-        this.endWeek = endWeek;
-    }
+	public void setReviewerId(UUID reviewerId) {
+		this.reviewerId = reviewerId;
+	}
 
-    /**
-     * @return the reviewerID
-     */
-    public int getReviewerID() {
-        return reviewerID;
-    }
+	public String getSignature() {
+		return signature;
+	}
 
-    /**
-     * @param reviewerID the reviewerID to set
-     */
-    public void setReviewerID(int reviewerID) {
-        this.reviewerID = reviewerID;
-    }
+	public void setSignature(String signature) {
+		this.signature = signature;
+	}
 
-    /**
-     * @return the signature
-     */
-    public String getSignature() {
-        return signature;
-    }
+	public String getFeedback() {
+		return feedback;
+	}
 
-    /**
-     * @param signature the signature to set
-     */
-    public void setSignature(String signature) {
-        this.signature = signature;
-    }
+	public void setFeedback(String feedback) {
+		this.feedback = feedback;
+	}
 
-    /**
-     * @return the feedback
-     */
-    public String getFeedback() {
-        return feedback;
-    }
+	public Integer getOvertime() {
+		return overtime;
+	}
 
-    /**
-     * @param feedback the feedback to set
-     */
-    public void setFeedback(String feedback) {
-        this.feedback = feedback;
-    }
+	public void setOvertime(Integer overtime) {
+		this.overtime = overtime;
+	}
 
-    /**
+	public Integer getFlextime() {
+		return flextime;
+	}
+
+	public void setFlextime(Integer flextime) {
+		this.flextime = flextime;
+	}
+
+	public Date getApprovedAt() {
+		return approvedAt;
+	}
+
+	public void setApprovedAt(Date approvedAt) {
+		this.approvedAt = approvedAt;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+	/**
      * @return the status
      */
-    public Status getStatus() {
-        return status;
+    public String getStatus() {
+        return status.name();
     }
 
     /**
      * @param status the status to set
      */
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setStatus(String status) {
+        this.status = Status.valueOf(status);
     }
 }
