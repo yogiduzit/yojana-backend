@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -28,11 +27,11 @@ import com.yojana.security.annotations.Secured;
 @Path("/employees")
 public class EmployeeService {
 
-	@Inject
-	// Provides access to the employee table
-	private EmployeeManager employeeManager;
-	
-	@GET
+    @Inject
+    // Provides access to the employee table
+    private EmployeeManager employeeManager;
+    
+    @GET
     @Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	// Finds an employee
@@ -102,4 +101,5 @@ public class EmployeeService {
 		}
         res.getData().put("employees", employees);
         return Response.ok().entity(res).build();
-	}}
+	}
+}

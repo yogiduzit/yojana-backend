@@ -126,5 +126,11 @@ public class Employee implements Auditable {
 		this.audit = audit;
 	}
 
+    @Override
+    public String toString() {
+        return "Employee [audit=" + audit + ", id=" + id + ", fullName=" + fullName + ", credential=" + credential
+                + "]";
+    }
+
     
 }

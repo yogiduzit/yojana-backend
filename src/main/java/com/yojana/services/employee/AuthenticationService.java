@@ -19,41 +19,41 @@ import com.yojana.model.employee.Credential;
 @Path("/auth")
 public class AuthenticationService {
 
-	@Inject
-	private CredentialManager credManager;
+    @Inject
+    private CredentialManager credManager;
 
-	// Helper for password encryption
-	private JWTHelper passwordHelper;
+    // Helper for password encryption
+    private JWTHelper passwordHelper;
 
-	// Provides authentication support
-	public AuthenticationService() {
-		passwordHelper = new JWTHelper();
-	}
+    // Provides authentication support
+    public AuthenticationService() {
+        passwordHelper = new JWTHelper();
+    }
 
-	@POST
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	// Authenticates a user
-	public Response authenticateUser(Credential auth) {
-		try {
-			authenticate(auth.getUsername(), auth.getPassword());
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    // Authenticates a user
+    public Response authenticateUser(Credential auth) {
+        try {
+            authenticate(auth.getUsername(), auth.getPassword());
 
-			final String token = passwordHelper.encrypt(auth.getUsername());
-			return Response.ok(token).build();
-		} catch (final Exception e) {
-			return Response.status(Status.UNAUTHORIZED).entity(e.getLocalizedMessage()).build();
-		}
-	}
+            final String token = passwordHelper.encrypt(auth.getUsername());
+            return Response.ok(token).build();
+        } catch (final Exception e) {
+            return Response.status(Status.UNAUTHORIZED).entity(e.getLocalizedMessage()).build();
+        }
+    }
 
-	// Helper for authentication
-	// TODO: Implement JWT
-	private void authenticate(String username, String password) throws AuthenticationException, SQLException {
-		final Credential stored = credManager.find(username);
-		if (stored == null) {
-			throw new AuthenticationException("Cannot find user with the provided username");
-		}
-		if (!(password.contentEquals(stored.getPassword()))) {
-			throw new AuthenticationException("Invalid password ! Please try again");
-		}
-	}
+    // Helper for authentication
+    // TODO: Implement JWT
+    private void authenticate(String username, String password) throws AuthenticationException, SQLException {
+        final Credential stored = credManager.find(username);
+        if (stored == null) {
+            throw new AuthenticationException("Cannot find user with the provided username");
+        }
+        if (!(password.contentEquals(stored.getPassword()))) {
+            throw new AuthenticationException("Invalid password ! Please try again");
+        }
+    }
 }
