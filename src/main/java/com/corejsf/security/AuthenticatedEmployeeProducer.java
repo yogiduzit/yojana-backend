@@ -7,7 +7,10 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import com.corejsf.access.EmployeeManager;
+import org.hibernate.Hibernate;
+
+import com.corejsf.access.CredentialManager;
+import com.corejsf.model.employee.Credential;
 import com.corejsf.model.employee.Employee;
 import com.corejsf.security.annotations.AuthenticatedEmployee;
 
@@ -15,7 +18,7 @@ import com.corejsf.security.annotations.AuthenticatedEmployee;
 public class AuthenticatedEmployeeProducer {
 
     @Inject
-    private EmployeeManager empManager;
+    private CredentialManager credManager;
 
     @Produces
     @RequestScoped
@@ -24,6 +27,8 @@ public class AuthenticatedEmployeeProducer {
 
     // Sets the authenticated employee in the database
     public void handleAuthenticationEvent(@Observes @AuthenticatedEmployee String username) throws SQLException {
-        authenticatedEmployee = empManager.findByUsername(username);
+        final Credential cred = credManager.find(username);
+        Hibernate.initialize(cred.getEmp());
+        authenticatedEmployee = cred.getEmp();
     }
 }
