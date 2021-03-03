@@ -159,6 +159,37 @@ CREATE TABLE Report(
             ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS WorkPackage;
+CREATE TABLE WorkPackage(
+	WorkPackageID VARCHAR(20) NOT NULL,
+	ProjectID VARCHAR(20) NOT NULL,
+    ParentWorkPackageID VARCHAR(20),
+    ResponsibleEngineerID VARCHAR(255),
+    WorkPackageName VARCHAR(100),
+    Descrip VARCHAR(255),
+    IsLowestLevel BOOLEAN,
+    AllocatedBudget FLOAT(14,2),
+    InitialEstimate FLOAT(14,2),
+    Charged FLOAT(14,2),
+    CostAtCompletion FLOAT(14,2),
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    DueAt DATE,
+    Stat ENUM('complete', 'open', 'closed') NOT NULL DEFAULT 'open',
+	CONSTRAINT PKWorkPackage
+		PRIMARY KEY(WorkPackageID, ProjectID),
+	CONSTRAINT FKWorkPackageProjectID 
+		FOREIGN KEY (ProjectID) REFERENCES Project(ProjectID)
+			ON UPDATE CASCADE
+            ON DELETE CASCADE,
+	CONSTRAINT FKWorkPackageParentWorkPackageID 
+		FOREIGN KEY (ParentWorkPackageID) REFERENCES WorkPackage(WorkPackageID)
+			ON UPDATE CASCADE
+            ON DELETE CASCADE,
+	CONSTRAINT FKWorkPackageResponsibleEngineerID
+		FOREIGN KEY (ResponsibleEngineerID) REFERENCES Employee(EmpID)
+			ON UPDATE CASCADE         
+);
 
 INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
 
