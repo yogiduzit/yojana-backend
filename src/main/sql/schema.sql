@@ -47,7 +47,7 @@ CREATE TABLE Credential(
     EmpID INT NOT NULL UNIQUE,
 	EmpUserName VARCHAR(10) NOT NULL UNIQUE,
     EmpPassword VARCHAR(15) NOT NULL,
-	CONSTRAINT PKCredentialEmpID PRIMARY KEY (EmpID),
+	CONSTRAINT PKCredentialEmp PRIMARY KEY (EmpID),
     CONSTRAINT FKCredentialEmpID
         FOREIGN KEY (EmpID)
             REFERENCES Employee(EmpID)
@@ -69,7 +69,7 @@ CREATE TABLE Timesheet(
 	CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ApprovedAt TIMESTAMP,
-	CONSTRAINT PKTimesheetID 
+	CONSTRAINT PKTimesheet
 		PRIMARY KEY (TimesheetID),
 	CONSTRAINT FKTimesheetRevieweer 
 		FOREIGN KEY (ReviewedBy) 
@@ -87,8 +87,8 @@ CREATE TABLE TimesheetRow(
 	ProjectID VARCHAR(20),
 	WorkPackageID VARCHAR(20),
 	Notes TINYTEXT,
-	Hours BIGINT,
-	CONSTRAINT PKTimesheetRowID 
+	Hours FLOAT,
+	CONSTRAINT PKTimesheetRow
 		PRIMARY KEY(ProjectID, WorkPackageID, TimesheetID),
 	CONSTRAINT FKTimesheetRow_Timesheet 
 		FOREIGN KEY (TimesheetID) REFERENCES Timesheet(TimesheetID)
@@ -104,7 +104,7 @@ CREATE TABLE LeaveRequest(
     EndDate DATE,
     Type VARCHAR(125),
     Description VARCHAR(255),
-	CONSTRAINT PKLeaveRequestLeaveRequestID PRIMARY KEY (LeaveRequestID),
+	CONSTRAINT PKLeaveRequest PRIMARY KEY (LeaveRequestID),
     CONSTRAINT FKRequestLeaveEmpID
         FOREIGN KEY (EmpID)
             REFERENCES Employee(EmpID)
@@ -122,7 +122,7 @@ CREATE TABLE Project(
     Descrip VARCHAR(255),
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Stat ENUM('pending', 'submitted', 'open', 'closed') NOT NULL DEFAULT 'pending',
-	CONSTRAINT PKProjectID
+	CONSTRAINT PKProject
 		PRIMARY KEY(ProjectID),
 	CONSTRAINT FKProjectProjectManagerID 
 		FOREIGN KEY (ProjectManagerID) REFERENCES Employee(EmpID)
@@ -133,7 +133,7 @@ DROP TABLE IF EXISTS ProjectEmployee;
 CREATE TABLE ProjectEmployee(
 	ProjectID VARCHAR(255) NOT NULL,
 	EmpID INT,
-	CONSTRAINT PKProjectEmployeeID
+	CONSTRAINT PKProjectEmployee
 		PRIMARY KEY(ProjectID, EmpID),
 	CONSTRAINT FKProjectEmployeeProjectID 
 		FOREIGN KEY (ProjectID) REFERENCES Project(ProjectID)
@@ -144,6 +144,21 @@ CREATE TABLE ProjectEmployee(
 			ON UPDATE CASCADE
         	ON DELETE CASCADE
 );
+
+DROP TABLE IF EXISTS Report;
+CREATE TABLE Report(
+	ReportID VARCHAR(255) NOT NULL,
+	ProjectID VARCHAR(20),
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Info JSON,
+	CONSTRAINT PKReport
+		PRIMARY KEY(ReportID),
+	CONSTRAINT FKReportProjectID 
+		FOREIGN KEY (ProjectID) REFERENCES Project(ProjectID)
+			ON UPDATE CASCADE
+            ON DELETE CASCADE
+);
+
 
 INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
 
