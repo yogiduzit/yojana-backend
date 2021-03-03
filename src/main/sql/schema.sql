@@ -223,7 +223,19 @@ CREATE TABLE Estimate(
             ON DELETE CASCADE
 );
 
-
+DROP TABLE IF EXISTS EstimateRow;
+CREATE TABLE EstimateRow(
+	EstimateID VARCHAR(255) NOT NULL,
+    PayGradeID VARCHAR(4) NOT NULL,
+	EmpDays FLOAT(4,2),
+    EmpCount INT,
+	CONSTRAINT PKEstimateRow
+		PRIMARY KEY(EstimateID, PayGradeID),
+	CONSTRAINT FKEstimateRowEstimateID 
+		FOREIGN KEY (EstimateID) REFERENCES Estimate(EstimateID)
+			ON UPDATE CASCADE
+            ON DELETE CASCADE
+);
 
 INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
 
