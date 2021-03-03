@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.corejsf.access.EmployeeManager;
+import com.corejsf.access.CredentialManager;
 import com.corejsf.helpers.JWTHelper;
 import com.corejsf.model.employee.Credential;
 
@@ -20,7 +20,7 @@ import com.corejsf.model.employee.Credential;
 public class AuthenticationService {
 
 	@Inject
-	private EmployeeManager empManager;
+	private CredentialManager credManager;
 
 	// Helper for password encryption
 	private JWTHelper passwordHelper;
@@ -38,7 +38,7 @@ public class AuthenticationService {
 		try {
 			authenticate(auth.getUsername(), auth.getPassword());
 
-			final String token = passwordHelper.encrypt(auth.getUsername() + auth.getPassword());
+			final String token = passwordHelper.encrypt(auth.getUsername());
 			return Response.ok(token).build();
 		} catch (final Exception e) {
 			return Response.status(Status.UNAUTHORIZED).entity(e.getLocalizedMessage()).build();
@@ -48,7 +48,7 @@ public class AuthenticationService {
 	// Helper for authentication
 	// TODO: Implement JWT
 	private void authenticate(String username, String password) throws AuthenticationException, SQLException {
-		final Credential stored = empManager.findByUsername(username).getCredential();
+		final Credential stored = credManager.find(username);
 		if (stored == null) {
 			throw new AuthenticationException("Cannot find user with the provided username");
 		}

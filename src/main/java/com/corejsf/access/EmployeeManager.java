@@ -30,13 +30,6 @@ public class EmployeeManager implements Serializable{
         return em.find(Employee.class, id);
     }
 	
-	/** find an employee with id. */
-	public Employee findByUsername(String username) {
-        TypedQuery<Employee> query = em.createQuery("select e from Employee e WHERE e.username=:username", Employee.class);
-        query.setParameter("username", username);
-        return query.getSingleResult();
-    }
-	
 	/** add an employee. */
 	@Transactional
 	public void persist(Employee employee) {
