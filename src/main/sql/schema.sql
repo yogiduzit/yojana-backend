@@ -32,8 +32,6 @@ CREATE TABLE Credential(
     EmpID INT NOT NULL UNIQUE,
 	EmpUserName VARCHAR(10) NOT NULL UNIQUE,
     EmpPassword VARCHAR(15) NOT NULL,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT PKCredentialEmpID PRIMARY KEY (EmpID),
     CONSTRAINT FKCredentialEmpID
         FOREIGN KEY (EmpID)
@@ -71,7 +69,7 @@ CREATE TABLE Timesheet(
 DROP TABLE IF EXISTS TimesheetRow;
 CREATE TABLE TimesheetRow(
 	TimesheetID VARCHAR(255) NOT NULL,
-	ProjectID VARCHAR(20) NOT NULL,
+	ProjectID VARCHAR(20),
 	WorkPackageID VARCHAR(20),
 	Notes TINYTEXT,
 	Hours BIGINT,
@@ -81,6 +79,22 @@ CREATE TABLE TimesheetRow(
 		FOREIGN KEY (TimesheetID) REFERENCES Timesheet(TimesheetID)
 			ON UPDATE CASCADE
         	ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS LeaveRequest;
+CREATE TABLE LeaveRequest(
+	LeaveRequestID VARCHAR(255) NOT NULL UNIQUE,
+    EmpID VARCHAR(255) NOT NULL,
+    StartDate DATE,
+    EndDate DATE,
+    Type VARCHAR(125),
+    Description VARCHAR(255),
+	CONSTRAINT PKLeaveRequestLeaveRequestID PRIMARY KEY (LeaveRequestID),
+    CONSTRAINT FKRequestLeaveEmpID
+        FOREIGN KEY (EmpID)
+            REFERENCES Employee(EmpID)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
 );
 
 INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
