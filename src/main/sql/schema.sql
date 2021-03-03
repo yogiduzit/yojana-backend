@@ -16,7 +16,7 @@ CREATE TABLE PayGrade(
 
 DROP TABLE IF EXISTS Employee;
 CREATE TABLE Employee(
-    EmpID INT NOT NULL UNIQUE AUTO_INCREMENT,
+    EmpID VARCHAR(255) NOT NULL UNIQUE,
     EmpName VARCHAR(50) NOT NULL,
     LabourGrade VARCHAR(4),
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -45,12 +45,12 @@ CREATE TABLE Credential(
 DROP TABLE IF EXISTS Timesheet;
 CREATE TABLE Timesheet(
 	TimesheetID VARCHAR(255) NOT NULL UNIQUE,
-    EmpID INT NOT NULL,
+    EmpID VARCHAR(255) NOT NULL,
 	EndWeek DATE NOT NULL,
     Overtime INT,
     Flextime INT,
 	Status ENUM('pending', 'submitted', 'approved', 'denied') NOT NULL DEFAULT 'pending',
-    ReviewedBy INT,
+    ReviewedBy VARCHAR(255),
     Signature TINYTEXT,
     Feedback TINYTEXT,
 	CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
