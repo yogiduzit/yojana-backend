@@ -112,7 +112,21 @@ CREATE TABLE LeaveRequest(
             ON DELETE CASCADE
 );
 
-
+DROP TABLE IF EXISTS ProjectEmployee;
+CREATE TABLE ProjectEmployee(
+	ProjectID VARCHAR(20) NOT NULL,
+	EmpID VARCHAR(255),
+	CONSTRAINT PKProjectEmployeeID
+		PRIMARY KEY(ProjectID, EmpID),
+	CONSTRAINT FKProjectEmployeeProjectID 
+		FOREIGN KEY (ProjectID) REFERENCES Project(ProjectID)
+			ON UPDATE CASCADE
+        	ON DELETE CASCADE,
+	CONSTRAINT FKProjectEmployeeEmpID 
+		FOREIGN KEY (EmpID) REFERENCES Employee(EmpID)
+			ON UPDATE CASCADE
+        	ON DELETE CASCADE
+);
 
 INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
 
