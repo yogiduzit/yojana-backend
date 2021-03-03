@@ -19,12 +19,27 @@ CREATE TABLE Employee(
     EmpID INT NOT NULL UNIQUE AUTO_INCREMENT,
     EmpName VARCHAR(50) NOT NULL,
     LabourGrade VARCHAR(4),
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CreatedBy VARCHAR(255),
+    ManagedBy VARCHAR(255),
+    TimesheetApproverID VARCHAR(255),
+    ProfileImage TINYTEXT,
+    IsHR BOOLEAN,
+    IsAdmin BOOLEAN,
+    IsProjectManager BOOLEAN,
+    IsTimesheetApprover BOOLEAN,
     CONSTRAINT PKEmployee PRIMARY KEY (EmpID),
     CONSTRAINT FKEmployeeLabourGrade
 		FOREIGN KEY (LabourGrade)
-			REFERENCES PayGrade(LabourGrade)
+			REFERENCES PayGrade(LabourGrade),
+	CONSTRAINT FKEmployeeCreatedBy
+		FOREIGN KEY (CreatedBy)
+			REFERENCES Employee(EmpID),
+	CONSTRAINT FKEmployeeManagedBy
+		FOREIGN KEY (ManagedBy)
+			REFERENCES Employee(EmpID),
+    CONSTRAINT FKEmployeeTimesheetApproverID
+		FOREIGN KEY (TimesheetApproverID)
+			REFERENCES Employee(EmpID)
 );
 
 DROP TABLE IF EXISTS Credential;
@@ -96,6 +111,8 @@ CREATE TABLE LeaveRequest(
             ON UPDATE CASCADE
             ON DELETE CASCADE
 );
+
+
 
 INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
 
