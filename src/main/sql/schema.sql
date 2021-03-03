@@ -208,6 +208,23 @@ CREATE TABLE EmployeePackages(
             ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS Estimate;
+CREATE TABLE Estimate(
+	EstimateID VARCHAR(255) NOT NULL,
+    WorkPackageID VARCHAR(20) NOT NULL,
+	ProjectID VARCHAR(20) NOT NULL,
+    EstimateToComplete FLOAT(14,2),
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT PKEstimate
+		PRIMARY KEY(EstimateID),
+	CONSTRAINT FKEstimateWorkPackageIDProjectID 
+		FOREIGN KEY (WorkPackageID, ProjectID) REFERENCES WorkPackage(WorkPackageID, ProjectID)
+			ON UPDATE CASCADE
+            ON DELETE CASCADE
+);
+
+
+
 INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
 
 INSERT INTO Employee (EmpID, EmpName, LabourGrade) VALUES (1, "Bruce Link",  "PS");
