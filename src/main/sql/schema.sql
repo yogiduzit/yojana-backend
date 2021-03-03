@@ -183,12 +183,29 @@ CREATE TABLE WorkPackage(
 			ON UPDATE CASCADE
             ON DELETE CASCADE,
 	CONSTRAINT FKWorkPackageParentWorkPackageID 
-		FOREIGN KEY (ParentWorkPackageID) REFERENCES WorkPackage(WorkPackageID)
+		FOREIGN KEY (ParentWorkPackageID, ProjectID) REFERENCES WorkPackage(WorkPackageID, ProjectID)
 			ON UPDATE CASCADE
             ON DELETE CASCADE,
 	CONSTRAINT FKWorkPackageResponsibleEngineerID
 		FOREIGN KEY (ResponsibleEngineerID) REFERENCES Employee(EmpID)
 			ON UPDATE CASCADE         
+);
+
+DROP TABLE IF EXISTS EmployeePackages;
+CREATE TABLE EmployeePackages(
+	WorkPackageID VARCHAR(20) NOT NULL,
+	ProjectID VARCHAR(20) NOT NULL,
+    EmpID VARCHAR(255) NOT NULL,
+	CONSTRAINT PKEmployeePackages
+		PRIMARY KEY(WorkPackageID, ProjectID, EmpID),
+	CONSTRAINT FKEmployeePackagesWorkPackageIDProjectID
+		FOREIGN KEY (WorkPackageID, ProjectID) REFERENCES WorkPackage(WorkPackageID, ProjectID)
+			ON UPDATE CASCADE
+            ON DELETE CASCADE,
+	CONSTRAINT FKEmployeePackagesEmpID
+		FOREIGN KEY (EmpID) REFERENCES Employee(EmpID)
+			ON UPDATE CASCADE
+            ON DELETE CASCADE
 );
 
 INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
