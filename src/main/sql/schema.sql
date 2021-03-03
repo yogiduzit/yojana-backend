@@ -99,7 +99,7 @@ CREATE TABLE TimesheetRow(
 DROP TABLE IF EXISTS LeaveRequest;
 CREATE TABLE LeaveRequest(
 	LeaveRequestID VARCHAR(255) NOT NULL UNIQUE,
-    EmpID VARCHAR(255) NOT NULL,
+    EmpID INT NOT NULL,
     StartDate DATE,
     EndDate DATE,
     Type VARCHAR(125),
@@ -112,10 +112,27 @@ CREATE TABLE LeaveRequest(
             ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS Project;
+CREATE TABLE Project(
+	ProjectID VARCHAR(255) NOT NULL,
+	ProjectManagerID INT NOT NULL,
+    ProjectName VARCHAR(100),
+    Budget FLOAT(14,2),
+    InitialEstimate FLOAT(14,2),
+    Descrip VARCHAR(255),
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Stat ENUM('pending', 'submitted', 'open', 'closed') NOT NULL DEFAULT 'pending',
+	CONSTRAINT PKProjectID
+		PRIMARY KEY(ProjectID),
+	CONSTRAINT FKProjectProjectManagerID 
+		FOREIGN KEY (ProjectManagerID) REFERENCES Employee(EmpID)
+			ON UPDATE CASCADE
+);
+
 DROP TABLE IF EXISTS ProjectEmployee;
 CREATE TABLE ProjectEmployee(
-	ProjectID VARCHAR(20) NOT NULL,
-	EmpID VARCHAR(255),
+	ProjectID VARCHAR(255) NOT NULL,
+	EmpID INT,
 	CONSTRAINT PKProjectEmployeeID
 		PRIMARY KEY(ProjectID, EmpID),
 	CONSTRAINT FKProjectEmployeeProjectID 
