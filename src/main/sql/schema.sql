@@ -19,9 +19,9 @@ CREATE TABLE Employee(
     EmpID INT NOT NULL UNIQUE AUTO_INCREMENT,
     EmpName VARCHAR(50) NOT NULL,
     LabourGrade VARCHAR(4),
-    CreatedBy VARCHAR(255),
-    ManagedBy VARCHAR(255),
-    TimesheetApproverID VARCHAR(255),
+    CreatedBy INT,
+    ManagedBy INT,
+    TimesheetApproverID INT,
     ProfileImage TINYTEXT,
     IsHR BOOLEAN,
     IsAdmin BOOLEAN,
@@ -81,20 +81,6 @@ CREATE TABLE Timesheet(
         	ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS TimesheetRow;
-CREATE TABLE TimesheetRow(
-	TimesheetID VARCHAR(255) NOT NULL,
-	ProjectID VARCHAR(20),
-	WorkPackageID VARCHAR(20),
-	Notes TINYTEXT,
-	Hours FLOAT,
-	CONSTRAINT PKTimesheetRow
-		PRIMARY KEY(ProjectID, WorkPackageID, TimesheetID),
-	CONSTRAINT FKTimesheetRow_Timesheet 
-		FOREIGN KEY (TimesheetID) REFERENCES Timesheet(TimesheetID)
-			ON UPDATE CASCADE
-        	ON DELETE CASCADE
-);
 
 DROP TABLE IF EXISTS LeaveRequest;
 CREATE TABLE LeaveRequest(
@@ -102,8 +88,8 @@ CREATE TABLE LeaveRequest(
     EmpID INT NOT NULL,
     StartDate DATE,
     EndDate DATE,
-    Type VARCHAR(125),
-    Description VARCHAR(255),
+    TypeRequest VARCHAR(125),
+    Descrip VARCHAR(255),
 	CONSTRAINT PKLeaveRequest PRIMARY KEY (LeaveRequestID),
     CONSTRAINT FKRequestLeaveEmpID
         FOREIGN KEY (EmpID)
@@ -164,7 +150,7 @@ CREATE TABLE WorkPackage(
 	WorkPackageID VARCHAR(20) NOT NULL,
 	ProjectID VARCHAR(20) NOT NULL,
     ParentWorkPackageID VARCHAR(20),
-    ResponsibleEngineerID VARCHAR(255),
+    ResponsibleEngineerID INT,
     WorkPackageName VARCHAR(100),
     Descrip VARCHAR(255),
     IsLowestLevel BOOLEAN,
@@ -191,11 +177,11 @@ CREATE TABLE WorkPackage(
 			ON UPDATE CASCADE         
 );
 
-DROP TABLE IF EXISTS EmployeePackages;
-CREATE TABLE EmployeePackages(
+DROP TABLE IF EXISTS EmployeePackage;
+CREATE TABLE EmployeePackage(
 	WorkPackageID VARCHAR(20) NOT NULL,
 	ProjectID VARCHAR(20) NOT NULL,
-    EmpID VARCHAR(255) NOT NULL,
+    EmpID INT NOT NULL,
 	CONSTRAINT PKEmployeePackages
 		PRIMARY KEY(WorkPackageID, ProjectID, EmpID),
 	CONSTRAINT FKEmployeePackagesWorkPackageIDProjectID
@@ -231,16 +217,38 @@ CREATE TABLE EstimateRow(
     EmpCount INT,
 	CONSTRAINT PKEstimateRow
 		PRIMARY KEY(EstimateID, PayGradeID),
+	CONSTRAINT FKEstimateRowPayGradeID 
+		FOREIGN KEY (PayGradeID) REFERENCES PayGrade(LabourGrade)
+			ON UPDATE CASCADE,
 	CONSTRAINT FKEstimateRowEstimateID 
 		FOREIGN KEY (EstimateID) REFERENCES Estimate(EstimateID)
 			ON UPDATE CASCADE
             ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS TimesheetRow;
+CREATE TABLE TimesheetRow(
+	TimesheetID VARCHAR(255) NOT NULL,
+	ProjectID VARCHAR(20),
+	WorkPackageID VARCHAR(20),
+	Notes TINYTEXT,
+	Hours FLOAT,
+	CONSTRAINT PKTimesheetRow
+		PRIMARY KEY(ProjectID, WorkPackageID, TimesheetID),
+	CONSTRAINT FKTimesheetRowTimesheetID 
+		FOREIGN KEY (TimesheetID) REFERENCES Timesheet(TimesheetID)
+			ON UPDATE CASCADE
+        	ON DELETE CASCADE,
+	CONSTRAINT FKTimesheetRowWorkPackageIDProjectID
+		FOREIGN KEY (WorkPackageID, ProjectID) REFERENCES WorkPackage(WorkPackageID, ProjectID)
+);
+
 INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
 
-INSERT INTO Employee (EmpID, EmpName, LabourGrade) VALUES (1, "Bruce Link",  "PS");
-INSERT INTO Employee (EmpID, EmpName, LabourGrade) VALUES (2, "Yogesh Verma",  "PS");
+INSERT INTO Employee (EmpID, EmpName, LabourGrade, TimesheetApproverID, IsHR, IsAdmin, IsProjectManager, IsTimesheetApprover)
+ VALUES (1, "Bruce Link",  "PS", NULL, TRUE, TRUE, TRUE, TRUE);
+INSERT INTO Employee (EmpID, EmpName, LabourGrade, ManagedBy, TimesheetApproverID, IsHR, IsAdmin, IsProjectManager, IsTimesheetApprover)
+ VALUES (2, "Yogesh Verma",  "PS", 1, 1, TRUE, FALSE, FALSE, TRUE);
 
 INSERT INTO Credential (EmpID, EmpUserName, EmpPassword) VALUES (1, "bdlink", "bruce");
 INSERT INTO Credential (EmpID, EmpUserName, EmpPassword) VALUES (2, "yogiduzit", "yogesh");
@@ -248,3 +256,24 @@ INSERT INTO Credential (EmpID, EmpUserName, EmpPassword) VALUES (2, "yogiduzit",
 INSERT INTO Timesheet (TimesheetID, EmpID, EndWeek) VALUES ("55000000-0000-0000-0000-000000000000", 1, DATE '2000/3/10');
 INSERT INTO Timesheet (TimesheetID, EmpID, EndWeek) VALUES ("26000000-0000-0000-0000-000000000000", 1, DATE '2000/3/17');
 INSERT INTO Timesheet (TimesheetID, EmpID, EndWeek) VALUES ("45700000-0000-0000-0000-000000000000", 2, DATE '2000/3/24');
+
+INSERT INTO LeaveRequest VALUES ("31324000-0000-0000-0000-000000000000", 1, DATE '2021/3/10', DATE '2021/4/18', "Medical", "Going to the dentist");
+
+INSERT INTO Project (ProjectID, ProjectManagerID, ProjectName, Budget, InitialEstimate, Descrip, Stat) VALUES ("PR123", 1, "Stormfront", 100000.00, 90000.00, "A really cool project that should get an A", 'pending');
+
+INSERT INTO WorkPackage (WorkPackageID, ProjectID, ResponsibleEngineerID, WorkPackageName, Descrip, IsLowestLevel, AllocatedBudget, InitialEstimate, DueAt, Stat) VALUES ("WP1.1", "PR123", 2, "DDL Creation", "Make a ddl", TRUE, 100.00, 89.00, DATE '2021/5/21', 'open');
+
+INSERT INTO TimesheetRow (TimesheetID, WorkPackageID, ProjectID, Notes) VALUES ("55000000-0000-0000-0000-000000000000","WP1.1", "PR123", "Did lots of work");
+
+INSERT INTO ProjectEmployee VALUES("PR123", 1);
+INSERT INTO ProjectEmployee VALUES("PR123", 2);
+
+INSERT INTO EmployeePackage VALUES("WP1.1",  "PR123", 2);
+
+INSERT INTO Estimate (EstimateID, WorkPackageID, ProjectID) VALUES ("83400000-0000-0000-0000-000000000000", "WP1.1", "PR123");
+
+INSERT INTO EstimateRow VALUES("83400000-0000-0000-0000-000000000000", "PS", 2.5, 50);
+
+INSERT INTO Report (ReportID, ProjectID, Info) VALUES("13400090-0000-0000-0000-000000000000", "PR123", '{
+"StatusReport":{ "Type":"weekly", "Date":"2021/2/12", "data":{"EmpID": "32000000-0000-0000-0000-000000000000",
+ "ProjectID":"PR123", "WorkPackage":"WP1.1", "Hours":"12"}}}');
