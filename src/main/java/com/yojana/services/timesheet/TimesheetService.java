@@ -38,7 +38,7 @@ public class TimesheetService {
 	@Produces("application/json")
 	// Finds a timesheet
 	public Response find(@PathParam("id") UUID id) {
-		Timesheet timesheet = timesheetManager.find(id.toString());
+		Timesheet timesheet = timesheetManager.find(id);
 		APIResponse res = new APIResponse();
 		if (timesheet == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundSingle("timesheet", id.toString(), null));
@@ -50,6 +50,7 @@ public class TimesheetService {
 
 	@POST
 	@Consumes("application/json")
+	@Produces("application/json")
 	// Inserts a timesheet ain't the database
 	public Response persist(Timesheet timesheet) {
 		APIResponse res = new APIResponse();
@@ -62,19 +63,20 @@ public class TimesheetService {
 			timesheet.setEmployee(emp);
 		}
 		UUID uuid = UUID.randomUUID();
-		timesheet.setTsId(uuid);
+		timesheet.setId(uuid);
 		timesheetManager.persist(timesheet);
-		return Response.created(URI.create("/timesheets/" + timesheet.getTsId())).entity(res).build();
+		return Response.created(URI.create("/timesheets/" + timesheet.getId())).entity(res).build();
 	}
 
 	@PATCH
 	@Path("{id}")
 	@Consumes("application/json")
+	@Produces("application/json")
 	// Updates a existing timesheet
 	public Response merge(@PathParam("id") UUID id, Timesheet timesheet) {
-		final Timesheet old = timesheetManager.find(id.toString());
+		final Timesheet old = timesheetManager.find(id);
 		APIResponse res = new APIResponse();
-		if (!id.equals(timesheet.getTsId())) { 
+		if (!id.equals(timesheet.getId())) { 
 			res.getErrors().add(ErrorMessageBuilder.badRequest("TimesheetID in route doesn't match timesheet id in body", null));
 			return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
 		}
@@ -91,8 +93,9 @@ public class TimesheetService {
 
 	@DELETE
 	@Path("/{id}")
+	@Produces("application/json")
 	// Deletes a existing timesheet
-	public Response remove(@PathParam("id") String id) {
+	public Response remove(@PathParam("id") UUID id) {
 		final APIResponse res = new APIResponse();
 		timesheetManager.remove(id);
 		return Response.ok().entity(res).build();
@@ -117,7 +120,7 @@ public class TimesheetService {
 	@Path("/emp/{id}")
 	@Produces("application/json")
 	// Gets a list of all timesheets for an id
-	public Response getAllForEmployee(@PathParam("id") String empId) {
+	public Response getAllForEmployee(@PathParam("id") UUID empId) {
 		final APIResponse res = new APIResponse();
 		List<Timesheet> timesheets = timesheetManager.getAllForEmployee(empId);
 		if (timesheets == null) {

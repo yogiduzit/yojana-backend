@@ -1,5 +1,6 @@
 package com.yojana.model.timesheet;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
@@ -37,8 +38,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @Entity
 @Table(name = "Timesheet")
 @EntityListeners(AuditListener.class)
-public class Timesheet implements Auditable {
+public class Timesheet implements Auditable, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -215084024326246226L;
+
 	@Embedded
 	private Audit audit;
 	
@@ -48,7 +54,7 @@ public class Timesheet implements Auditable {
 	@Id
     @Column(name = "TimesheetID", unique = true, columnDefinition = "uuid-char", updatable = false, insertable = false)
 	@Type(type="uuid-char")
-    private UUID tsId;
+    private UUID id;
 	
     /**
      * Represents the ID of the employee
@@ -130,7 +136,7 @@ public class Timesheet implements Auditable {
      * @param employee
      * @param endWeek
      */
-    public Timesheet(Employee employee, @NotBlank LocalDate endWeek) {
+    public Timesheet(Employee employee, LocalDate endWeek) {
         super();
         this.employee = employee;
         this.endWeek = endWeek;
@@ -144,15 +150,16 @@ public class Timesheet implements Auditable {
 		this.audit = audit;
 	}
 
-	public UUID getTsId() {
-		return tsId;
-	}
 
-	public void setTsId(UUID tsId) {
-		this.tsId = tsId;
-	}
+	public UUID getId() {
+        return id;
+    }
 
-	public Employee getEmployee() {
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public Employee getEmployee() {
 		return employee;
 	}
 
@@ -162,10 +169,6 @@ public class Timesheet implements Auditable {
 
 	public UUID getOwnerId() {
 		return ownerId;
-	}
-
-	public void setOwnerId(UUID ownerId) {
-		this.ownerId = ownerId;
 	}
 
 	public LocalDate getEndWeek() {
@@ -186,10 +189,6 @@ public class Timesheet implements Auditable {
 
 	public UUID getReviewerId() {
 		return reviewerId;
-	}
-
-	public void setReviewerId(UUID reviewerId) {
-		this.reviewerId = reviewerId;
 	}
 
 	public String getSignature() {
