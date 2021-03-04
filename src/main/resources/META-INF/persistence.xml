@@ -7,6 +7,7 @@
 	    <class>com.corejsf.model.employee.Employee</class>
 	    <class>com.corejsf.model.employee.Credential</class>
 	    <class>com.corejsf.model.timesheet.Timesheet</class>
+	    <class>com.corejsf.model.employee.PayGrade</class>
 	      
       <properties>
          <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLInnoDBDialect"/>
