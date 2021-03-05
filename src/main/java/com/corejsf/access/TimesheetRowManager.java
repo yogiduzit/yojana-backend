@@ -1,15 +1,14 @@
 package com.corejsf.access;
 
 import java.io.Serializable;
-import java.util.UUID;
-
 import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+
 import com.corejsf.model.timesheet.TimesheetRow;
-import com.corejsf.model.timesheet.TimesheetRowKey;
+import com.corejsf.model.timesheet.TimesheetRowPK;
 
 
 @Dependent
@@ -26,8 +25,8 @@ public class TimesheetRowManager implements Serializable {
 	public TimesheetRowManager() {}
 	
 	/** find a timesheetrow with id. */
-	public TimesheetRow find(UUID timesheetId, UUID projectId, UUID workPackageId) {
-        return em.find(TimesheetRow.class, new TimesheetRowKey(timesheetId, projectId, workPackageId));
+	public TimesheetRow find(int timesheetId, int projectId, String workPackageId) {
+        return em.find(TimesheetRow.class, new TimesheetRowPK(timesheetId, projectId, workPackageId));
     }
 	
 	/** add a timesheetrow. */
@@ -41,7 +40,7 @@ public class TimesheetRowManager implements Serializable {
     }
 	
 	/** remove a timesheetrow. */
-	public void remove(TimesheetRow timesheetrow, UUID timesheetId, UUID projectId, UUID workPackageId) {
+	public void remove(TimesheetRow timesheetrow, int timesheetId, int projectId, String workPackageId) {
         timesheetrow = find(timesheetId, projectId, workPackageId); 
         em.remove(timesheetrow);
     }
@@ -56,6 +55,16 @@ public class TimesheetRowManager implements Serializable {
         }
         return suparray;
     }
+	
+	public TimesheetRow[] getAllForTimesheet(int timesheetId) {
+		TypedQuery<TimesheetRow> query = em.createQuery("select t from TimesheetRow t where TimesheetID = " + timesheetId, TimesheetRow.class); 
+        java.util.List<TimesheetRow> timesheetrows = query.getResultList();
+        TimesheetRow[] suparray = new TimesheetRow[timesheetrows.size()];
+        for (int i=0; i < suparray.length; i++) {
+            suparray[i] = timesheetrows.get(i);
+        }
+        return suparray;
+	}
 	
 
 }

@@ -22,7 +22,7 @@ import com.corejsf.model.timesheet.Timesheet;
 import com.corejsf.model.timesheet.TimesheetRow;
 
 
-@Path("/timesheetrows")
+@Path("/timesheets")
 public class TimesheetRowService {
 	
 	@Inject
@@ -34,59 +34,28 @@ public class TimesheetRowService {
 	private TimesheetManager timesheetManager;
 	
 	
-	
-	@GET
-	@Path("/{timesheetid}/{projectid}/{workpackageid}")
-	@Produces("application/xml")
-	public TimesheetRow find(@PathParam("timesheetid") UUID timesheetId, @PathParam("projectid") UUID projectId, @PathParam("workpackageid") UUID workPackageId) {
-		TimesheetRow timesheetrow;
-		timesheetrow = timesheetrowManager.find(timesheetId, projectId, workPackageId);
-		if (timesheetrow == null) {
-			throw new WebApplicationException(Response.Status.NOT_FOUND);
-		}
-		return timesheetrow;
-	}
-	
 	@POST
-	@Path("/{timesheetid}")
+	@Path("/{timesheetID}/rows")
     @Consumes("application/json")
 	// Inserts a timesheetrow into the database
-	public Response persist(@PathParam("timesheetid") UUID timesheetId, TimesheetRow timesheetrow) throws SQLException {
-		timesheetrow.setTimesheet(timesheetManager.find(timesheetId.toString()));
+	public Response persist(@PathParam("timesheetID") int timesheetId, TimesheetRow timesheetrow) throws SQLException {
+		timesheetrow.setTimesheet(timesheetManager.find(String.valueOf(timesheetId)));
 		System.out.println(timesheetrow.getTimesheet().getTsId());
 		UUID uuid1 = UUID.randomUUID();
-		timesheetrow.setProjectId(uuid1);
+		timesheetrow.setProjectId(Integer.parseInt(String.valueOf(uuid1)));
 		UUID uuid2 = UUID.randomUUID();
-		timesheetrow.setWorkPackageId(uuid2);
+		timesheetrow.setWorkPackageId(String.valueOf(uuid2));
 		timesheetrowManager.persist(timesheetrow);
-		return Response.created(URI.create("/timesheetrows/" + timesheetrow.getTimesheetId() + "/" + timesheetrow.getProjectId() + "/" + timesheetrow.getWorkPackageId())).build();
-	}
-	
-	@PATCH
-	@Path("{id}")
-    @Consumes("application/json")
-	// Updates a existing timesheetrow
-	public Response merge(@PathParam("id") UUID timesheetid, TimesheetRow timesheetrow) throws SQLException {
-		timesheetrowManager.merge(timesheetrow);
-		return Response.noContent().build();
-	}
-	
-	@DELETE
-	@Path("/{id}")
-	// Deletes a existing timesheetrow
-	public Response remove(TimesheetRow timesheetrow, @PathParam("id") String timesheetId) throws SQLException {
-		timesheetrow = find(timesheetrow.getTimesheetId(), timesheetrow.getProjectId(), timesheetrow.getWorkPackageId());
-		timesheetrowManager.remove(timesheetrow, timesheetrow.getTimesheetId(), timesheetrow.getProjectId(), timesheetrow.getWorkPackageId());
-		return Response.ok().build();
+		return Response.created(URI.create("/timesheetrows/" + timesheetrow.getTimesheet().getTsId() + "/" + timesheetrow.getProjectId() + "/" + timesheetrow.getWorkPackageId())).build();
 	}
 	
 	@GET
-    @Path("/all")
+    @Path("/{timesheetID}/rows")
     @Produces("application/json")
-	// Gets a list of all timesheetrows
-	public TimesheetRow[] getAll() throws SQLException {
+	// Gets a list of all timesheetrows for a timesheet
+	public TimesheetRow[] getAllForTimesheet(@PathParam("timesheetID") int timesheetId) throws SQLException {
 		TimesheetRow[] timesheetrows;
-		timesheetrows = timesheetrowManager.getAll();
+		timesheetrows = timesheetrowManager.getAllForTimesheet(timesheetId);
 		if (timesheetrows == null) {
 			throw new WebApplicationException("There are no timesheetrows somehow", Response.Status.NOT_FOUND);
 		}

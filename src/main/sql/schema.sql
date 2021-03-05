@@ -74,7 +74,7 @@ CREATE TABLE TimesheetRow(
 	ProjectID VARCHAR(20) NOT NULL,
 	WorkPackageID VARCHAR(20),
 	Notes TINYTEXT,
-	Hours FLOAT(5,2),
+	Hours FLOAT,
 	CONSTRAINT PKTimesheetRowID 
 		PRIMARY KEY(ProjectID, WorkPackageID, TimesheetID),
 	CONSTRAINT FKTimesheetRow_Timesheet 
@@ -82,6 +82,7 @@ CREATE TABLE TimesheetRow(
 			ON UPDATE CASCADE
         	ON DELETE CASCADE
 );
+
 
 INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
 
