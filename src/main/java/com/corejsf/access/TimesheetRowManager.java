@@ -1,6 +1,15 @@
 package com.corejsf.access;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+import javax.activation.DataSource;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
 import javax.persistence.EntityManager;
@@ -21,6 +30,9 @@ public class TimesheetRowManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@PersistenceContext(unitName="comp4911-pms-rest-jpa") EntityManager em;
+	
+	@Resource(mappedName = "java:jboss/datasources/MySQLDS")
+	private DataSource dataSource;
 	
 	public TimesheetRowManager() {}
 	
@@ -57,13 +69,24 @@ public class TimesheetRowManager implements Serializable {
     }
 	
 	public TimesheetRow[] getAllForTimesheet(int timesheetId) {
-		TypedQuery<TimesheetRow> query = em.createQuery("select t from TimesheetRow t where TimesheetID = " + timesheetId, TimesheetRow.class); 
-        java.util.List<TimesheetRow> timesheetrows = query.getResultList();
-        TimesheetRow[] suparray = new TimesheetRow[timesheetrows.size()];
-        for (int i=0; i < suparray.length; i++) {
-            suparray[i] = timesheetrows.get(i);
+		ArrayList<TimesheetRow> timesheetrows = new ArrayList<TimesheetRow>();
+		try (Connection connection = ((Statement) dataSource).getConnection();
+		Statement stmt = connection.createStatement();
+		PreparedStatement pstmt = connection.prepareStatement("select t from TimesheetRow t where TimesheetID = ? ")) {
+			pstmt.setInt(1, timesheetId);
+			ResultSet results = pstmt.executeQuery();
+			while (results.next()) {
+				timesheetrows.add(new TimesheetRow(Integer.parseInt(results.getString("ProjectID"))
+						, results.getString("WorkPackageID"), results.getString("Notes"), results.getFloat("Hours")));
+			}
+		} catch (SQLException ex) {
+            System.out.println("Error in getAllForTimesheet");
+            ex.printStackTrace();
+            return null;
         }
-        return suparray;
+
+        TimesheetRow[] suparray = new TimesheetRow[timesheetrows.size()];
+        return timesheetrows.toArray(suparray);
 	}
 	
 
