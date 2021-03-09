@@ -21,7 +21,6 @@ import com.yojana.model.auditable.Auditable;
 
 /**
  * Represents an employee.
- *
  * @author Yogesh Verma
  * @version 1.0
  */
@@ -29,6 +28,7 @@ import com.yojana.model.auditable.Auditable;
 @Entity
 @Table(name = "Employee")
 @EntityListeners(AuditListener.class)
+/* Implements auditable since this entity needs to be time-tracked */
 public class Employee implements Auditable {
 	
 	@Embedded
@@ -42,7 +42,8 @@ public class Employee implements Auditable {
 	@Type(type="uuid-char")
 	/**
 	 * Do not use GeneratedValue annotation for UUID.
-	 * Instead, use UUID.randomUUID while persisting entities.
+	 * Instead, explicitly set a UUID.randomUUID while 
+	 * persisting entities with UUID primary key.
 	 */
     private UUID id;
 	
@@ -53,6 +54,15 @@ public class Employee implements Auditable {
 	@Column(name = "EmpName")
     private String fullName;
 	
+	/**
+	 * FetchType.LAZY means don't load the credential when employees
+	 * are requested.
+	 * JsonProperty.Access.WRITE_ONLY prevents the LazyInitializationException
+	 * This happens because JSON tries to add the credential property as well
+	 * but since we have specified it's lazy loaded, it doesn't exist at that moment.
+	 * This annotation says "Unless we're trying to do a write action to an employee
+	 * , ignore the Credential"
+	 */
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "emp", orphanRemoval = true)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Credential credential;
