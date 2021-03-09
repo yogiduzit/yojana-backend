@@ -1,7 +1,7 @@
 // /**
 //  *
 //  */
-// package com.corejsf.test;
+// package com.yojana.test;
 
 // import java.util.ArrayList;
 // import java.util.List;
@@ -16,7 +16,7 @@
 // import org.junit.BeforeClass;
 // import org.junit.Test;
 
-// import com.corejsf.domain.Supplier;
+// import com.yojana.domain.Supplier;
 
 // /**
 //  * @author yogeshverma

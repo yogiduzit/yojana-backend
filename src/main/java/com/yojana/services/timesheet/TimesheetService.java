@@ -1,0 +1,130 @@
+package com.yojana.services.timesheet;
+
+import java.net.URI;
+import java.util.List;
+import java.util.UUID;
+
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+
+import com.yojana.access.EmployeeManager;
+import com.yojana.access.TimesheetManager;
+import com.yojana.model.employee.Employee;
+import com.yojana.model.timesheet.Timesheet;
+import com.yojana.response.APIResponse;
+import com.yojana.response.errors.ErrorMessageBuilder;
+
+@Path("/timesheets")
+public class TimesheetService {
+
+	@Inject
+	// Provides access to the employee table
+	private TimesheetManager timesheetManager;
+
+	@Inject
+	// Provides access to the employee table
+	private EmployeeManager employeeManager;
+
+	@GET
+	@Path("/{id}")
+	@Produces("application/json")
+	// Finds a timesheet
+	public Response find(@PathParam("id") UUID id) {
+		Timesheet timesheet = timesheetManager.find(id.toString());
+		APIResponse res = new APIResponse();
+		if (timesheet == null) {
+			res.getErrors().add(ErrorMessageBuilder.notFoundSingle("timesheet", id.toString(), null));
+			 return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+		}
+		res.getData().put("timesheet", timesheet);
+		return Response.ok().entity(res).build();
+	}
+
+	@POST
+	@Consumes("application/json")
+	// Inserts a timesheet ain't the database
+	public Response persist(Timesheet timesheet) {
+		APIResponse res = new APIResponse();
+		if (timesheet.getEmployee() != null) {
+			final Employee emp = employeeManager.find(timesheet.getEmployee().getId());
+			if (emp == null) {
+				ErrorMessageBuilder.notFound("Could not find employee for timesheet", null);
+				return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+			}
+			timesheet.setEmployee(emp);
+		}
+		UUID uuid = UUID.randomUUID();
+		timesheet.setTsId(uuid);
+		timesheetManager.persist(timesheet);
+		return Response.created(URI.create("/timesheets/" + timesheet.getTsId())).entity(res).build();
+	}
+
+	@PATCH
+	@Path("{id}")
+	@Consumes("application/json")
+	// Updates a existing timesheet
+	public Response merge(@PathParam("id") UUID id, Timesheet timesheet) {
+		final Timesheet old = timesheetManager.find(id.toString());
+		APIResponse res = new APIResponse();
+		if (!id.equals(timesheet.getTsId())) { 
+			res.getErrors().add(ErrorMessageBuilder.badRequest("TimesheetID in route doesn't match timesheet id in body", null));
+			return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
+		}
+		if (old == null) {
+			res.getErrors().add(ErrorMessageBuilder.notFoundSingle("timesheet", id.toString(), null));
+			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+		}
+		if (timesheet.getEmployee() != null) {
+			timesheet.setEmployee(timesheet.getEmployee());
+		}
+		timesheetManager.merge(timesheet);
+		return Response.ok().entity(new APIResponse()).build();
+	}
+
+	@DELETE
+	@Path("/{id}")
+	// Deletes a existing timesheet
+	public Response remove(@PathParam("id") String id) {
+		final APIResponse res = new APIResponse();
+		timesheetManager.remove(id);
+		return Response.ok().entity(res).build();
+	}
+
+	@GET
+	@Path("/all")
+	@Produces("application/json")
+	// Gets a list of all timesheets
+	public Response getAll() {
+		final APIResponse res = new APIResponse();
+		List<Timesheet> timesheets = timesheetManager.getAll();
+		if (timesheets == null) {
+			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("timesheet", null));
+			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+		}
+		res.getData().put("timesheets", timesheets);
+		return Response.ok().entity(res).build();
+	}
+
+	@GET
+	@Path("/emp/{id}")
+	@Produces("application/json")
+	// Gets a list of all timesheets for an id
+	public Response getAllForEmployee(@PathParam("id") String empId) {
+		final APIResponse res = new APIResponse();
+		List<Timesheet> timesheets = timesheetManager.getAllForEmployee(empId);
+		if (timesheets == null) {
+			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("timesheet", null));
+			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+		}
+		res.getData().put("timesheets", timesheets);
+		return Response.ok().entity(res).build();
+	}
+}
