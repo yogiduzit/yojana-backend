@@ -74,7 +74,7 @@ CREATE TABLE TimesheetRow(
 	ProjectID VARCHAR(20) NOT NULL,
 	WorkPackageID VARCHAR(20),
 	Notes TINYTEXT,
-	Hours FLOAT,
+	Hours BIGINT,
 	CONSTRAINT PKTimesheetRowID 
 		PRIMARY KEY(ProjectID, WorkPackageID, TimesheetID),
 	CONSTRAINT FKTimesheetRow_Timesheet 
