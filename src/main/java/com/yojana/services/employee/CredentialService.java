@@ -39,13 +39,16 @@ public class CredentialService {
 	@Transactional
 	public Response persist(Credential credentials) {
 		APIResponse res = new APIResponse();
-		if (credentials.getEmp() != null) {
-			final Employee employee = empManager.find(credentials.getEmp().getId());
+		if (credentials.getEmpID() != null) {
+			final Employee employee = empManager.find(credentials.getEmpID());
 			if (employee == null) {
 				res.getErrors().add(ErrorMessageBuilder.notFound("Cannot find corresponding employee for credential", null));
 				return Response.status(Response.Status.NOT_FOUND).entity(res).build();
 			}
 			credentials.setEmp(employee);
+		} else {
+			res.getErrors().add(ErrorMessageBuilder.badRequest("No employee passed for the credentials", null));
+			return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
 		}
 		credManager.persist(credentials);
 		return Response.ok().entity(res).build();

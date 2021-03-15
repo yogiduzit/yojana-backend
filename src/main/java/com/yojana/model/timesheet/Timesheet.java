@@ -17,7 +17,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.Type;
 
@@ -165,6 +164,10 @@ public class Timesheet implements Auditable, Serializable {
 
 	public void setEmployee(Employee employee) {
 		this.employee = employee;
+	}
+	
+	public void setOwnerId(UUID ownerId) {
+		this.ownerId = ownerId;
 	}
 
 	public UUID getOwnerId() {
