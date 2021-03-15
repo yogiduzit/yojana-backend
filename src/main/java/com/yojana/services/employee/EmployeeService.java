@@ -40,12 +40,12 @@ public class EmployeeService {
     @Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	// Finds an employee
-	public Response find(@PathParam("id") UUID id) {
+	public Response find(@PathParam("id") int id) {
 		Employee employee = employeeManager.find(id);
 		APIResponse res = new APIResponse();
 		if (employee == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundSingle("employee",
-					id.toString(),
+					id + "",
 					null
 					));
 			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
@@ -59,12 +59,12 @@ public class EmployeeService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	// Inserts an employee in the database
 	public Response persist(Employee employee) {
-		UUID id = UUID.randomUUID();
-		employee.setId(id);
+		APIResponse res = new APIResponse();
 		employeeManager.persist(employee);
+		res.getData().put("id", employee.getId());
 		return Response
 				.created(URI.create("/employees/" + employee.getId()))
-				.entity(new APIResponse())
+				.entity(res)
 				.build();
 	}
 	
@@ -74,7 +74,7 @@ public class EmployeeService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	// Updates an existing employee
-	public Response merge(Employee employee, @PathParam("id") UUID empId) {
+	public Response merge(Employee employee, @PathParam("id") int empId) {
 		final Employee emp = employeeManager.find(empId);
 		if (employee.getFullName() != null) {
 			emp.setFullName(employee.getFullName());
@@ -88,7 +88,7 @@ public class EmployeeService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	// Deletes an existing employee
-	public Response remove(@PathParam("id") UUID empId) {
+	public Response remove(@PathParam("id") int empId) {
 		final Employee emp = employeeManager.find(empId);
 		employeeManager.remove(emp, empId);
 		return Response.ok().entity(new APIResponse()).build();

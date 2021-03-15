@@ -3,7 +3,6 @@ package com.yojana.services.employee;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -39,7 +38,7 @@ public class CredentialService {
 	@Transactional
 	public Response persist(Credential credentials) {
 		APIResponse res = new APIResponse();
-		if (credentials.getEmpID() != null) {
+		if (credentials.getEmpID() > 0) {
 			final Employee employee = empManager.find(credentials.getEmpID());
 			if (employee == null) {
 				res.getErrors().add(ErrorMessageBuilder.notFound("Cannot find corresponding employee for credential", null));
@@ -59,7 +58,7 @@ public class CredentialService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	public Response remove(@PathParam("id") UUID credID) {
+	public Response remove(@PathParam("id") int credID) {
 		APIResponse res = new APIResponse();
 		final Credential cred = credManager.find(credID);
 		if (cred == null) {
