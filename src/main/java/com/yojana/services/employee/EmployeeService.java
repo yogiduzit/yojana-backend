@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -19,7 +18,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.yojana.access.EmployeeManager;
+import com.yojana.access.TimesheetManager;
 import com.yojana.model.employee.Employee;
+import com.yojana.model.timesheet.Timesheet;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
 import com.yojana.security.annotations.Secured;
@@ -28,11 +29,14 @@ import com.yojana.security.annotations.Secured;
 @Path("/employees")
 public class EmployeeService {
 
-	@Inject
-	// Provides access to the employee table
-	private EmployeeManager employeeManager;
-	
-	@GET
+    @Inject
+    // Provides access to the employee table
+    private EmployeeManager employeeManager;
+    
+    @Inject
+    private TimesheetManager timesheetManager;
+    
+    @GET
     @Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	// Finds an employee
@@ -102,4 +106,20 @@ public class EmployeeService {
 		}
         res.getData().put("employees", employees);
         return Response.ok().entity(res).build();
-	}}
+	}
+	
+	@GET
+	@Path("//{id}")
+	@Produces("application/json")
+	// Gets a list of all timesheets for an id
+	public Response getAllTimesheetsForEmployee(@PathParam("id") UUID empId) {
+		final APIResponse res = new APIResponse();
+		List<Timesheet> timesheets = timesheetManager.getAllForEmployee(empId);
+		if (timesheets == null) {
+			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("timesheet", null));
+			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+		}
+		res.getData().put("timesheets", timesheets);
+		return Response.ok().entity(res).build();
+	}
+}

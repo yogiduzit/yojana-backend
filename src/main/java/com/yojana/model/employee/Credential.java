@@ -60,6 +60,12 @@ public class Credential implements Auditable {
 	private Employee emp;
 	
 	/**
+	 * Foreign key reference to the credential table's EmpID column
+	 */
+	@JoinColumn(name = "EmpID", updatable = false, insertable = false)
+	private UUID empID;
+	
+	/**
 	 * Represents the username of the login phase
 	 */
 	@Column(name = "EmpUserName")
@@ -109,6 +115,14 @@ public class Credential implements Auditable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public UUID getEmpID() {
+		return empID;
+	}
+
+	public void setEmpID(UUID empID) {
+		this.empID = empID;
 	}
 
 	public Audit getAudit() {

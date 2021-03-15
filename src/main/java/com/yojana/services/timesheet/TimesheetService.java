@@ -38,7 +38,7 @@ public class TimesheetService {
 	@Produces("application/json")
 	// Finds a timesheet
 	public Response find(@PathParam("id") UUID id) {
-		Timesheet timesheet = timesheetManager.find(id.toString());
+		Timesheet timesheet = timesheetManager.find(id);
 		APIResponse res = new APIResponse();
 		if (timesheet == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundSingle("timesheet", id.toString(), null));
@@ -50,11 +50,12 @@ public class TimesheetService {
 
 	@POST
 	@Consumes("application/json")
+	@Produces("application/json")
 	// Inserts a timesheet ain't the database
 	public Response persist(Timesheet timesheet) {
 		APIResponse res = new APIResponse();
-		if (timesheet.getEmployee() != null) {
-			final Employee emp = employeeManager.find(timesheet.getEmployee().getId());
+		if (timesheet.getOwnerId() != null) {
+			final Employee emp = employeeManager.find(timesheet.getOwnerId());
 			if (emp == null) {
 				ErrorMessageBuilder.notFound("Could not find employee for timesheet", null);
 				return Response.status(Response.Status.NOT_FOUND).entity(res).build();
@@ -62,28 +63,29 @@ public class TimesheetService {
 			timesheet.setEmployee(emp);
 		}
 		UUID uuid = UUID.randomUUID();
-		timesheet.setTsId(uuid);
+		timesheet.setId(uuid);
 		timesheetManager.persist(timesheet);
-		return Response.created(URI.create("/timesheets/" + timesheet.getTsId())).entity(res).build();
+		return Response.created(URI.create("/timesheets/" + timesheet.getId())).entity(res).build();
 	}
 
 	@PATCH
 	@Path("{id}")
 	@Consumes("application/json")
+	@Produces("application/json")
 	// Updates a existing timesheet
 	public Response merge(@PathParam("id") UUID id, Timesheet timesheet) {
-		final Timesheet old = timesheetManager.find(id.toString());
 		APIResponse res = new APIResponse();
-		if (!id.equals(timesheet.getTsId())) { 
+		if (!id.equals(timesheet.getId())) { 
 			res.getErrors().add(ErrorMessageBuilder.badRequest("TimesheetID in route doesn't match timesheet id in body", null));
 			return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
 		}
+		final Timesheet old = timesheetManager.find(id);
 		if (old == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundSingle("timesheet", id.toString(), null));
 			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
 		}
-		if (timesheet.getEmployee() != null) {
-			timesheet.setEmployee(timesheet.getEmployee());
+		if (timesheet.getOwnerId() == null) {
+			timesheet.setEmployee(employeeManager.find(old.getOwnerId()));
 		}
 		timesheetManager.merge(timesheet);
 		return Response.ok().entity(new APIResponse()).build();
@@ -91,35 +93,20 @@ public class TimesheetService {
 
 	@DELETE
 	@Path("/{id}")
+	@Produces("application/json")
 	// Deletes a existing timesheet
-	public Response remove(@PathParam("id") String id) {
+	public Response remove(@PathParam("id") UUID id) {
 		final APIResponse res = new APIResponse();
 		timesheetManager.remove(id);
 		return Response.ok().entity(res).build();
 	}
 
 	@GET
-	@Path("/all")
 	@Produces("application/json")
 	// Gets a list of all timesheets
 	public Response getAll() {
 		final APIResponse res = new APIResponse();
 		List<Timesheet> timesheets = timesheetManager.getAll();
-		if (timesheets == null) {
-			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("timesheet", null));
-			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
-		}
-		res.getData().put("timesheets", timesheets);
-		return Response.ok().entity(res).build();
-	}
-
-	@GET
-	@Path("/emp/{id}")
-	@Produces("application/json")
-	// Gets a list of all timesheets for an id
-	public Response getAllForEmployee(@PathParam("id") String empId) {
-		final APIResponse res = new APIResponse();
-		List<Timesheet> timesheets = timesheetManager.getAllForEmployee(empId);
 		if (timesheets == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("timesheet", null));
 			return Response.status(Response.Status.NOT_FOUND).entity(res).build();

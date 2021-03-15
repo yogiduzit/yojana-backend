@@ -1,5 +1,6 @@
 package com.yojana.model.employee;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -29,8 +30,13 @@ import com.yojana.model.auditable.Auditable;
 @Table(name = "Employee")
 @EntityListeners(AuditListener.class)
 /* Implements auditable since this entity needs to be time-tracked */
-public class Employee implements Auditable {
+public class Employee implements Auditable, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1016424160017320304L;
+
 	@Embedded
 	private Audit audit;
 	
@@ -125,6 +131,12 @@ public class Employee implements Auditable {
 	public void setAudit(Audit audit) {
 		this.audit = audit;
 	}
+
+    @Override
+    public String toString() {
+        return "Employee [audit=" + audit + ", id=" + id + ", fullName=" + fullName + ", credential=" + credential
+                + "]";
+    }
 
     
 }
