@@ -6,7 +6,6 @@ package com.yojana.access;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.UUID;
 
 import javax.enterprise.context.Dependent;
 import javax.persistence.EntityManager;
@@ -35,7 +34,7 @@ public class CredentialManager implements Serializable {
 
     public CredentialManager() {}
 
-    public Credential find(UUID id) {
+    public Credential find(int id) {
     	return em.find(Credential.class, id);
     }
     

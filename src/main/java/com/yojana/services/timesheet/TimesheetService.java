@@ -54,7 +54,7 @@ public class TimesheetService {
 	// Inserts a timesheet ain't the database
 	public Response persist(Timesheet timesheet) {
 		APIResponse res = new APIResponse();
-		if (timesheet.getOwnerId() != null) {
+		if (timesheet.getOwnerId() > 0) {
 			final Employee emp = employeeManager.find(timesheet.getOwnerId());
 			if (emp == null) {
 				ErrorMessageBuilder.notFound("Could not find employee for timesheet", null);
@@ -84,7 +84,7 @@ public class TimesheetService {
 			res.getErrors().add(ErrorMessageBuilder.notFoundSingle("timesheet", id.toString(), null));
 			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
 		}
-		if (timesheet.getOwnerId() == null) {
+		if (timesheet.getOwnerId() > 0) {
 			timesheet.setEmployee(employeeManager.find(old.getOwnerId()));
 		}
 		timesheetManager.merge(timesheet);

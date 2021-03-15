@@ -64,8 +64,7 @@ public class Timesheet implements Auditable, Serializable {
     private Employee employee;
 	
 	@Column(name = "EmpID", updatable = false, insertable = false)
-	@Type(type="uuid-char")
-	private UUID ownerId;
+	private int ownerId;
 
     /**
      * Represents the end of the week
@@ -84,8 +83,7 @@ public class Timesheet implements Auditable, Serializable {
     private Employee reviewer;
 	
 	@Column(name = "ReviewedBy", updatable = false, insertable = false)
-	@Type(type="uuid-char")
-	private UUID reviewerId;
+	private int reviewerId;
     
     /**
      * Represents the signature of the employee
@@ -166,11 +164,11 @@ public class Timesheet implements Auditable, Serializable {
 		this.employee = employee;
 	}
 	
-	public void setOwnerId(UUID ownerId) {
+	public void setOwnerId(int ownerId) {
 		this.ownerId = ownerId;
 	}
 
-	public UUID getOwnerId() {
+	public int getOwnerId() {
 		return ownerId;
 	}
 
@@ -190,7 +188,7 @@ public class Timesheet implements Auditable, Serializable {
 		this.reviewer = reviewer;
 	}
 
-	public UUID getReviewerId() {
+	public int getReviewerId() {
 		return reviewerId;
 	}
 

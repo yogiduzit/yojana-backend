@@ -1,7 +1,6 @@
 package com.yojana.model.employee;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -9,13 +8,12 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Type;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yojana.model.auditable.Audit;
 import com.yojana.model.auditable.AuditListener;
 import com.yojana.model.auditable.Auditable;
@@ -44,14 +42,9 @@ public class Employee implements Auditable, Serializable {
      * Represents the number of an employee
      */
 	@Id
-    @Column(name = "EmpID", unique = true, columnDefinition = "uuid-char")
-	@Type(type="uuid-char")
-	/**
-	 * Do not use GeneratedValue annotation for UUID.
-	 * Instead, explicitly set a UUID.randomUUID while 
-	 * persisting entities with UUID primary key.
-	 */
-    private UUID id;
+    @Column(name = "EmpID", unique = true)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+    private int id;
 	
     /**
      * Represents the first name of the employee
@@ -69,8 +62,7 @@ public class Employee implements Auditable, Serializable {
 	 * This annotation says "Unless we're trying to do a write action to an employee
 	 * , ignore the Credential"
 	 */
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "emp", orphanRemoval = true)
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "emp", orphanRemoval = true)
 	private Credential credential;
 	
 	public Employee() {}
@@ -83,7 +75,7 @@ public class Employee implements Auditable, Serializable {
      * @param empName
      * @param id
      */
-    public Employee(final UUID empId, final String empName) {
+    public Employee(final int empId, final String empName) {
         this.id = empId;
         this.fullName = empName;
     }
@@ -100,7 +92,7 @@ public class Employee implements Auditable, Serializable {
 	 * Get the ID of an employee
 	 * @return Id
 	 */
-	public UUID getId() {
+	public int getId() {
 		return id;
 	}
 
@@ -108,7 +100,7 @@ public class Employee implements Auditable, Serializable {
 	 * Set the ID of an employee
 	 * @param id
 	 */
-	public void setId(UUID id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 

@@ -3,8 +3,6 @@ package com.yojana.access;
 import java.io.Serializable;
 import java.util.List;
 
-import java.util.UUID;
-
 import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
 import javax.persistence.PersistenceContext;
@@ -26,7 +24,7 @@ public class EmployeeManager implements Serializable{
 	@PersistenceContext(unitName="comp4911-pms-rest-jpa") EntityManager em;
 	
 	/** find an employee with id. */
-	public Employee find(UUID id) {
+	public Employee find(int id) {
         return em.find(Employee.class, id);
     }
 	
@@ -44,7 +42,7 @@ public class EmployeeManager implements Serializable{
 	
 	/** remove an employee. */
 	@Transactional
-	public void remove(Employee employee, UUID id) {
+	public void remove(Employee employee, int id) {
         employee = find(id);
         em.remove(employee);
     }

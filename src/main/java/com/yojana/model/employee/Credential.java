@@ -1,7 +1,5 @@
 package com.yojana.model.employee;
 
-import java.util.UUID;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -15,9 +13,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-
-import org.hibernate.annotations.Type;
 
 import com.yojana.model.auditable.Audit;
 import com.yojana.model.auditable.AuditListener;
@@ -47,8 +42,7 @@ public class Credential implements Auditable {
 	 * Represents the id of the employee
 	 */
 	@Id
-	@Type(type="uuid-char")
-	private UUID id;
+	private int id;
 
 	/**
 	 * Foreign key reference to the credential table's EmpID column
@@ -62,8 +56,8 @@ public class Credential implements Auditable {
 	/**
 	 * Foreign key reference to the credential table's EmpID column
 	 */
-	@JoinColumn(name = "EmpID", updatable = false, insertable = false)
-	private UUID empID;
+	@Column(name = "EmpID", updatable = false, insertable = false)
+	private int empID;
 	
 	/**
 	 * Represents the username of the login phase
@@ -75,7 +69,7 @@ public class Credential implements Auditable {
 	 * Represents the password of the login phase
 	 */
 	@Column(name = "EmpPassword")
-	@NotBlank
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
 	
 	public Credential() {}
@@ -85,11 +79,11 @@ public class Credential implements Auditable {
 		this.username = username;
 	}
 
-	public UUID getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(UUID empId) {
+	public void setId(int empId) {
 		this.id = empId;
 	}
 
@@ -117,11 +111,11 @@ public class Credential implements Auditable {
 		this.password = password;
 	}
 
-	public UUID getEmpID() {
+	public int getEmpID() {
 		return empID;
 	}
 
-	public void setEmpID(UUID empID) {
+	public void setEmpID(int empID) {
 		this.empID = empID;
 	}
 
