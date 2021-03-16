@@ -27,6 +27,8 @@ CREATE TABLE Employee(
     IsAdmin BOOLEAN,
     IsProjectManager BOOLEAN,
     IsTimesheetApprover BOOLEAN,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT PKEmployee PRIMARY KEY (EmpID),
     CONSTRAINT FKEmployeeLabourGrade
 		FOREIGN KEY (LabourGrade)
@@ -47,6 +49,8 @@ CREATE TABLE Credential(
     EmpID INT NOT NULL UNIQUE,
 	EmpUserName VARCHAR(10) NOT NULL UNIQUE,
     EmpPassword VARCHAR(15) NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT PKCredentialEmp PRIMARY KEY (EmpID),
     CONSTRAINT FKCredentialEmpID
         FOREIGN KEY (EmpID)
@@ -229,10 +233,10 @@ CREATE TABLE EstimateRow(
 DROP TABLE IF EXISTS TimesheetRow;
 CREATE TABLE TimesheetRow(
 	TimesheetID VARCHAR(255) NOT NULL,
-	ProjectID VARCHAR(20),
-	WorkPackageID VARCHAR(20),
+	ProjectID VARCHAR(20) NOT NULL,
+	WorkPackageID VARCHAR(20) NOT NULL,
 	Notes TINYTEXT,
-	Hours FLOAT,
+	Hours BIGINT NOT NULL,
 	CONSTRAINT PKTimesheetRow
 		PRIMARY KEY(ProjectID, WorkPackageID, TimesheetID),
 	CONSTRAINT FKTimesheetRowTimesheetID 
@@ -262,8 +266,6 @@ INSERT INTO LeaveRequest VALUES ("31324000-0000-0000-0000-000000000000", 1, DATE
 INSERT INTO Project (ProjectID, ProjectManagerID, ProjectName, Budget, InitialEstimate, Descrip, Stat) VALUES ("PR123", 1, "Stormfront", 100000.00, 90000.00, "A really cool project that should get an A", 'pending');
 
 INSERT INTO WorkPackage (WorkPackageID, ProjectID, ResponsibleEngineerID, WorkPackageName, Descrip, IsLowestLevel, AllocatedBudget, InitialEstimate, DueAt, Stat) VALUES ("WP1.1", "PR123", 2, "DDL Creation", "Make a ddl", TRUE, 100.00, 89.00, DATE '2021/5/21', 'open');
-
-INSERT INTO TimesheetRow (TimesheetID, WorkPackageID, ProjectID, Notes) VALUES ("55000000-0000-0000-0000-000000000000","WP1.1", "PR123", "Did lots of work");
 
 INSERT INTO ProjectEmployee VALUES("PR123", 1);
 INSERT INTO ProjectEmployee VALUES("PR123", 2);
