@@ -8,7 +8,9 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.yojana.access.EmployeeManager;
@@ -63,4 +65,21 @@ public class ProjectService {
 		return Response.ok().entity(res).build();
 	}
 
+	@GET
+    @Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	// Finds an employee
+	public Response find(@PathParam("id") String id) {
+		Project project = projectManager.find(id);
+		APIResponse res = new APIResponse();
+		if (project == null) {
+			res.getErrors().add(ErrorMessageBuilder.notFoundSingle("project",
+					id + "",
+					null
+					));
+			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+		}
+        res.getData().put("project", project);
+        return Response.ok().entity(res).build();
+	}
 }

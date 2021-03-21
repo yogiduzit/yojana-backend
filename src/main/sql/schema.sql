@@ -157,7 +157,7 @@ CREATE TABLE WorkPackage(
     ParentWorkPackageID VARCHAR(20),
     ResponsibleEngineerID INT,
     WorkPackageName VARCHAR(100),
-    Descrip VARCHAR(255),
+    Descrip TEXT,
     IsLowestLevel BOOLEAN,
     AllocatedBudget FLOAT(14,2),
     InitialEstimate FLOAT(14,2),
