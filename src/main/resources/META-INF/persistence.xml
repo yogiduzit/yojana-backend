@@ -4,9 +4,10 @@
 <!--  	    <jta-data-source>java:jboss/datasources/inventory</jta-data-source>
 -->
 	    <jta-data-source>java:jboss/datasources/MySQLDS</jta-data-source>
-	    <class>com.yojana.model.employee.Employee</class>
-	    <class>com.yojana.model.employee.Credential</class>
-	    <class>com.yojana.model.timesheet.Timesheet</class>
+	    <class>com.corejsf.model.employee.Employee</class>
+	    <class>com.corejsf.model.employee.Credential</class>
+	    <class>com.corejsf.model.timesheet.Timesheet</class>
+	    <class>com.corejsf.model.timesheet.TimesheetRow</class>
 	      
       <properties>
          <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLInnoDBDialect"/>
