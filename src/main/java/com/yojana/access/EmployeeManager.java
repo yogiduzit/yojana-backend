@@ -3,17 +3,15 @@ package com.yojana.access;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.ejb.Stateless;
-import javax.enterprise.context.Dependent;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import javax.enterprise.context.ConversationScoped;
 import javax.persistence.EntityManager;
 
 import com.yojana.model.employee.Employee;
 
-@Dependent
-@Stateless
+@ConversationScoped
 public class EmployeeManager implements Serializable{
 
 	/**

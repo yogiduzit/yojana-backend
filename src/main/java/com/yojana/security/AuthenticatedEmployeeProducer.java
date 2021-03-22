@@ -7,9 +7,8 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import org.hibernate.Hibernate;
-
 import com.yojana.access.CredentialManager;
+import com.yojana.access.EmployeeManager;
 import com.yojana.model.employee.Credential;
 import com.yojana.model.employee.Employee;
 import com.yojana.security.annotations.AuthenticatedEmployee;
@@ -19,6 +18,9 @@ public class AuthenticatedEmployeeProducer {
 
     @Inject
     private CredentialManager credManager;
+    
+    @Inject
+    private EmployeeManager empManager;
 
     @Produces
     @RequestScoped
@@ -28,7 +30,7 @@ public class AuthenticatedEmployeeProducer {
     // Sets the authenticated employee in the database
     public void handleAuthenticationEvent(@Observes @AuthenticatedEmployee String username) throws SQLException {
         final Credential cred = credManager.find(username);
-        Hibernate.initialize(cred.getEmp());
-        authenticatedEmployee = cred.getEmp();
+        final Employee emp = empManager.find(cred.getEmpID());
+        authenticatedEmployee = emp;
     }
 }
