@@ -83,7 +83,7 @@ public class Timesheet implements Auditable, Serializable {
     private Employee reviewer;
 	
 	@Column(name = "ReviewedBy", updatable = false, insertable = false)
-	private int reviewerId;
+	private Integer reviewerId;
     
     /**
      * Represents the signature of the employee
@@ -188,7 +188,7 @@ public class Timesheet implements Auditable, Serializable {
 		this.reviewer = reviewer;
 	}
 
-	public int getReviewerId() {
+	public Integer getReviewerId() {
 		return reviewerId;
 	}
 
