@@ -21,8 +21,11 @@ import com.yojana.model.employee.Employee;
 import com.yojana.model.timesheet.Timesheet;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
+import com.yojana.security.annotations.AuthenticatedEmployee;
+import com.yojana.security.annotations.Secured;
 
 @Path("/timesheets")
+@Secured
 public class TimesheetService {
 
 	@Inject
@@ -32,6 +35,10 @@ public class TimesheetService {
 	@Inject
 	// Provides access to the employee table
 	private EmployeeManager employeeManager;
+	
+	@Inject
+	@AuthenticatedEmployee
+	private Employee authEmployee;
 
 	@GET
 	@Path("/{id}")
@@ -54,6 +61,7 @@ public class TimesheetService {
 	// Inserts a timesheet ain't the database
 	public Response persist(Timesheet timesheet) {
 		APIResponse res = new APIResponse();
+		timesheet.setOwnerId(authEmployee.getId());
 		if (timesheet.getOwnerId() > 0) {
 			final Employee emp = employeeManager.find(timesheet.getOwnerId());
 			if (emp == null) {
