@@ -102,7 +102,7 @@ public class Timesheet implements Auditable, Serializable {
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "Status", columnDefinition = "enum")
-    private Status status;
+    private TimesheetStatus status;
     
     /**
      * Represents the overtime
@@ -232,7 +232,7 @@ public class Timesheet implements Auditable, Serializable {
 		this.approvedAt = approvedAt;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(TimesheetStatus status) {
 		this.status = status;
 	}
 
@@ -241,12 +241,5 @@ public class Timesheet implements Auditable, Serializable {
      */
     public String getStatus() {
         return status.name();
-    }
-
-    /**
-     * @param status the status to set
-     */
-    public void setStatus(String status) {
-        this.status = Status.valueOf(status);
     }
 }

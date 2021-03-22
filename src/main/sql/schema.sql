@@ -109,9 +109,10 @@ CREATE TABLE Project(
     ProjectName VARCHAR(100),
     Budget FLOAT(14,2),
     InitialEstimate FLOAT(14,2),
-    Descrip VARCHAR(255),
+    Status ENUM('pending', 'submitted', 'open', 'closed') NOT NULL DEFAULT 'pending',
+    Description TEXT,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Stat ENUM('pending', 'submitted', 'open', 'closed') NOT NULL DEFAULT 'pending',
+  	UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT PKProject
 		PRIMARY KEY(ProjectID),
 	CONSTRAINT FKProjectProjectManagerID 
@@ -156,12 +157,12 @@ CREATE TABLE WorkPackage(
     ParentWorkPackageID VARCHAR(20),
     ResponsibleEngineerID INT,
     WorkPackageName VARCHAR(100),
-    Descrip VARCHAR(255),
-    IsLowestLevel BOOLEAN,
-    AllocatedBudget FLOAT(14,2),
-    InitialEstimate FLOAT(14,2),
-    Charged FLOAT(14,2),
-    CostAtCompletion FLOAT(14,2),
+    Descrip TEXT,
+    IsLowestLevel BOOLEAN DEFAULT true,
+    AllocatedBudget FLOAT(14,2) DEFAULT 0,
+    InitialEstimate FLOAT(14,2) DEFAULT 0,
+    Charged FLOAT(14,2) DEFAULT 0,
+    CostAtCompletion FLOAT(14,2) DEFAULT 0,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     DueAt DATE,
@@ -263,7 +264,7 @@ INSERT INTO Timesheet (TimesheetID, EmpID, EndWeek) VALUES ("45700000-0000-0000-
 
 INSERT INTO LeaveRequest VALUES ("31324000-0000-0000-0000-000000000000", 1, DATE '2021/3/10', DATE '2021/4/18', "Medical", "Going to the dentist");
 
-INSERT INTO Project (ProjectID, ProjectManagerID, ProjectName, Budget, InitialEstimate, Descrip, Stat) VALUES ("PR123", 1, "Stormfront", 100000.00, 90000.00, "A really cool project that should get an A", 'pending');
+INSERT INTO Project (ProjectID, ProjectManagerID, ProjectName, Budget, InitialEstimate, Description, Status) VALUES ("PR123", 1, "Stormfront", 100000.00, 90000.00, "A really cool project that should get an A", 'pending');
 
 INSERT INTO WorkPackage (WorkPackageID, ProjectID, ResponsibleEngineerID, WorkPackageName, Descrip, IsLowestLevel, AllocatedBudget, InitialEstimate, DueAt, Stat) VALUES ("WP1.1", "PR123", 2, "DDL Creation", "Make a ddl", TRUE, 100.00, 89.00, DATE '2021/5/21', 'open');
 
