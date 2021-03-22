@@ -28,7 +28,6 @@ import com.yojana.model.auditable.Audit;
 import com.yojana.model.auditable.AuditListener;
 import com.yojana.model.auditable.Auditable;
 import com.yojana.model.employee.Employee;
-import com.yojana.model.timesheet.Status;
 
 @Entity
 @Table(name = "WorkPackage")
@@ -47,7 +46,8 @@ public class WorkPackage implements Auditable, Serializable {
 	private WorkPackagePK workPackagePk;
 	
 	@JoinColumn(name = "ProjectID", insertable = false, updatable = false)
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Project project;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -55,9 +55,11 @@ public class WorkPackage implements Auditable, Serializable {
 		@JoinColumn(name = "ParentWorkPackageID", referencedColumnName = "WorkPackageID", insertable = false, updatable = false),
 		@JoinColumn(name = "ProjectID", referencedColumnName = "ProjectID", insertable = false, updatable = false)
 	})
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private WorkPackage parentWP;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "parentWP")
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Set<WorkPackage> childWPs;
 	
 	@Column(name = "ParentWorkPackageID", insertable = false, updatable = false)
@@ -65,6 +67,7 @@ public class WorkPackage implements Auditable, Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "ResponsibleEngineerID")
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Employee responsibleEngineer;
 	
 	@Column(name = "WorkPackageName")
@@ -94,7 +97,7 @@ public class WorkPackage implements Auditable, Serializable {
 	
 	@Enumerated(EnumType.STRING)
     @Column(name = "Stat", columnDefinition = "enum")
-    private Status status;
+    private WorkPackageStatus status;
 	
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -114,6 +117,134 @@ public class WorkPackage implements Auditable, Serializable {
 
 	public void setAudit(Audit audit) {
 		this.audit = audit;
+	}
+
+	public WorkPackagePK getWorkPackagePk() {
+		return workPackagePk;
+	}
+
+	public void setWorkPackagePk(WorkPackagePK workPackagePk) {
+		this.workPackagePk = workPackagePk;
+	}
+
+	public Project getProject() {
+		return project;
+	}
+
+	public void setProject(Project project) {
+		this.project = project;
+	}
+
+	public WorkPackage getParentWP() {
+		return parentWP;
+	}
+
+	public void setParentWP(WorkPackage parentWP) {
+		this.parentWP = parentWP;
+	}
+
+	public Set<WorkPackage> getChildWPs() {
+		return childWPs;
+	}
+
+	public void setChildWPs(Set<WorkPackage> childWPs) {
+		this.childWPs = childWPs;
+	}
+
+	public String getParentWPId() {
+		return parentWPId;
+	}
+
+	public void setParentWPId(String parentWPId) {
+		this.parentWPId = parentWPId;
+	}
+
+	public Employee getResponsibleEngineer() {
+		return responsibleEngineer;
+	}
+
+	public void setResponsibleEngineer(Employee responsibleEngineer) {
+		this.responsibleEngineer = responsibleEngineer;
+	}
+
+	public String getWorkPackageName() {
+		return workPackageName;
+	}
+
+	public void setWorkPackageName(String workPackageName) {
+		this.workPackageName = workPackageName;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public boolean isLowestLevel() {
+		return isLowestLevel;
+	}
+
+	public void setLowestLevel(boolean isLowestLevel) {
+		this.isLowestLevel = isLowestLevel;
+	}
+
+	public float getAllocatedBudget() {
+		return allocatedBudget;
+	}
+
+	public void setAllocatedBudget(float allocatedBudget) {
+		this.allocatedBudget = allocatedBudget;
+	}
+
+	public float getInitialEstimate() {
+		return initialEstimate;
+	}
+
+	public void setInitialEstimate(float initialEstimate) {
+		this.initialEstimate = initialEstimate;
+	}
+
+	public float getCharged() {
+		return charged;
+	}
+
+	public void setCharged(float charged) {
+		this.charged = charged;
+	}
+
+	public float getCostAtCompletion() {
+		return costAtCompletion;
+	}
+
+	public void setCostAtCompletion(float costAtCompletion) {
+		this.costAtCompletion = costAtCompletion;
+	}
+
+	public Date getDueAt() {
+		return dueAt;
+	}
+
+	public void setDueAt(Date dueAt) {
+		this.dueAt = dueAt;
+	}
+
+	public WorkPackageStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(WorkPackageStatus status) {
+		this.status = status;
+	}
+
+	public Set<Employee> getEmployees() {
+		return employees;
+	}
+
+	public void setEmployees(Set<Employee> employees) {
+		this.employees = employees;
 	}
 
 }

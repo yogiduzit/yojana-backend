@@ -18,6 +18,14 @@ public class WorkPackagePK implements Serializable {
 	
 	@Column(name = "ProjectID", insertable = false, updatable = false)
 	private String projectID;
+	
+	public WorkPackagePK() {
+	}
+
+	public WorkPackagePK(String id, String projectID) {
+		this.id = id;
+		this.projectID = projectID;
+	}
 
 	public String getId() {
 		return id;
