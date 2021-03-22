@@ -49,6 +49,12 @@ public class TimesheetRowPK implements Serializable {
 	public void setTimesheetId(UUID timesheetId) {
 		this.timesheetId = timesheetId;
 	}
+	public TimesheetRowPK() {}
+	public TimesheetRowPK(UUID timesheetId, String projectId, String workPackageId) {
+      this.timesheetId = timesheetId;
+      this.projectId = projectId;
+      this.workPackageId = workPackageId;
+    }
 	@Override
 	public int hashCode() {
 		final int prime = 31;
