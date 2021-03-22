@@ -8,6 +8,7 @@
 	    <class>com.yojana.model.employee.Employee</class>
 	    <class>com.yojana.model.employee.Credential</class>
 	    <class>com.yojana.model.timesheet.Timesheet</class>
+	    <class>com.yojana.model.timesheet.TimesheetRow</class>
 	    <class>com.yojana.model.employee.PayGrade</class>
 	      
       <properties>
