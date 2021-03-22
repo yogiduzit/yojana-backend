@@ -1,4 +1,4 @@
-package com.corejsf.services.employee;
+package com.yojana.services.employee;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -15,10 +15,10 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.corejsf.access.PayGradeManager;
-import com.corejsf.model.employee.PayGrade;
-import com.corejsf.response.APIResponse;
-import com.corejsf.security.annotations.Secured;
+import com.yojana.access.PayGradeManager;
+import com.yojana.model.employee.PayGrade;
+import com.yojana.response.APIResponse;
+import com.yojana.security.annotations.Secured;
 
 @Secured
 @Path("/paygrade")
