@@ -25,7 +25,7 @@ import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
 import com.yojana.security.annotations.Secured;
 
-@Secured
+//@Secured
 @Path("/employees")
 public class EmployeeService {
 
@@ -79,7 +79,7 @@ public class EmployeeService {
 		if (employee.getFullName() != null) {
 			emp.setFullName(employee.getFullName());
 		}
-		employeeManager.merge(employee);
+		employeeManager.merge(emp);
 		return Response.ok().entity(new APIResponse()).build();
 	}
 	
