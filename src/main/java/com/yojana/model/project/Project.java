@@ -23,7 +23,6 @@ import com.yojana.model.auditable.Audit;
 import com.yojana.model.auditable.AuditListener;
 import com.yojana.model.auditable.Auditable;
 import com.yojana.model.employee.Employee;
-import com.yojana.model.timesheet.Status;
 
 @Entity
 @Table(name = "Project")
@@ -56,7 +55,7 @@ public class Project  implements Auditable, Serializable {
 	
 	@Enumerated(EnumType.STRING)
     @Column(name = "Status", columnDefinition = "enum")
-    private Status status;
+    private ProjectStatus status;
 	
 	/**
      * Represents the project manager
@@ -125,11 +124,11 @@ public class Project  implements Auditable, Serializable {
 		this.description = description;
 	}
 
-	public Status getStatus() {
+	public ProjectStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(ProjectStatus status) {
 		this.status = status;
 	}
 
