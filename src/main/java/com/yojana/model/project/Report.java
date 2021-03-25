@@ -1,28 +1,14 @@
 package com.yojana.model.project;
 
 import java.io.Serializable;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
+import java.util.Date;
 import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.primefaces.shaded.json.JSONObject;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yojana.model.auditable.Audit;
-import com.yojana.model.auditable.AuditListener;
 import com.yojana.model.auditable.Auditable;
 
-@Entity
-@Table(name = "Report")
-@EntityListeners(AuditListener.class)
+
 public class Report implements Auditable, Serializable {
 
 	/**
@@ -33,17 +19,53 @@ public class Report implements Auditable, Serializable {
 	@Embedded
 	private Audit audit;
 	
-	@Id
-	@Column(name = "ReportID", unique = true)
+	
+	@JsonProperty("id")
 	private String id;
 	
-	@JoinColumn(name = "ProjectID", insertable = false, updatable = false)
-	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	private Project project;
+	@JsonProperty("projectID")
+	private String projectId;
 	
-	@Column(name = "Info")
+	@JsonProperty("projectName")
+	private String projectName;
+	
+	@JsonProperty("projectBudget")
+	private float projectBudget;
+	
+	@JsonProperty("projectInitialEstimate")
+	private float projectInitialEstimate;
+	
+	@JsonProperty("projectDescription")
+	private String projectDes;
+	
+	@JsonProperty("projectStatus")
+	private ProjectStatus status;
+	
+	@JsonProperty("projectManagerID")
+	private int projectManagerId;
+	
+	@JsonProperty("projectManagerName")
+	private String projectManagerName;
+	
+	@JsonProperty("projectManagerUsername")
+	private String projectManagerUsername;
+	
+	@JsonProperty("projectManagerPassword")
+	private String projectManagerPassword;
+	
+	@JsonProperty("reportCreatedAt")
+	private Date reportCreatedAt;
+	
+	@JsonProperty("projectCreatedAt")
+	private Date projectCreatedAt;
+	
+	@JsonProperty("projectUpdatedAt")
+	private Date projectUpdatedAt;
+	
+	@JsonProperty("info")
     private JSONObject info;
+	
+	public Report() {}
 
 	@Override
 	public Audit getAudit() {
@@ -71,5 +93,108 @@ public class Report implements Auditable, Serializable {
 		this.info = info;
 	}
 	
+	public String getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(String projectId) {
+		this.projectId = projectId;
+	}
+	
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+	
+	public float getProjectBudget() {
+		return projectBudget;
+	}
+
+	public void setProjectBudget(float projectBudget) {
+		this.projectBudget = projectBudget;
+	}
+	
+	public float getProjectInitialEstimate() {
+		return projectInitialEstimate;
+	}
+
+	public void setProjectInitialEstimate(float projectInitialEstimate) {
+		this.projectInitialEstimate = projectInitialEstimate;
+	}
+	
+	public String getProjectDes() {
+		return projectDes;
+	}
+
+	public void setProjectDes(String projectDes) {
+		this.projectDes = projectDes;
+	}
+	
+	public ProjectStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(ProjectStatus status) {
+		this.status = status;
+	}
+	
+	public int getProjectManagerId() {
+		return projectManagerId;
+	}
+
+	public void setProjectManagerId(int projectManagerId) {
+		this.projectManagerId = projectManagerId;
+	}
+	
+	public String getProjectManagerName() {
+		return projectManagerName;
+	}
+
+	public void setProjectManagerName(String projectManagerName) {
+		this.projectManagerName = projectManagerName;
+	}
+	
+	public String getProjectManagerUsername() {
+		return projectManagerUsername;
+	}
+
+	public void setProjectManagerUsername(String projectManagerUsername) {
+		this.projectManagerUsername = projectManagerUsername;
+	}
+	
+	public String getProjectManagerPassword() {
+		return projectManagerPassword;
+	}
+
+	public void setProjectManagerPassword(String projectManagerPassword) {
+		this.projectManagerPassword = projectManagerPassword;
+	}
+	
+	public Date getReportCreatedAt() {
+		return reportCreatedAt;
+	}
+
+	public void setReportCreatedAt(Date reportCreatedAt) {
+		this.reportCreatedAt = reportCreatedAt;
+	}
+	
+	public Date getProjectCreatedAt() {
+		return projectCreatedAt;
+	}
+
+	public void setProjectCreatedAt(Date projectCreatedAt) {
+		this.projectCreatedAt = projectCreatedAt;
+	}
+	
+	public Date getProjectUpdatedAt() {
+		return projectUpdatedAt;
+	}
+
+	public void setProjectUpdatedAt(Date projectUpdatedAt) {
+		this.projectUpdatedAt = projectUpdatedAt;
+	}
 
 }
