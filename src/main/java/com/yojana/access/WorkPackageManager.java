@@ -44,7 +44,7 @@ public class WorkPackageManager implements Serializable {
 			Project parent = workPackage.getProject();
 			parent.setBudget(parent.getBudget() - workPackage.getAllocatedBudget());
 			parent.setInitialEstimate(parent.getInitialEstimate() - workPackage.getInitialEstimate());
-			em.merge(parent);
+			em.merge(parent); 
 		}
         em.persist(workPackage);
     }

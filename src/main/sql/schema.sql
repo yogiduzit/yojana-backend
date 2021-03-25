@@ -277,6 +277,7 @@ INSERT INTO Estimate (EstimateID, WorkPackageID, ProjectID) VALUES ("83400000-00
 
 INSERT INTO EstimateRow VALUES("83400000-0000-0000-0000-000000000000", "PS", 2.5, 50);
 
+
 INSERT INTO Report (ReportID, ProjectID, Info) VALUES("13400090-0000-0000-0000-000000000000", "PR123", '{
 "StatusReport":{ "Type":"weekly", "Date":"2021/2/12", "data":{"EmpID": "32000000-0000-0000-0000-000000000000",
  "ProjectID":"PR123", "WorkPackage":"WP1.1", "Hours":"12"}}}');

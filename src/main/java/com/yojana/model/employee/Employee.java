@@ -12,7 +12,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -68,6 +70,10 @@ public class Employee implements Auditable, Serializable {
 	 */
 	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "emp", orphanRemoval = true)
 	private Credential credential;
+	
+	@ManyToOne(optional = true)
+    @JoinColumn(name="LabourGrade")
+	private PayGrade payGrade;
 	
 	public Employee() {}
 
@@ -127,6 +133,14 @@ public class Employee implements Auditable, Serializable {
 	public void setAudit(Audit audit) {
 		this.audit = audit;
 	}
+	
+    public PayGrade getPayGrade() {
+        return payGrade;
+    }
+
+    public void setPayGrade(PayGrade payGrade) {
+        this.payGrade = payGrade;
+    }
 
     @Override
     public String toString() {
