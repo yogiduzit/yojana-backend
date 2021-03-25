@@ -244,27 +244,6 @@ public class TimesheetRow implements Serializable {
         this.timesheet = timesheet;
     }
     
-    /* 
-     * public WorkPackage getWorkPackage() {
-        return this.workPackage;
-    }
-    
-    public void setWorkPackage(wp) {
-        this.workPackage = wp;
-    }
-     * */
-    
-    /* 
-     * public Project getProject() {
-        return this.project;
-    }
-    
-    public void setProject(proj) {
-        this.project = proj;
-    }
-     * */
-    
-    //-------------------------------------------------------------------------
     
     /**
      * convert hour to decihour.  hour rounded to one fractional decimal place.
@@ -359,20 +338,20 @@ public class TimesheetRow implements Serializable {
     /**
      * getter for notes section.
      * @return the notes
-     
+     */
     public String getNotes() {
         return notes;
     }
-    */
+    
     
     /**
      * setter for notes section.
      * @param notes the notes to set
-     
+     */
     public void setNotes(final String notes) {
         this.notes = notes;
     }
-    */
+
     
     /**
      * adds total hours for this timesheet row.

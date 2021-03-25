@@ -108,13 +108,13 @@ public class Timesheet implements Auditable, Serializable {
      * Represents the overtime
      */
     @Column(name = "Overtime")
-    private Integer overtime;
+    private Float overtime;
     
     /**
      * Represents the flextime
      */
     @Column(name = "Flextime")
-    private Integer flextime;
+    private Float flextime;
     
     /**
      * The time it was approved
@@ -208,19 +208,19 @@ public class Timesheet implements Auditable, Serializable {
 		this.feedback = feedback;
 	}
 
-	public Integer getOvertime() {
+	public Float getOvertime() {
 		return overtime;
 	}
 
-	public void setOvertime(Integer overtime) {
+	public void setOvertime(Float overtime) {
 		this.overtime = overtime;
 	}
 
-	public Integer getFlextime() {
+	public Float getFlextime() {
 		return flextime;
 	}
 
-	public void setFlextime(Integer flextime) {
+	public void setFlextime(Float flextime) {
 		this.flextime = flextime;
 	}
 

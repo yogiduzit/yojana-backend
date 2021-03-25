@@ -79,7 +79,7 @@ public class EmployeeService {
 		if (employee.getFullName() != null) {
 			emp.setFullName(employee.getFullName());
 		}
-		employeeManager.merge(emp);
+		employeeManager.merge(employee);
 		return Response.ok().entity(new APIResponse()).build();
 	}
 	
