@@ -10,6 +10,7 @@ import com.yojana.model.employee.Employee;
 import com.yojana.model.project.Project;
 import com.yojana.model.project.Report;
 import com.yojana.response.APIResponse;
+import com.yojana.response.errors.ErrorMessageBuilder;
 import com.yojana.security.annotations.Secured;
 
 @Path("/reports")
@@ -21,6 +22,11 @@ public class ReportService {
 		
 	public Response createReport(String projectId) {
 		Project project = projectManager.find(projectId);
+		APIResponse res = new APIResponse();
+		if (project == null) {
+			res.getErrors().add(ErrorMessageBuilder.notFoundSingle("report", projectId, null));
+			 return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+		}
 		Employee projectManager = project.getProjectManager();
 		Credential credential = projectManager.getCredential();
 		Report report = new Report();
@@ -37,7 +43,6 @@ public class ReportService {
 		report.setProjectManagerPassword(credential.getPassword());
 		report.setProjectCreatedAt(project.getAudit().getCreatedAt());
 		report.setProjectUpdatedAt(project.getAudit().getUpdatedAt());
-		APIResponse res = new APIResponse();
 		res.getData().put("report", report);
 		return Response.ok().entity(res).build();
 		
