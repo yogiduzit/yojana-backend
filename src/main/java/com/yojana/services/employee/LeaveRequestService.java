@@ -54,11 +54,13 @@ public class LeaveRequestService {
 		if (leave.getEmpId() > 0) {
 			final Employee emp = employeeManager.find(leave.getEmpId());
 			if (emp == null) {
-				ErrorMessageBuilder.notFound("Could not find employee for timesheet", null);
+				ErrorMessageBuilder.notFound("Could not find employee for Leave Request	", null);
 				return Response.status(Response.Status.NOT_FOUND).entity(res).build();
 			}
 			leave.setEmployee(emp);
 		}
+		leave.getStartDate().setDate(leave.getStartDate().getDate()+1);
+		leave.getEndDate().setDate(leave.getEndDate().getDate()+1);
 		UUID uuid = UUID.randomUUID();
 		leave.setId(uuid.toString());
 		leaveManager.persist(leave);
@@ -114,12 +116,21 @@ public class LeaveRequestService {
 	@Produces("application/json")
 	public Response change(LeaveRequest req) {
 		APIResponse res = new APIResponse();
+		req.getStartDate().setDate(req.getStartDate().getDate()+1);
+		req.getEndDate().setDate(req.getEndDate().getDate()+1);
+		if (req.getEmpId() > 0) {
+			final Employee emp = employeeManager.find(req.getEmpId());
+			if (emp == null) {
+				ErrorMessageBuilder.notFound("Could not find employee for Leave Request", null);
+				return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+			}
+			req.setEmployee(emp);
+		}
 		leaveManager.merge(req);
 		res.getData().put("leaveRequest", req);
-		return Response.ok().entity(res).build();	
+		return Response.ok().entity(res).build();
 	}
 	
-
 	@GET
 	@Consumes("application/json")
 	@Produces("application/json")

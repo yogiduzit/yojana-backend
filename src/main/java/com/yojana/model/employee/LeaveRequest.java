@@ -24,7 +24,6 @@ import com.yojana.model.auditable.AuditListener;
 
 @Entity
 @Table(name = "LeaveRequest")
-@EntityListeners(AuditListener.class)
 public class LeaveRequest  implements Serializable {
 	
 	/**
