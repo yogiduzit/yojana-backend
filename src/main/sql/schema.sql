@@ -92,7 +92,7 @@ CREATE TABLE LeaveRequest(
     EmpID INT NOT NULL,
     StartDate DATE,
     EndDate DATE,
-    TypeRequest VARCHAR(125),
+    TypeRequest ENUM('Vacation', 'Medical', 'Other') NOT NULL DEFAULT 'Other',
     Descrip VARCHAR(255),
 	CONSTRAINT PKLeaveRequest PRIMARY KEY (LeaveRequestID),
     CONSTRAINT FKRequestLeaveEmpID
