@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -110,6 +111,10 @@ public class WorkPackage implements Auditable, Serializable {
         inverseJoinColumns = { @JoinColumn(name = "EmpID", referencedColumnName = "EmpID") }
     )
     private Set<Employee> employees;
+	
+	public WorkPackage() {
+		
+	}
 
 	public Audit getAudit() {
 		return audit;
