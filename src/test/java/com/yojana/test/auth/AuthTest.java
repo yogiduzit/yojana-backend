@@ -60,7 +60,7 @@ public class AuthTest {
 		assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJlbXBsb3llZSI6ImJkbGluayJ9.Ufu3Wyz1W60xwOrLaR3xkVBT1zeod8LoUNZNlKpCE-hZBjQ_P3FCh1s1bZ1bSFb2aryqQPDm9Cz1UHd3-NieXA", tokenResponse.getData().get("token"));
 	}
 	@Test
-    @Order(1)
+    @Order(2)
     public void testToken() throws Exception {
 	    Response response = client.target(Constants.PAYGRADE_URL)
             .request()
