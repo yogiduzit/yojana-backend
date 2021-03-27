@@ -42,7 +42,7 @@ public class ProjectService {
 	
 	@Inject
     @AuthenticatedEmployee
-    // Gets the authenticated employee
+    // Gets the authenticated employee 
     private Employee authEmployee;
 
 	

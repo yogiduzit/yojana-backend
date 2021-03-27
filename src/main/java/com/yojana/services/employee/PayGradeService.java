@@ -21,7 +21,7 @@ import com.yojana.response.APIResponse;
 import com.yojana.security.annotations.Secured;
 
 @Secured
-@Path("/paygrade")
+@Path("/paygrades")
 public class PayGradeService {
     
     @Inject

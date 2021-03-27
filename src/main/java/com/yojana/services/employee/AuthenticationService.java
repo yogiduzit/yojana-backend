@@ -33,7 +33,7 @@ public class AuthenticationService {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON) 
     // Authenticates a user
     public Response authenticateUser(Credential auth) {
     	APIResponse res = new APIResponse();
