@@ -13,7 +13,7 @@ public class EstimateRowPK implements Serializable {
 
     private static final long serialVersionUID = -8709713671106036600L;
     
-    @Column(name="TimesheetID", nullable = false, insertable = false, updatable = false)
+    @Column(name="EstimateId", nullable = false, insertable = false, updatable = false)
     @Type(type="uuid-char")
     private UUID estimateId;
     
@@ -41,7 +41,6 @@ public class EstimateRowPK implements Serializable {
     }
     
     public EstimateRowPK(UUID estimateId, String payGradeId) {
-        super();
         this.estimateId = estimateId;
         this.payGradeId = payGradeId;
     }

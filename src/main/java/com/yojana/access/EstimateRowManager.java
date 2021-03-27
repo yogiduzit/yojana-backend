@@ -18,7 +18,7 @@ import com.yojana.model.project.EstimateRowPK;
 @Stateless
 public class EstimateRowManager implements Serializable {
 
-    private static final long serialVersionUID = -6478292740340769939L;
+    private static final long serialVersionUID = 1L;
     
     @PersistenceContext(unitName="comp4911-pms-rest-jpa") EntityManager em;
     
