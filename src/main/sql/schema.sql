@@ -268,6 +268,8 @@ INSERT INTO Project (ProjectID, ProjectManagerID, ProjectName, Budget, InitialEs
 
 INSERT INTO WorkPackage (WorkPackageID, ProjectID, ResponsibleEngineerID, WorkPackageName, Descrip, IsLowestLevel, AllocatedBudget, InitialEstimate, DueAt, Stat) VALUES ("WP1.1", "PR123", 2, "DDL Creation", "Make a ddl", TRUE, 100.00, 89.00, DATE '2021/5/21', 'open');
 
+INSERT INTO TimesheetRow (TimesheetID, ProjectID, WorkPackageID, Notes, Hours) VALUES ("45700000-0000-0000-0000-000000000000", "PR123", "WP1.1", "Sample notes", 1000);
+
 INSERT INTO ProjectEmployee VALUES("PR123", 1);
 INSERT INTO ProjectEmployee VALUES("PR123", 2);
 
@@ -276,6 +278,7 @@ INSERT INTO EmployeePackage VALUES("WP1.1",  "PR123", 2);
 INSERT INTO Estimate (EstimateID, WorkPackageID, ProjectID) VALUES ("83400000-0000-0000-0000-000000000000", "WP1.1", "PR123");
 
 INSERT INTO EstimateRow VALUES("83400000-0000-0000-0000-000000000000", "PS", 2.5, 50);
+
 
 INSERT INTO Report (ReportID, ProjectID, Info) VALUES("13400090-0000-0000-0000-000000000000", "PR123", '{
 "StatusReport":{ "Type":"weekly", "Date":"2021/2/12", "data":{"EmpID": "32000000-0000-0000-0000-000000000000",
