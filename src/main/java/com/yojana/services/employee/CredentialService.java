@@ -22,10 +22,16 @@ import com.yojana.model.employee.Credential;
 import com.yojana.model.employee.Employee;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
+import com.yojana.security.annotations.AuthenticatedEmployee;
 
 @Path("/credentials")
 public class CredentialService {
 
+    @Inject
+    @AuthenticatedEmployee
+    // Gets the authenticated employee 
+    private Employee authEmployee;
+    
 	@Inject
 	private CredentialManager credManager;
 	
@@ -38,6 +44,9 @@ public class CredentialService {
 	@Transactional
 	public Response persist(Credential credentials) {
 		APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+		    return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+		}
 		if (credentials.getEmpID() > 0) {
 			final Employee employee = empManager.find(credentials.getEmpID());
 			if (employee == null) {

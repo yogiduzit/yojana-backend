@@ -50,7 +50,7 @@ public class ProjectService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	// Inserts a timesheet ain't the database
-	public Response persist(Project project) {
+	public Response persist(Project project) { 
 		APIResponse res = new APIResponse();
 		project.setProjectManager(employeeManager.find(authEmployee.getId()));
 		projectManager.persist(project);
