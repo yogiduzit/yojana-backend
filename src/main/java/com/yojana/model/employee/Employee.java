@@ -70,18 +70,18 @@ public class Employee implements Auditable, Serializable {
 	 */
 	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "emp", orphanRemoval = true)
 	private Credential credential;
-	// commented out until paygrade table is implemented
-//  /**
-//     * Represents the ID of the timesheet approver of this employee
-//     */
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "LabourGrade")
-//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//    private PayGrade labourGrade;
-//    
-//    @Column(name = "LabourGrade", updatable = false, insertable = false)
-//    private int labourGradeId;
-//  
+
+  /**
+     * Represents the ID of the timesheet approver of this employee
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "LabourGrade")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private PayGrade labourGrade;
+    
+    @Column(name = "LabourGrade", updatable = false, insertable = false)
+    private String labourGradeId;
+  
     /**
      * Represents the ID of the creator of this employee
      */
@@ -201,6 +201,34 @@ public class Employee implements Auditable, Serializable {
 	public void setAudit(Audit audit) {
 		this.audit = audit;
 	}
+    /**
+     * @return the labourGrade
+     */
+    public PayGrade getLabourGrade() {
+        return labourGrade;
+    }
+
+    /**
+     * @param labourGrade the labourGrade to set
+     */
+    public void setLabourGrade(PayGrade labourGrade) {
+        this.labourGrade = labourGrade;
+    }
+
+    /**
+     * @return the labourGradeId
+     */
+    public String getLabourGradeId() {
+        return labourGradeId;
+    }
+
+    /**
+     * @param labourGradeId the labourGradeId to set
+     */
+    public void setLabourGradeId(String labourGradeId) {
+        this.labourGradeId = labourGradeId;
+    }
+
     /**
      * @return the creator
      */
