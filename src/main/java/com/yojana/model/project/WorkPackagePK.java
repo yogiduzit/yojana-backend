@@ -25,7 +25,7 @@ public class WorkPackagePK implements Serializable {
 	public WorkPackagePK(String id, String projectID) {
 		this.id = id;
 		this.projectID = projectID;
-	}
+	} 
 
 	public String getId() {
 		return id;
