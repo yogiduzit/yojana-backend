@@ -238,14 +238,17 @@ CREATE TABLE TimesheetRow(
 	WorkPackageID VARCHAR(20) NOT NULL,
 	Notes TINYTEXT,
 	Hours BIGINT NOT NULL,
+	RowIndex INT NOT NULL DEFAULT 0
+		CONSTRAINT RowIndexLimit
+			CHECK (RowIndex >= 0 AND RowIndex <= 6),
 	CONSTRAINT PKTimesheetRow
-		PRIMARY KEY(ProjectID, WorkPackageID, TimesheetID),
+		PRIMARY KEY(RowIndex, TimesheetID),
 	CONSTRAINT FKTimesheetRowTimesheetID 
 		FOREIGN KEY (TimesheetID) REFERENCES Timesheet(TimesheetID)
 			ON UPDATE CASCADE
         	ON DELETE CASCADE,
 	CONSTRAINT FKTimesheetRowWorkPackageIDProjectID
-		FOREIGN KEY (WorkPackageID, ProjectID) REFERENCES WorkPackage(WorkPackageID, ProjectID)
+		FOREIGN KEY (WorkPackageID, ProjectID) REFERENCES WorkPackage(WorkPackageID, ProjectID) 
 );
 
 INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);

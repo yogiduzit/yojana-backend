@@ -153,7 +153,6 @@ public class Timesheet implements Auditable, Serializable {
 		this.audit = audit;
 	}
 
-
 	public UUID getId() {
         return id;
     }

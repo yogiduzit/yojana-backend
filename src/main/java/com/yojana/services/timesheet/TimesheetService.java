@@ -88,6 +88,7 @@ public class TimesheetService {
 		UUID uuid = UUID.randomUUID();
 		timesheet.setId(uuid);
 		timesheetManager.persist(timesheet);
+		res.getData().put("id", timesheet.getId());
 		return Response.created(URI.create("/timesheets/" + timesheet.getId())).entity(res).build();
 	}
 
