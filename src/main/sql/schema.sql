@@ -248,7 +248,9 @@ CREATE TABLE TimesheetRow(
 			ON UPDATE CASCADE
         	ON DELETE CASCADE,
 	CONSTRAINT FKTimesheetRowWorkPackageIDProjectID
-		FOREIGN KEY (WorkPackageID, ProjectID) REFERENCES WorkPackage(WorkPackageID, ProjectID) 
+		FOREIGN KEY (WorkPackageID, ProjectID) REFERENCES WorkPackage(WorkPackageID, ProjectID), 
+	CONSTRAINT UQ_Proj_WP
+		UNIQUE (WorkPackageID, ProjectID, TimesheetID)
 );
 
 INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
