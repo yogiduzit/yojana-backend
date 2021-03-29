@@ -48,7 +48,7 @@ public class EmployeeService {
 	// Finds an employee
 	public Response find(@PathParam("id") int id) {
         APIResponse res = new APIResponse();
-        if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+        if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
         }
 		Employee employee = employeeManager.find(id);
@@ -69,7 +69,7 @@ public class EmployeeService {
 	// Inserts an employee in the database
 	public Response persist(Employee employee) {
 		APIResponse res = new APIResponse();
-		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
         }
 		employeeManager.persist(employee);
@@ -88,14 +88,15 @@ public class EmployeeService {
 	// Updates an existing employee
 	public Response merge(Employee employee, @PathParam("id") int empId) {
 	    APIResponse res = new APIResponse();
-	    if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && authEmployee.getId() == empId) {
+	    System.out.println("!!!!!" + empId + " " + authEmployee.getId() + " !!!!!");
+	    if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && authEmployee.getId() != empId && !authEmployee.isHr()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
         }
 		final Employee emp = employeeManager.find(empId);
 		if (employee.getFullName() != null) {
 			emp.setFullName(employee.getFullName());
 		}
-		employeeManager.merge(employee);
+		employeeManager.merge(emp);
 		return Response.ok().entity(new APIResponse()).build();
 	}
 	
@@ -106,7 +107,7 @@ public class EmployeeService {
 	// Deletes an existing employee
 	public Response remove(@PathParam("id") int empId) {
 	    APIResponse res = new APIResponse();
-	    if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+	    if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
         }
 		final Employee emp = employeeManager.find(empId);
@@ -119,7 +120,7 @@ public class EmployeeService {
 	// Gets a list of all employees
 	public Response getAll() throws SQLException {
 	    APIResponse res = new APIResponse();
-        if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+        if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
         }
 		List<Employee> employees = employeeManager.getAll();
@@ -137,6 +138,9 @@ public class EmployeeService {
 	// Gets a list of all timesheets for an id
 	public Response getAllTimesheetsForEmployee(@PathParam("id") UUID empId) {
 		final APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		List<Timesheet> timesheets = timesheetManager.getAllForEmployee(empId);
 		if (timesheets == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("timesheet", null));

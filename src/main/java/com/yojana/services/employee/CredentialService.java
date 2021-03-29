@@ -69,6 +69,9 @@ public class CredentialService {
 	@Transactional
 	public Response remove(@PathParam("id") int credID) {
 		APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		final Credential cred = credManager.find(credID);
 		if (cred == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFound("Cannot find credential to be deleted", null));
@@ -82,7 +85,11 @@ public class CredentialService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
 	public Response getAll() {
+	    APIResponse res = new APIResponse();
 		final List<Credential> credentials = credManager.getAll();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
     	Map<String, Object> data = new HashMap<String, Object>();
         data.put("credentials", credentials);
         return Response.ok().entity(new APIResponse(data)).build();

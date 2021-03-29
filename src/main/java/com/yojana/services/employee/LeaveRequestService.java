@@ -45,6 +45,11 @@ public class LeaveRequestService {
 	// Provides access to the project table
 	private LeaveRequestManager leaveManager;
 
+	@Inject
+    @AuthenticatedEmployee
+    // Gets the authenticated employee 
+    private Employee authEmployee;
+	
 	@POST
 	@Consumes("application/json")
 	@Produces("application/json")
@@ -72,6 +77,9 @@ public class LeaveRequestService {
 	// Gets a list of all requests
 	public Response getAll() {
 		final APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		List<LeaveRequest> projects = leaveManager.getAll();
 		if (projects == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("Leave Reuest", null));
@@ -88,6 +96,9 @@ public class LeaveRequestService {
 	public Response find(@PathParam("id") String id) {
 		LeaveRequest leave = leaveManager.find(id);
 		APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr() && authEmployee.getId() != leave.getEmpId()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		if (leave == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundSingle("Leave Request",
 					id + "",
@@ -104,6 +115,9 @@ public class LeaveRequestService {
 	@Produces("application/json")
 	public Response del(@PathParam("id") String id) {
 		APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		LeaveRequest leave = leaveManager.find(id);
 		leaveManager.remove(leave, id);
 		res.getData().put("leaveRequest", leave);
@@ -116,6 +130,9 @@ public class LeaveRequestService {
 	@Produces("application/json")
 	public Response change(LeaveRequest req) {
 		APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr() && authEmployee.getId() != req.getEmpId()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		req.getStartDate().setDate(req.getStartDate().getDate()+1);
 		req.getEndDate().setDate(req.getEndDate().getDate()+1);
 		if (req.getEmpId() > 0) {
@@ -137,6 +154,9 @@ public class LeaveRequestService {
 	// Gets a list of all requests
 	public Response getByType(LeaveRequest req) {
 		final APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		System.out.print(req.getType().toString());
 		List<LeaveRequest> projects = leaveManager.findByType(req.getType().toString());
 		if (projects == null) {
@@ -147,11 +167,16 @@ public class LeaveRequestService {
 		return Response.ok().entity(res).build();
 	}
 
+	
+	//Is this needed?
 	@GET
 	@Path("/emp/{id}")
 	@Produces("application/json")
 	public Response getWorkPackages(@PathParam("id") String projectId) {
 		final APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		List<LeaveRequest> projects = leaveManager.findByEmp(projectId);
 		if (projects == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("Leave Reuest", null));
