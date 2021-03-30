@@ -1,4 +1,4 @@
-package com.yojana.services.project;
+package com.yojana.services.estimate;
 
 import java.net.URI;
 import java.util.List;
@@ -19,9 +19,9 @@ import com.yojana.access.EstimateManager;
 import com.yojana.access.EstimateRowManager;
 import com.yojana.access.PayGradeManager;
 import com.yojana.model.employee.PayGrade;
-import com.yojana.model.project.Estimate;
-import com.yojana.model.project.EstimateRow;
-import com.yojana.model.project.EstimateRowPK;
+import com.yojana.model.estimate.Estimate;
+import com.yojana.model.estimate.EstimateRow;
+import com.yojana.model.estimate.EstimateRowPK;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
 

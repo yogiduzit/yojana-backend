@@ -1,4 +1,4 @@
-package com.yojana.model.project;
+package com.yojana.model.estimate;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -20,6 +20,7 @@ import org.hibernate.annotations.Type;
 import com.yojana.model.auditable.Audit;
 import com.yojana.model.auditable.AuditListener;
 import com.yojana.model.auditable.Auditable;
+import com.yojana.model.project.WorkPackage;
 
 @Entity
 @Table(name = "Estimate")

@@ -1,4 +1,4 @@
-package com.yojana.model.project;
+package com.yojana.model.estimate;
 
 import java.io.Serializable;
 import java.util.UUID;

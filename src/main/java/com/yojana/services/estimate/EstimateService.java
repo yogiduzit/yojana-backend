@@ -1,4 +1,4 @@
-package com.yojana.services.project;
+package com.yojana.services.estimate;
 
 import java.net.URI;
 import java.util.List;
@@ -17,7 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.yojana.access.EstimateManager;
-import com.yojana.model.project.Estimate;
+import com.yojana.model.estimate.Estimate;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
 import com.yojana.security.annotations.Secured;

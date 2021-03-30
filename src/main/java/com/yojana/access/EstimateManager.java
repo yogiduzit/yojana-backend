@@ -11,7 +11,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
-import com.yojana.model.project.Estimate;
+import com.yojana.model.estimate.Estimate;
 
 @Dependent
 @Stateless
