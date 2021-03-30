@@ -45,10 +45,17 @@ public class Project  implements Auditable, Serializable {
     private String name;
 	
 	@Column(name = "Budget")
-    private float budget;
+	private float budget;
+	
+	@Column(name = "AllocatedBudget")
+	private float allocatedBudget;
 	
 	@Column(name = "InitialEstimate")
-    private float initialEstimate;
+	private float initialEstimate;
+	
+	@Column(name = "AllocatedInitialEstimate")
+	private float allocatedInitialEstimate;
+	
 	
 	@Column(name = "Description", columnDefinition="TEXT")
 	private String description;
@@ -154,6 +161,22 @@ public class Project  implements Auditable, Serializable {
 
 	public void setEmployees(Set<Employee> employees) {
 		this.employees = employees;
+	}
+
+	public float getAllocatedBudget() {
+		return allocatedBudget;
+	}
+
+	public void setAllocatedBudget(float allocatedBudget) {
+		this.allocatedBudget = allocatedBudget;
+	}
+
+	public float getAllocatedInitialEstimate() {
+		return allocatedInitialEstimate;
+	}
+
+	public void setAllocatedInitialEstimate(float allocatedInitialEstimate) {
+		this.allocatedInitialEstimate = allocatedInitialEstimate;
 	}
 
 }

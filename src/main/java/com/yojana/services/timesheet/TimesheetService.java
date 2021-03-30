@@ -1,7 +1,6 @@
 package com.yojana.services.timesheet;
 
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 

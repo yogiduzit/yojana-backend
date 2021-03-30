@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
-import javax.inject.Inject;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -63,7 +62,7 @@ public class WorkPackage implements Auditable, Serializable {
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Set<WorkPackage> childWPs;
 	
-	@Column(name = "ParentWorkPackageID", insertable = false, updatable = false)
+	@Column(name = "ParentWorkPackageID")
 	private String parentWPId;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -80,11 +79,17 @@ public class WorkPackage implements Auditable, Serializable {
 	@Column(name = "IsLowestLevel")
 	private boolean isLowestLevel;
 	
+	@Column(name = "Budget")
+	private float budget;
+	
 	@Column(name = "AllocatedBudget")
 	private float allocatedBudget;
 	
 	@Column(name = "InitialEstimate")
 	private float initialEstimate;
+	
+	@Column(name = "AllocatedInitialEstimate")
+	private float allocatedInitialEstimate;
 	
 	@Column(name = "Charged")
 	private float charged;
@@ -111,6 +116,13 @@ public class WorkPackage implements Auditable, Serializable {
         inverseJoinColumns = { @JoinColumn(name = "EmpID", referencedColumnName = "EmpID") }
     )
     private Set<Employee> employees;
+	
+	/**
+	 * Represents the nesting / hierarchy level of the work package
+	 * 0 if it is a top level work package
+	 */
+	@Column(name = "HierarchyLevel")
+	private int hierarchyLevel;
 	
 	public WorkPackage() {
 		
@@ -250,6 +262,30 @@ public class WorkPackage implements Auditable, Serializable {
 
 	public void setEmployees(Set<Employee> employees) {
 		this.employees = employees;
+	}
+
+	public float getBudget() {
+		return budget;
+	}
+
+	public void setBudget(float budget) {
+		this.budget = budget;
+	}
+
+	public float getAllocatedInitialEstimate() {
+		return allocatedInitialEstimate;
+	}
+
+	public void setAllocatedInitialEstimate(float allocatedInitialEstimate) {
+		this.allocatedInitialEstimate = allocatedInitialEstimate;
+	}
+
+	public int getHierarchyLevel() {
+		return hierarchyLevel;
+	}
+
+	public void setHierarchyLevel(int hierarchyLevel) {
+		this.hierarchyLevel = hierarchyLevel;
 	}
 
 }

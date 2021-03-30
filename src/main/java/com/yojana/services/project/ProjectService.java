@@ -10,6 +10,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -120,9 +121,26 @@ public class ProjectService {
 	@GET
 	@Path("/{id}/workPackages")
 	@Produces("application/json")
-	public Response getWorkPackages(@PathParam("id") String projectId) {
+	public Response getWorkPackages(@PathParam("id") String projectId,
+			@QueryParam("hierarchyLevel") Integer hierarchyLevel) {
 		APIResponse res = new APIResponse();
-		List<WorkPackage> wps = wpManager.getAll(projectId);
+		List<WorkPackage> wps;
+		if (hierarchyLevel == null) {
+			wps = wpManager.getAll(projectId);
+		} else {
+			wps = wpManager.getAllWithHierarchyLevel(projectId, hierarchyLevel);
+		}
+		res.getData().put("workPackages", wps);
+		return Response.ok().entity(res).build();
+	}
+	
+	@GET
+	@Path("/{id}/workPackages/{wpId}/children")
+	@Produces("application/json")
+	public Response getChildWPs(@PathParam("id") String projectId, 
+			@PathParam("wpId") String wpId) {
+		APIResponse res = new APIResponse();
+		List<WorkPackage> wps = wpManager.getChildWPs(projectId, wpId);
 		res.getData().put("workPackages", wps);
 		return Response.ok().entity(res).build();
 	}
@@ -130,7 +148,10 @@ public class ProjectService {
 	@GET
 	@Path("/{id}/workPackages/{wpId}")
 	@Produces("application/json")
-	public Response getWorkPackages(@PathParam("id") String projectId, @PathParam("wpId") String wpId) {
+	public Response getWorkPackage(
+			@PathParam("id") String projectId, 
+			@PathParam("wpId") String wpId
+	) {
 		APIResponse res = new APIResponse();
 		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
