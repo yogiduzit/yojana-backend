@@ -12,7 +12,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -68,7 +70,79 @@ public class Employee implements Auditable, Serializable {
 	 */
 	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "emp", orphanRemoval = true)
 	private Credential credential;
-	
+
+  /**
+     * Represents the ID of the timesheet approver of this employee
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "LabourGrade")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private PayGrade labourGrade;
+    
+    @Column(name = "LabourGrade", updatable = false, insertable = false)
+    private String labourGradeId;
+  
+    /**
+     * Represents the ID of the creator of this employee
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CreatedBy")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Employee creator;
+    
+    @Column(columnDefinition="integer", name = "CreatedBy", updatable = false, insertable = false, nullable = true)
+    private Integer creatorId;
+    
+    /**
+     * Represents the ID of the manager of this employee
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ManagedBy")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Employee manager;
+    
+    @Column(columnDefinition="integer", name = "ManagedBy", updatable = false, insertable = false)
+    private Integer managerId;
+    
+    /**
+     * Represents the ID of the timesheet approver of this employee
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TimesheetApproverID")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Employee timesheetApprover;
+    
+    @Column(columnDefinition="integer", name = "TimesheetApproverID", updatable = false, insertable = false)
+    private Integer timesheetApproverId;
+    
+    /**
+     * Represents if an employee is a timesheet approver
+     */
+    @Column(name = "IsTimesheetApprover")
+    private boolean isTimesheetApprover;
+    
+    /**
+     * Represents if an employee is in HR
+     */
+    @Column(name = "IsHR")
+    private boolean isHr;
+    
+    /**
+     * Represents if an employee is an admin
+     */
+    @Column(name = "IsAdmin")
+    private boolean isAdmin;
+    
+    /**
+     * Represents if an employee is a project manager
+     */
+    @Column(name = "IsProjectManager")
+    private boolean isProjectManager;
+//  
+//    @Lob
+//    @Basic(fetch = FetchType.LAZY)
+//    private byte[] profilePicture;
+//
 	public Employee() {}
 
     /**
@@ -127,12 +201,180 @@ public class Employee implements Auditable, Serializable {
 	public void setAudit(Audit audit) {
 		this.audit = audit;
 	}
+    /**
+     * @return the labourGrade
+     */
+    public PayGrade getLabourGrade() {
+        return labourGrade;
+    }
+
+    /**
+     * @param labourGrade the labourGrade to set
+     */
+    public void setLabourGrade(PayGrade labourGrade) {
+        this.labourGrade = labourGrade;
+    }
+
+    /**
+     * @return the labourGradeId
+     */
+    public String getLabourGradeId() {
+        return labourGradeId;
+    }
+
+    /**
+     * @param labourGradeId the labourGradeId to set
+     */
+    public void setLabourGradeId(String labourGradeId) {
+        this.labourGradeId = labourGradeId;
+    }
+
+    /**
+     * @return the creator
+     */
+    public Employee getCreator() {
+        return creator;
+    }
+
+    /**
+     * @param creator the creator to set
+     */
+    public void setCreator(Employee creator) {
+        this.creator = creator;
+    }
+
+    /**
+     * @return the creatorId
+     */
+    public Integer getCreatorId() {
+        return creatorId;
+    }
+
+    /**
+     * @param creatorId the creatorId to set
+     */
+    public void setCreatorId(Integer creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    /**
+     * @return the manager
+     */
+    public Employee getManager() {
+        return manager;
+    }
+
+    /**
+     * @param manager the manager to set
+     */
+    public void setManager(Employee manager) {
+        this.manager = manager;
+    }
+
+    /**
+     * @return the managerId
+     */
+    public Integer getManagerId() {
+        return managerId;
+    }
+
+    /**
+     * @param managerId the managerId to set
+     */
+    public void setManagerId(Integer managerId) {
+        this.managerId = managerId;
+    }
+
+    /**
+     * @return the timesheetApprover
+     */
+    public Employee getTimesheetApprover() {
+        return timesheetApprover;
+    }
+
+    /**
+     * @param timesheetApprover the timesheetApprover to set
+     */
+    public void setTimesheetApprover(Employee timesheetApprover) {
+        this.timesheetApprover = timesheetApprover;
+    }
+
+    /**
+     * @return the timesheetApproverId
+     */
+    public Integer getTimesheetApproverId() {
+        return timesheetApproverId;
+    }
+
+    /**
+     * @param timesheetApproverId the timesheetApproverId to set
+     */
+    public void setTimesheetApproverId(Integer timesheetApproverId) {
+        this.timesheetApproverId = timesheetApproverId;
+    }
+
+    /**
+     * @return the isTimesheetApprover
+     */
+    public boolean isTimesheetApprover() {
+        return isTimesheetApprover;
+    }
+
+    /**
+     * @param isTimesheetApprover the isTimesheetApprover to set
+     */
+    public void setTimesheetApprover(boolean isTimesheetApprover) {
+        this.isTimesheetApprover = isTimesheetApprover;
+    }
+
+    /**
+     * @return the isHr
+     */
+    public boolean isHr() {
+        return isHr;
+    }
+
+    /**
+     * @param isHr the isHr to set
+     */
+    public void setHr(boolean isHr) {
+        this.isHr = isHr;
+    }
+
+    /**
+     * @return the isAdmin
+     */
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    /**
+     * @param isAdmin the isAdmin to set
+     */
+    public void setAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+
+    /**
+     * @return the isProjectManager
+     */
+    public boolean isProjectManager() {
+        return isProjectManager;
+    }
+
+    /**
+     * @param isProjectManager the isProjectManager to set
+     */
+    public void setProjectManager(boolean isProjectManager) {
+        this.isProjectManager = isProjectManager;
+    }
 
     @Override
     public String toString() {
         return "Employee [audit=" + audit + ", id=" + id + ", fullName=" + fullName + ", credential=" + credential
-                + "]";
-    }
-
-    
+                + ", creator=" + creator + ", creatorId=" + creatorId + ", manager=" + manager + ", managerId="
+                + managerId + ", timesheetApprover=" + timesheetApprover + ", timesheetApproverId="
+                + timesheetApproverId + ", isTimesheetApprover=" + isTimesheetApprover + ", isHr=" + isHr + ", isAdmin="
+                + isAdmin + ", isProjectManager=" + isProjectManager + "]";
+    }  
 }

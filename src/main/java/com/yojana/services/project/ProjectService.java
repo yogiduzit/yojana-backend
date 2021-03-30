@@ -42,7 +42,7 @@ public class ProjectService {
 	
 	@Inject
     @AuthenticatedEmployee
-    // Gets the authenticated employee
+    // Gets the authenticated employee 
     private Employee authEmployee;
 
 	
@@ -50,8 +50,11 @@ public class ProjectService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	// Inserts a timesheet ain't the database
-	public Response persist(Project project) {
+	public Response persist(Project project) { 
 		APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+		    return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+		}
 		project.setProjectManager(employeeManager.find(authEmployee.getId()));
 		projectManager.persist(project);
 		return Response.created(URI.create("/projects/" + project.getId())).entity(res).build();
@@ -62,6 +65,9 @@ public class ProjectService {
 	// Gets a list of all timesheets
 	public Response getAll() {
 		final APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		List<Project> projects = projectManager.getAll();
 		if (projects == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("project", null));
@@ -74,10 +80,13 @@ public class ProjectService {
 	@GET
     @Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	// Finds an employee
+	// Finds a project
 	public Response find(@PathParam("id") String id) {
 		Project project = projectManager.find(id);
 		APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		if (project == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundSingle("project",
 					id + "",
@@ -95,6 +104,9 @@ public class ProjectService {
 	@Produces("application/json")
 	public Response addWP(@PathParam("id") String projectId, WorkPackage wp) {
 		APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		Project project = projectManager.find(projectId);
 		wp.setProject(project);
 		
@@ -120,6 +132,9 @@ public class ProjectService {
 	@Produces("application/json")
 	public Response getWorkPackages(@PathParam("id") String projectId, @PathParam("wpId") String wpId) {
 		APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		WorkPackage wp = wpManager.find(new WorkPackagePK(wpId, projectId));
 		res.getData().put("workPackage", wp);
 		return Response.ok().entity(res).build();

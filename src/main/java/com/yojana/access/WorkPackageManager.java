@@ -44,7 +44,7 @@ public class WorkPackageManager implements Serializable {
 			Project parent = workPackage.getProject();
 			parent.setBudget(parent.getBudget() - workPackage.getAllocatedBudget());
 			parent.setInitialEstimate(parent.getInitialEstimate() - workPackage.getInitialEstimate());
-			em.merge(parent);
+			em.merge(parent); 
 		}
         em.persist(workPackage);
     }
@@ -52,13 +52,40 @@ public class WorkPackageManager implements Serializable {
 	/** update an employee. */
 	@Transactional
 	public void merge(WorkPackage workPackage) {
+		if (workPackage.getParentWPId() != null) {
+			WorkPackage parent = find(new WorkPackagePK(workPackage.getParentWPId(), 
+					workPackage.getWorkPackagePk().getProjectID()));
+			parent.setAllocatedBudget(parent.getAllocatedBudget() - workPackage.getAllocatedBudget());
+			parent.setInitialEstimate(parent.getInitialEstimate() - workPackage.getInitialEstimate());
+			parent.setLowestLevel(false);
+			em.merge(parent);
+		} else {
+			Project parent = workPackage.getProject();
+			parent.setBudget(parent.getBudget() - workPackage.getAllocatedBudget());
+			parent.setInitialEstimate(parent.getInitialEstimate() - workPackage.getInitialEstimate());
+			em.merge(parent);
+		}
         em.merge(workPackage);
     }
 	
 	/** remove an employee. */
 	@Transactional
 	public void remove(WorkPackage workPackage, WorkPackagePK key) {
-        workPackage = find(key);
+        if (workPackage.getParentWPId() != null) {
+			WorkPackage parent = find(new WorkPackagePK(workPackage.getParentWPId(), 
+					workPackage.getWorkPackagePk().getProjectID()));
+			parent.setAllocatedBudget(parent.getAllocatedBudget() + workPackage.getAllocatedBudget());
+			parent.setInitialEstimate(parent.getInitialEstimate() + workPackage.getInitialEstimate());
+			if (workPackage.isLowestLevel()) {
+				parent.setLowestLevel(true);
+			}
+			em.merge(parent);
+		} else {
+			Project parent = workPackage.getProject();
+			parent.setBudget(parent.getBudget() + workPackage.getAllocatedBudget());
+			parent.setInitialEstimate(parent.getInitialEstimate() + workPackage.getInitialEstimate());
+			em.merge(parent);
+		}
         em.remove(workPackage);
     }
 	

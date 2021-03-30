@@ -23,12 +23,18 @@ import com.yojana.model.employee.Employee;
 import com.yojana.model.timesheet.Timesheet;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
+import com.yojana.security.annotations.AuthenticatedEmployee;
 import com.yojana.security.annotations.Secured;
 
 @Secured
 @Path("/employees")
 public class EmployeeService {
 
+    @Inject
+    @AuthenticatedEmployee
+    // Gets the authenticated employee 
+    private Employee authEmployee;
+    
     @Inject
     // Provides access to the employee table
     private EmployeeManager employeeManager;
@@ -41,8 +47,11 @@ public class EmployeeService {
 	@Produces(MediaType.APPLICATION_JSON)
 	// Finds an employee
 	public Response find(@PathParam("id") int id) {
+        APIResponse res = new APIResponse();
+        if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		Employee employee = employeeManager.find(id);
-		APIResponse res = new APIResponse();
 		if (employee == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundSingle("employee",
 					id + "",
@@ -60,6 +69,9 @@ public class EmployeeService {
 	// Inserts an employee in the database
 	public Response persist(Employee employee) {
 		APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		employeeManager.persist(employee);
 		res.getData().put("id", employee.getId());
 		return Response
@@ -75,11 +87,16 @@ public class EmployeeService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	// Updates an existing employee
 	public Response merge(Employee employee, @PathParam("id") int empId) {
+	    APIResponse res = new APIResponse();
+	    System.out.println("!!!!!" + empId + " " + authEmployee.getId() + " !!!!!");
+	    if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && authEmployee.getId() != empId && !authEmployee.isHr()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		final Employee emp = employeeManager.find(empId);
 		if (employee.getFullName() != null) {
 			emp.setFullName(employee.getFullName());
 		}
-		employeeManager.merge(employee);
+		employeeManager.merge(emp);
 		return Response.ok().entity(new APIResponse()).build();
 	}
 	
@@ -89,6 +106,10 @@ public class EmployeeService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	// Deletes an existing employee
 	public Response remove(@PathParam("id") int empId) {
+	    APIResponse res = new APIResponse();
+	    if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		final Employee emp = employeeManager.find(empId);
 		employeeManager.remove(emp, empId);
 		return Response.ok().entity(new APIResponse()).build();
@@ -98,8 +119,11 @@ public class EmployeeService {
 	@Produces(MediaType.APPLICATION_JSON)
 	// Gets a list of all employees
 	public Response getAll() throws SQLException {
+	    APIResponse res = new APIResponse();
+        if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		List<Employee> employees = employeeManager.getAll();
-    	APIResponse res = new APIResponse();
 		if (employees == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("employee", null));
 			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
@@ -114,6 +138,9 @@ public class EmployeeService {
 	// Gets a list of all timesheets for an id
 	public Response getAllTimesheetsForEmployee(@PathParam("id") UUID empId) {
 		final APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		List<Timesheet> timesheets = timesheetManager.getAllForEmployee(empId);
 		if (timesheets == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("timesheet", null));

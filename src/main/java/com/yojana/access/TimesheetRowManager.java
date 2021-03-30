@@ -16,6 +16,7 @@ import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import com.yojana.model.employee.Employee;
@@ -37,9 +38,6 @@ public class TimesheetRowManager implements Serializable {
 	
 	@PersistenceContext(unitName="comp4911-pms-rest-jpa") EntityManager em;
 	
-	@Resource(mappedName = "java:jboss/datasources/MySQLDS")
-	private DataSource dataSource;
-	
 	public TimesheetRowManager() {}
 	
 	/** find a timesheetrow with id. */
@@ -49,7 +47,13 @@ public class TimesheetRowManager implements Serializable {
 	
 	/** add a timesheetrow. */
 	public void persist(TimesheetRow timesheetrow) {
-        em.persist(timesheetrow);
+		Query query = em.createNativeQuery("INSERT INTO TimesheetRow (Notes, Hours, ProjectID, TimesheetID, WorkPackageID) VALUES (?,?,?,?,?)");
+		query.setParameter(1, timesheetrow.getNotes());
+		query.setParameter(2, timesheetrow.getPackedHours());
+		query.setParameter(3, timesheetrow.getProjectId());
+		query.setParameter(4, timesheetrow.getTimesheetId().toString());
+		query.setParameter(5, timesheetrow.getWorkPackageId());
+        query.executeUpdate();
     } 
 	
 	/** update a timesheetrow. */
@@ -63,16 +67,8 @@ public class TimesheetRowManager implements Serializable {
         em.remove(timesheetrow);
     }
 	
-	/** get all timesheetrows. */
-	public List<TimesheetRow> getAll() {       
-	    TypedQuery<TimesheetRow> query = em.createQuery("select t from TimesheetRow",
-	            TimesheetRow.class);  
-        List<TimesheetRow> timesheetRows = query.getResultList();
-        return timesheetRows;
-    }
-	
 	public List<TimesheetRow> getAllForTimesheet(UUID timesheetId) {
-	    TypedQuery<TimesheetRow> query = em.createQuery("select t from TimesheetRow t where TimesheetID = :timesheetId", TimesheetRow.class);
+	    TypedQuery<TimesheetRow> query = em.createQuery("select t from TimesheetRow t where t.timesheetId = :timesheetId", TimesheetRow.class);
         query.setParameter("timesheetId", timesheetId);
         return query.getResultList();
 	}

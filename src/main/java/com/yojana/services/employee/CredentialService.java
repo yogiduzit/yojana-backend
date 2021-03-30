@@ -22,10 +22,16 @@ import com.yojana.model.employee.Credential;
 import com.yojana.model.employee.Employee;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
+import com.yojana.security.annotations.AuthenticatedEmployee;
 
 @Path("/credentials")
 public class CredentialService {
 
+    @Inject
+    @AuthenticatedEmployee
+    // Gets the authenticated employee 
+    private Employee authEmployee;
+    
 	@Inject
 	private CredentialManager credManager;
 	
@@ -38,6 +44,9 @@ public class CredentialService {
 	@Transactional
 	public Response persist(Credential credentials) {
 		APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+		    return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+		}
 		if (credentials.getEmpID() > 0) {
 			final Employee employee = empManager.find(credentials.getEmpID());
 			if (employee == null) {
@@ -60,6 +69,9 @@ public class CredentialService {
 	@Transactional
 	public Response remove(@PathParam("id") int credID) {
 		APIResponse res = new APIResponse();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
 		final Credential cred = credManager.find(credID);
 		if (cred == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFound("Cannot find credential to be deleted", null));
@@ -73,7 +85,11 @@ public class CredentialService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
 	public Response getAll() {
+	    APIResponse res = new APIResponse();
 		final List<Credential> credentials = credManager.getAll();
+		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+        }
     	Map<String, Object> data = new HashMap<String, Object>();
         data.put("credentials", credentials);
         return Response.ok().entity(new APIResponse(data)).build();

@@ -69,7 +69,6 @@ public class Credential implements Auditable {
 	 * Represents the password of the login phase
 	 */
 	@Column(name = "EmpPassword")
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
 	
 	public Credential() {}

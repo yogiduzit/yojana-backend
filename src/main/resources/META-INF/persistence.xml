@@ -10,6 +10,7 @@
 	    <class>com.yojana.model.timesheet.Timesheet</class>
 	    <class>com.yojana.model.timesheet.TimesheetRow</class>
 	    <class>com.yojana.model.employee.PayGrade</class>
+	    <class>com.yojana.model.employee.LeaveRequest</class>
 	      
       <properties>
          <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLInnoDBDialect"/>

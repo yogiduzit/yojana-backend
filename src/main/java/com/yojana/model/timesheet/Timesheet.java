@@ -3,6 +3,7 @@ package com.yojana.model.timesheet;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -14,6 +15,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -108,13 +110,13 @@ public class Timesheet implements Auditable, Serializable {
      * Represents the overtime
      */
     @Column(name = "Overtime")
-    private Integer overtime;
+    private Float overtime;
     
     /**
      * Represents the flextime
      */
     @Column(name = "Flextime")
-    private Integer flextime;
+    private Float flextime;
     
     /**
      * The time it was approved
@@ -122,6 +124,10 @@ public class Timesheet implements Auditable, Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "ApprovedAt")
     private Date approvedAt;
+    
+    @OneToMany(mappedBy = "timesheet", fetch = FetchType.LAZY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Set<TimesheetRow> timesheetRows;
     
     /**
      * no parameter constructor
@@ -208,19 +214,19 @@ public class Timesheet implements Auditable, Serializable {
 		this.feedback = feedback;
 	}
 
-	public Integer getOvertime() {
+	public Float getOvertime() {
 		return overtime;
 	}
 
-	public void setOvertime(Integer overtime) {
+	public void setOvertime(Float overtime) {
 		this.overtime = overtime;
 	}
 
-	public Integer getFlextime() {
+	public Float getFlextime() {
 		return flextime;
 	}
 
-	public void setFlextime(Integer flextime) {
+	public void setFlextime(Float flextime) {
 		this.flextime = flextime;
 	}
 
@@ -234,6 +240,18 @@ public class Timesheet implements Auditable, Serializable {
 
 	public void setStatus(TimesheetStatus status) {
 		this.status = status;
+	}
+
+	public Set<TimesheetRow> getTimesheetRows() {
+		return timesheetRows;
+	}
+
+	public void setTimesheetRows(Set<TimesheetRow> timesheetRows) {
+		this.timesheetRows = timesheetRows;
+	}
+
+	public void setReviewerId(Integer reviewerId) {
+		this.reviewerId = reviewerId;
 	}
 
 	/**
