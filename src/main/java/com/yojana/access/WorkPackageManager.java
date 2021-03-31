@@ -59,8 +59,9 @@ public class WorkPackageManager implements Serializable {
 			em.merge(parent);
 		} else {
 			Project parent = workPackage.getProject();
-			parent.setAllocatedBudget(workPackage.getBudget());
-			parent.setAllocatedInitialEstimate(workPackage.getInitialEstimate());
+			parent.setAllocatedBudget(parent.getAllocatedBudget() + workPackage.getBudget());
+			parent.setAllocatedInitialEstimate(parent.getAllocatedInitialEstimate()
+					 + workPackage.getInitialEstimate());
 			em.merge(parent); 
 		}
         em.persist(workPackage);
@@ -69,18 +70,29 @@ public class WorkPackageManager implements Serializable {
 	/** update an employee. */
 	@Transactional
 	public void merge(WorkPackage workPackage) {
+		WorkPackage old = find(workPackage.getWorkPackagePk());
 		if (workPackage.getParentWPId() != null) {
 			WorkPackage parent = find(new WorkPackagePK(workPackage.getParentWPId(), 
 					workPackage.getWorkPackagePk().getProjectID()));
-			parent.setAllocatedBudget(parent.getAllocatedBudget() - workPackage.getAllocatedBudget());
-			parent.setInitialEstimate(parent.getInitialEstimate() - workPackage.getInitialEstimate());
+			
+			float parentBudgetAllocation = parent.getAllocatedBudget() - old.getBudget() + workPackage.getBudget();
+			float parentEstimateAllocation = parent.getAllocatedInitialEstimate() - old.getInitialEstimate() + workPackage.getInitialEstimate();
+			
+			parent.setAllocatedBudget(parentBudgetAllocation);
+			parent.setAllocatedInitialEstimate(parentEstimateAllocation);
 			parent.setLowestLevel(false);
+			workPackage.setParentWP(parent);
 			em.merge(parent);
 		} else {
 			Project parent = workPackage.getProject();
-			parent.setBudget(parent.getBudget() - workPackage.getAllocatedBudget());
-			parent.setInitialEstimate(parent.getInitialEstimate() - workPackage.getInitialEstimate());
-			em.merge(parent);
+			
+			float parentBudgetAllocation = parent.getAllocatedBudget() - old.getBudget() + workPackage.getBudget();
+			float parentEstimateAllocation = parent.getAllocatedInitialEstimate() - old.getInitialEstimate() + workPackage.getInitialEstimate();
+			
+			parent.setAllocatedBudget(parentBudgetAllocation);
+			parent.setAllocatedInitialEstimate(parentEstimateAllocation);
+			
+			em.merge(parent); 
 		}
         em.merge(workPackage);
     }

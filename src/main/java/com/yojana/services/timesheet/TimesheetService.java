@@ -111,7 +111,7 @@ public class TimesheetService {
 			timesheet.setEmployee(employeeManager.find(old.getOwnerId()));
 		}
 		timesheetManager.merge(timesheet);
-		return Response.ok().entity(new APIResponse()).build();
+		return Response.ok().entity(res).build();
 	}
 
 	@DELETE

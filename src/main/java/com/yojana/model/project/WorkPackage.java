@@ -65,7 +65,7 @@ public class WorkPackage implements Auditable, Serializable {
 	@Column(name = "ParentWorkPackageID")
 	private String parentWPId;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ResponsibleEngineerID")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Employee responsibleEngineer;
@@ -77,25 +77,25 @@ public class WorkPackage implements Auditable, Serializable {
 	private String description;
 	
 	@Column(name = "IsLowestLevel")
-	private boolean isLowestLevel;
+	private Boolean isLowestLevel;
 	
 	@Column(name = "Budget")
-	private float budget;
+	private Float budget;
 	
 	@Column(name = "AllocatedBudget")
-	private float allocatedBudget;
+	private Float allocatedBudget;
 	
 	@Column(name = "InitialEstimate")
-	private float initialEstimate;
+	private Float initialEstimate;
 	
 	@Column(name = "AllocatedInitialEstimate")
-	private float allocatedInitialEstimate;
+	private Float allocatedInitialEstimate;
 	
 	@Column(name = "Charged")
-	private float charged;
+	private Float charged;
 	
 	@Column(name = "CostAtCompletion")
-	private float costAtCompletion;
+	private Float costAtCompletion;
 	
 	@Temporal(TemporalType.DATE)
     @Column(name = "DueAt")
@@ -200,43 +200,43 @@ public class WorkPackage implements Auditable, Serializable {
 		this.description = description;
 	}
 
-	public boolean isLowestLevel() {
+	public Boolean isLowestLevel() {
 		return isLowestLevel;
 	}
 
-	public void setLowestLevel(boolean isLowestLevel) {
+	public void setLowestLevel(Boolean isLowestLevel) {
 		this.isLowestLevel = isLowestLevel;
 	}
 
-	public float getAllocatedBudget() {
+	public Float getAllocatedBudget() {
 		return allocatedBudget;
 	}
 
-	public void setAllocatedBudget(float allocatedBudget) {
+	public void setAllocatedBudget(Float allocatedBudget) {
 		this.allocatedBudget = allocatedBudget;
 	}
 
-	public float getInitialEstimate() {
+	public Float getInitialEstimate() {
 		return initialEstimate;
 	}
 
-	public void setInitialEstimate(float initialEstimate) {
+	public void setInitialEstimate(Float initialEstimate) {
 		this.initialEstimate = initialEstimate;
 	}
 
-	public float getCharged() {
+	public Float getCharged() {
 		return charged;
 	}
 
-	public void setCharged(float charged) {
+	public void setCharged(Float charged) {
 		this.charged = charged;
 	}
 
-	public float getCostAtCompletion() {
+	public Float getCostAtCompletion() {
 		return costAtCompletion;
 	}
 
-	public void setCostAtCompletion(float costAtCompletion) {
+	public void setCostAtCompletion(Float costAtCompletion) {
 		this.costAtCompletion = costAtCompletion;
 	}
 
@@ -264,19 +264,19 @@ public class WorkPackage implements Auditable, Serializable {
 		this.employees = employees;
 	}
 
-	public float getBudget() {
+	public Float getBudget() {
 		return budget;
 	}
 
-	public void setBudget(float budget) {
+	public void setBudget(Float budget) {
 		this.budget = budget;
 	}
 
-	public float getAllocatedInitialEstimate() {
+	public Float getAllocatedInitialEstimate() {
 		return allocatedInitialEstimate;
 	}
 
-	public void setAllocatedInitialEstimate(float allocatedInitialEstimate) {
+	public void setAllocatedInitialEstimate(Float allocatedInitialEstimate) {
 		this.allocatedInitialEstimate = allocatedInitialEstimate;
 	}
 

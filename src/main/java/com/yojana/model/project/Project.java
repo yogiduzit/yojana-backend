@@ -45,16 +45,16 @@ public class Project  implements Auditable, Serializable {
     private String name;
 	
 	@Column(name = "Budget")
-	private float budget;
+	private Float budget;
 	
 	@Column(name = "AllocatedBudget")
-	private float allocatedBudget;
+	private Float allocatedBudget;
 	
 	@Column(name = "InitialEstimate")
-	private float initialEstimate;
+	private Float initialEstimate;
 	
 	@Column(name = "AllocatedInitialEstimate")
-	private float allocatedInitialEstimate;
+	private Float allocatedInitialEstimate;
 	
 	
 	@Column(name = "Description", columnDefinition="TEXT")
@@ -67,7 +67,7 @@ public class Project  implements Auditable, Serializable {
 	/**
      * Represents the project manager
      */
-	@ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
+	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ProjectManagerID")
     private Employee projectManager;
 	
@@ -107,19 +107,19 @@ public class Project  implements Auditable, Serializable {
 		this.name = name;
 	}
 
-	public float getBudget() {
+	public Float getBudget() {
 		return budget;
 	}
 
-	public void setBudget(float budget) {
+	public void setBudget(Float budget) {
 		this.budget = budget;
 	}
 
-	public float getInitialEstimate() {
+	public Float getInitialEstimate() {
 		return initialEstimate;
 	}
 
-	public void setInitialEstimate(float initialEstimate) {
+	public void setInitialEstimate(Float initialEstimate) {
 		this.initialEstimate = initialEstimate;
 	}
 
@@ -163,19 +163,19 @@ public class Project  implements Auditable, Serializable {
 		this.employees = employees;
 	}
 
-	public float getAllocatedBudget() {
+	public Float getAllocatedBudget() {
 		return allocatedBudget;
 	}
 
-	public void setAllocatedBudget(float allocatedBudget) {
+	public void setAllocatedBudget(Float allocatedBudget) {
 		this.allocatedBudget = allocatedBudget;
 	}
 
-	public float getAllocatedInitialEstimate() {
+	public Float getAllocatedInitialEstimate() {
 		return allocatedInitialEstimate;
 	}
 
-	public void setAllocatedInitialEstimate(float allocatedInitialEstimate) {
+	public void setAllocatedInitialEstimate(Float allocatedInitialEstimate) {
 		this.allocatedInitialEstimate = allocatedInitialEstimate;
 	}
 
