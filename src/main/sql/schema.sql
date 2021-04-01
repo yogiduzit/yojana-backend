@@ -92,7 +92,7 @@ CREATE TABLE LeaveRequest(
     EmpID INT NOT NULL,
     StartDate DATE,
     EndDate DATE,
-    TypeRequest VARCHAR(125),
+    TypeRequest ENUM('Vacation', 'Medical', 'Other') NOT NULL DEFAULT 'Other',
     Descrip VARCHAR(255),
 	CONSTRAINT PKLeaveRequest PRIMARY KEY (LeaveRequestID),
     CONSTRAINT FKRequestLeaveEmpID
@@ -206,6 +206,7 @@ CREATE TABLE Estimate(
 	ProjectID VARCHAR(20) NOT NULL,
     EstimateToComplete FLOAT(14,2),
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT PKEstimate
 		PRIMARY KEY(EstimateID),
 	CONSTRAINT FKEstimateWorkPackageIDProjectID 

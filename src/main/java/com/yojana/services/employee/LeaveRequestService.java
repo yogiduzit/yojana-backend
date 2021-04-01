@@ -49,7 +49,6 @@ public class LeaveRequestService {
     @AuthenticatedEmployee
     // Gets the authenticated employee 
     private Employee authEmployee;
-	
 	@POST
 	@Consumes("application/json")
 	@Produces("application/json")
@@ -166,7 +165,6 @@ public class LeaveRequestService {
 		res.getData().put("leaveRequest", projects);
 		return Response.ok().entity(res).build();
 	}
-
 	
 	//Is this needed?
 	@GET
