@@ -1,7 +1,6 @@
 package com.yojana.services.timesheet;
 
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
@@ -88,6 +87,7 @@ public class TimesheetService {
 		UUID uuid = UUID.randomUUID();
 		timesheet.setId(uuid);
 		timesheetManager.persist(timesheet);
+		res.getData().put("id", timesheet.getId());
 		return Response.created(URI.create("/timesheets/" + timesheet.getId())).entity(res).build();
 	}
 
@@ -111,7 +111,7 @@ public class TimesheetService {
 			timesheet.setEmployee(employeeManager.find(old.getOwnerId()));
 		}
 		timesheetManager.merge(timesheet);
-		return Response.ok().entity(new APIResponse()).build();
+		return Response.ok().entity(res).build();
 	}
 
 	@DELETE

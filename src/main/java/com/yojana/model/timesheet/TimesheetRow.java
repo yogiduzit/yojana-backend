@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.UUID;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,6 +40,10 @@ public class TimesheetRow implements Serializable {
 	@Column(name = "TimesheetID", nullable = false, insertable = false, updatable = false)
 	@Type(type = "uuid-char")
 	private UUID timesheetId;
+	
+	@Id
+	@Column(name = "RowIndex")
+	private int index;
 
 	/**
 	 * Representing the Timesheet itself. Many timesheet row, One Timesheet Foreign
@@ -54,7 +57,6 @@ public class TimesheetRow implements Serializable {
 	/**
 	 * The WorkPackageId. PK/FK Must be unique for a given projectId.
 	 */
-	@Id
 	@Column(name = "WorkPackageID")
 	private String workPackageId;
 
@@ -72,7 +74,6 @@ public class TimesheetRow implements Serializable {
 	private WorkPackage workPackage;
 
 	/** The projectId PK/FK . */
-	@Id
 	@Column(name = "ProjectID", nullable = false, insertable = false, updatable = false)
 	private String projectId;
 
@@ -523,6 +524,14 @@ public class TimesheetRow implements Serializable {
 	public String toString() {
 		return "Project ID: " + projectId + "\nTimsheetID: " + timesheetId + "\nWork Package ID: " + workPackageId
 				+ " \n" + Arrays.toString(getHours());
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 }

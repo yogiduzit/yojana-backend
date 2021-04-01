@@ -45,10 +45,17 @@ public class Project  implements Auditable, Serializable {
     private String name;
 	
 	@Column(name = "Budget")
-    private float budget;
+	private Float budget;
+	
+	@Column(name = "AllocatedBudget")
+	private Float allocatedBudget;
 	
 	@Column(name = "InitialEstimate")
-    private float initialEstimate;
+	private Float initialEstimate;
+	
+	@Column(name = "AllocatedInitialEstimate")
+	private Float allocatedInitialEstimate;
+	
 	
 	@Column(name = "Description", columnDefinition="TEXT")
 	private String description;
@@ -60,7 +67,7 @@ public class Project  implements Auditable, Serializable {
 	/**
      * Represents the project manager
      */
-	@ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
+	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ProjectManagerID")
     private Employee projectManager;
 	
@@ -100,19 +107,19 @@ public class Project  implements Auditable, Serializable {
 		this.name = name;
 	}
 
-	public float getBudget() {
+	public Float getBudget() {
 		return budget;
 	}
 
-	public void setBudget(float budget) {
+	public void setBudget(Float budget) {
 		this.budget = budget;
 	}
 
-	public float getInitialEstimate() {
+	public Float getInitialEstimate() {
 		return initialEstimate;
 	}
 
-	public void setInitialEstimate(float initialEstimate) {
+	public void setInitialEstimate(Float initialEstimate) {
 		this.initialEstimate = initialEstimate;
 	}
 
@@ -154,6 +161,22 @@ public class Project  implements Auditable, Serializable {
 
 	public void setEmployees(Set<Employee> employees) {
 		this.employees = employees;
+	}
+
+	public Float getAllocatedBudget() {
+		return allocatedBudget;
+	}
+
+	public void setAllocatedBudget(Float allocatedBudget) {
+		this.allocatedBudget = allocatedBudget;
+	}
+
+	public Float getAllocatedInitialEstimate() {
+		return allocatedInitialEstimate;
+	}
+
+	public void setAllocatedInitialEstimate(Float allocatedInitialEstimate) {
+		this.allocatedInitialEstimate = allocatedInitialEstimate;
 	}
 
 }
