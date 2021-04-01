@@ -132,6 +132,7 @@ public class ProjectService {
 		wp.setProject(project);
 		
 		wpManager.persist(wp);
+		res.getData().put("id", wp.getWorkPackagePk().getId());
 		return Response.created(URI.create("/projects/" + projectId + "/workPackages/" + wp.getWorkPackagePk()
 			.getId()))
 			.entity(res)
