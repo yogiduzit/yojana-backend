@@ -3,6 +3,13 @@ package com.yojana.model.timesheet;
 import java.io.Serializable;
 import java.util.UUID;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+
+import org.hibernate.annotations.Type;
+
  
 /**External class containing PK columns of TimesheetRow. 
  * A class representing the Composite primary key of a Timesheet Row.
@@ -17,53 +24,50 @@ public class TimesheetRowPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //instance members
+    
     /**Timesheet ID. */
+    @Column(name = "TimesheetID",columnDefinition = "varchar", updatable = false, insertable = false)
+    @Type(type="uuid-char")
     private UUID timesheetId;
     
-    /**Work Package ID */
-    private String workPackageId;
-    
-    /**Project ID */
-    private String projectId;
-
-    //getters and setters--------------------------
-    
-    /**@return work package ID. */
-    public String getWorkPackageId() {
-        return workPackageId;
-    }
-    public String getProjectId() {
-		return projectId;
-	}
-	public void setProjectId(String projectId) {
-		this.projectId = projectId;
-	}
-	/**@param workPackageid is the work package Id to be set. */
-    public void setWorkPackageId(String workPackageId) {
-        this.workPackageId = workPackageId;
-    }
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "RowIndex")
+    private int index;
 
 	public UUID getTimesheetId() {
 		return timesheetId;
 	}
+	
+	public TimesheetRowPK() {
+	}
+
+	public TimesheetRowPK(UUID timesheetId, int index) {
+		super();
+		this.timesheetId = timesheetId;
+		this.index = index;
+	}
+
 	public void setTimesheetId(UUID timesheetId) {
 		this.timesheetId = timesheetId;
 	}
-	public TimesheetRowPK() {}
-	public TimesheetRowPK(UUID timesheetId, String projectId, String workPackageId) {
-      this.timesheetId = timesheetId;
-      this.projectId = projectId;
-      this.workPackageId = workPackageId;
-    }
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((projectId == null) ? 0 : projectId.hashCode());
+		result = prime * result + index;
 		result = prime * result + ((timesheetId == null) ? 0 : timesheetId.hashCode());
-		result = prime * result + ((workPackageId == null) ? 0 : workPackageId.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -73,20 +77,12 @@ public class TimesheetRowPK implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		TimesheetRowPK other = (TimesheetRowPK) obj;
-		if (projectId == null) {
-			if (other.projectId != null)
-				return false;
-		} else if (!projectId.equals(other.projectId))
+		if (index != other.index)
 			return false;
 		if (timesheetId == null) {
 			if (other.timesheetId != null)
 				return false;
 		} else if (!timesheetId.equals(other.timesheetId))
-			return false;
-		if (workPackageId == null) {
-			if (other.workPackageId != null)
-				return false;
-		} else if (!workPackageId.equals(other.workPackageId))
 			return false;
 		return true;
 	}

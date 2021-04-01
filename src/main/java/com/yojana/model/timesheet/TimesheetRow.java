@@ -3,11 +3,13 @@ package com.yojana.model.timesheet;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.UUID;
-
-import javax.persistence.CascadeType;
+ 
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
@@ -18,9 +20,11 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yojana.model.project.Project;
 import com.yojana.model.project.WorkPackage;
+import com.yojana.model.project.WorkPackagePK;
 
 /**
  * A class representing a single row of a Timesheet. Note: Row details are based
@@ -37,24 +41,28 @@ public class TimesheetRow implements Serializable {
 	// -------------Data Table
 
 	/** The timesheetId PK/FK . */
-	@Id
-	@Column(name = "TimesheetID", nullable = false, insertable = false, updatable = false)
-	@Type(type = "uuid-char")
-	private UUID timesheetId;
+    @Column(name = "TimesheetID",columnDefinition = "varchar", updatable = false, insertable = false)
+    @Type(type="uuid-char")
+    @Id
+    private UUID timesheetId;
+    
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "RowIndex")
+    @Id
+    private int index;
 
 	/**
 	 * Representing the Timesheet itself. Many timesheet row, One Timesheet Foreign
 	 * key reference to timesheetId
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "TimesheetID")
+	@JoinColumn(name = "TimesheetID", updatable = false, insertable = false)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Timesheet timesheet;
 	
 	/**
 	 * The WorkPackageId. PK/FK Must be unique for a given projectId.
 	 */
-	@Id
 	@Column(name = "WorkPackageID")
 	private String workPackageId;
 
@@ -72,7 +80,6 @@ public class TimesheetRow implements Serializable {
 	private WorkPackage workPackage;
 
 	/** The projectId PK/FK . */
-	@Id
 	@Column(name = "ProjectID", nullable = false, insertable = false, updatable = false)
 	private String projectId;
 
@@ -350,6 +357,7 @@ public class TimesheetRow implements Serializable {
 	 * 
 	 * @return the weekly hours
 	 */
+	@JsonIgnore
 	public Float getSum() {
 		return toHour(getDeciSum());
 	}
@@ -359,6 +367,7 @@ public class TimesheetRow implements Serializable {
 	 * 
 	 * @return total hours in units of decihours
 	 */
+	@JsonIgnore
 	public int getDeciSum() {
 		int[] charges = getDecihours();
 		int sum = 0;
@@ -495,13 +504,6 @@ public class TimesheetRow implements Serializable {
 		this.workPackage = workPackage;
 	}
 
-	public UUID getTimesheetId() {
-		return timesheetId;
-	}
-
-	public void setTimesheetId(UUID timesheetId) {
-		this.timesheetId = timesheetId;
-	}
 
 	public Project getProject() {
 		return project;
@@ -519,10 +521,29 @@ public class TimesheetRow implements Serializable {
 		this.notes = notes;
 	}
 
-	@Override
+	
+
+    public UUID getTimesheetId() {
+        return timesheetId;
+    }
+
+    public void setTimesheetId(UUID timesheetId) {
+        this.timesheetId = timesheetId;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    @Override
 	public String toString() {
 		return "Project ID: " + projectId + "\nTimsheetID: " + timesheetId + "\nWork Package ID: " + workPackageId
 				+ " \n" + Arrays.toString(getHours());
 	}
+
 
 }

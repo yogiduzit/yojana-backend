@@ -25,6 +25,7 @@ import com.yojana.model.employee.Employee;
 import com.yojana.model.project.WorkPackagePK;
 import com.yojana.model.timesheet.Timesheet;
 import com.yojana.model.timesheet.TimesheetRow;
+import com.yojana.model.timesheet.TimesheetRowPK;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
 import com.yojana.security.annotations.AuthenticatedEmployee;
@@ -71,6 +72,7 @@ public class TimesheetService {
 	}
 
 	@POST
+	@Path("")
 	@Consumes("application/json")
 	@Produces("application/json")
 	// Inserts a timesheet ain't the database
@@ -88,6 +90,7 @@ public class TimesheetService {
 		UUID uuid = UUID.randomUUID();
 		timesheet.setId(uuid);
 		timesheetManager.persist(timesheet);
+		res.getData().put("id", timesheet.getId());
 		return Response.created(URI.create("/timesheets/" + timesheet.getId())).entity(res).build();
 	}
 
@@ -125,6 +128,7 @@ public class TimesheetService {
 	}
 
 	@GET
+	@Path("")
 	@Produces("application/json")
 	// Gets a list of all timesheets
 	public Response getAll() {
@@ -138,41 +142,53 @@ public class TimesheetService {
 		return Response.ok().entity(res).build();
 	}
 	
+	@GET
+    @Path("/{id}/rows")
+    @Produces("application/json")
+    // Gets a list of all timesheetrows for a timesheet
+    public Response getAllForTimesheet(@PathParam("id") UUID timesheetId) {
+        APIResponse res = new APIResponse();
+        System.out.println("heyo this is getallForTimesheet");
+        List<TimesheetRow> timesheetRows = timesheetRowManager.getAllForTimesheet(timesheetId); 
+        if (timesheetRows == null) {
+            res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("timesheetRows", "No rows found for" + 
+                "timesheet: " + timesheetId));
+             return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+        }
+        res.getData().put("timesheetRows", timesheetRows);
+        return Response.ok().entity(res).build();
+    }
+	
 	@POST
 	@Path("/{id}/rows")
     @Consumes("application/json")
 	@Produces("application/json")
 	// Inserts a timesheetrow into the database
-	public Response addRow(@PathParam("id") UUID timesheetId, TimesheetRow row) {
-		final APIResponse res = new APIResponse();
+	public Response persist(@PathParam("id") UUID timesheetId, TimesheetRow row) {
+	    APIResponse res = new APIResponse();
+	    System.out.println("heyo this is addrow");
+	    Timesheet timesheet = timesheetManager.find(timesheetId);
+	    if (timesheet != null) {
+	        System.out.println("Heyo");
+	        row.setTimesheetId(timesheet.getId());
+	        
+	        row.setTimesheet(timesheetManager.find(timesheetId));       
+	        row.setProject(projectManager.find(row.getProjectId()));
+	        row.setWorkPackage(workPackageManager.find(
+	            new WorkPackagePK(row.getWorkPackageId(), row.getProjectId())
+	        ));
+	        
+	        timesheetRowManager.persist(row);
+	        return Response.created(URI.create("/timesheets/" + row.getTimesheetId() + "/rows"))
+	                .entity(res)
+	                .build();
+	        
+	    } else {
+	        System.out.println(timesheetId.toString());
+	        return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+	    }
 		
-		row.setTimesheetId(timesheetId);
-		row.setTimesheet(timesheetManager.find(timesheetId));		
-		row.setProject(projectManager.find(row.getProjectId()));
-		row.setWorkPackage(workPackageManager.find(
-			new WorkPackagePK(row.getWorkPackageId(), row.getProjectId())
-		));
-		
-		timesheetRowManager.persist(row);
-		return Response.created(URI.create("/timesheets/" + row.getTimesheetId() + "/rows/"
-			+ "project/" + row.getProjectId() + "/wp/" + row.getWorkPackageId()))
-				.entity(res)
-				.build();
 	}
 	
-	@GET
-    @Path("/{id}/rows")
-    @Produces("application/json")
-	// Gets a list of all timesheetrows for a timesheet
-	public Response getAllForTimesheet(@PathParam("id") UUID timesheetId) {
-		APIResponse res = new APIResponse();
-		List<TimesheetRow> timesheetRows = timesheetRowManager.getAllForTimesheet(timesheetId); 
-        if (timesheetRows == null) {
-            res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("timesheetRows", "No rows found for" + 
-            	"timesheet: " + timesheetId));
-             return Response.status(Response.Status.NOT_FOUND).entity(res).build();
-        }
-        res.getData().put("timesheetRows", timesheetRows);
-        return Response.ok().entity(res).build();
-	}
+
 }
