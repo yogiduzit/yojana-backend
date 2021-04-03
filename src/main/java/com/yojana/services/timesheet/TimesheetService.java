@@ -16,22 +16,43 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import com.yojana.access.EmployeeManager;
+import com.yojana.access.ProjectManager;
 import com.yojana.access.TimesheetManager;
+import com.yojana.access.TimesheetRowManager;
+import com.yojana.access.WorkPackageManager;
 import com.yojana.model.employee.Employee;
+import com.yojana.model.project.WorkPackagePK;
 import com.yojana.model.timesheet.Timesheet;
+import com.yojana.model.timesheet.TimesheetRow;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
+import com.yojana.security.annotations.AuthenticatedEmployee;
+import com.yojana.security.annotations.Secured;
 
 @Path("/timesheets")
+@Secured
 public class TimesheetService {
+	
+	@Inject
+	private ProjectManager projectManager;
 
 	@Inject
 	// Provides access to the employee table
 	private TimesheetManager timesheetManager;
+	
+	@Inject
+	private TimesheetRowManager timesheetRowManager;
+	
+	@Inject
+	private WorkPackageManager workPackageManager;
 
 	@Inject
 	// Provides access to the employee table
 	private EmployeeManager employeeManager;
+	
+	@Inject
+	@AuthenticatedEmployee
+	private Employee authEmployee;
 
 	@GET
 	@Path("/{id}")
@@ -54,6 +75,7 @@ public class TimesheetService {
 	// Inserts a timesheet ain't the database
 	public Response persist(Timesheet timesheet) {
 		APIResponse res = new APIResponse();
+		timesheet.setOwnerId(authEmployee.getId());
 		if (timesheet.getOwnerId() > 0) {
 			final Employee emp = employeeManager.find(timesheet.getOwnerId());
 			if (emp == null) {
@@ -65,6 +87,7 @@ public class TimesheetService {
 		UUID uuid = UUID.randomUUID();
 		timesheet.setId(uuid);
 		timesheetManager.persist(timesheet);
+		res.getData().put("id", timesheet.getId());
 		return Response.created(URI.create("/timesheets/" + timesheet.getId())).entity(res).build();
 	}
 
@@ -88,7 +111,7 @@ public class TimesheetService {
 			timesheet.setEmployee(employeeManager.find(old.getOwnerId()));
 		}
 		timesheetManager.merge(timesheet);
-		return Response.ok().entity(new APIResponse()).build();
+		return Response.ok().entity(res).build();
 	}
 
 	@DELETE
@@ -113,5 +136,43 @@ public class TimesheetService {
 		}
 		res.getData().put("timesheets", timesheets);
 		return Response.ok().entity(res).build();
+	}
+	
+	@POST
+	@Path("/{id}/rows")
+    @Consumes("application/json")
+	@Produces("application/json")
+	// Inserts a timesheetrow into the database
+	public Response addRow(@PathParam("id") UUID timesheetId, TimesheetRow row) {
+		final APIResponse res = new APIResponse();
+		
+		row.setTimesheetId(timesheetId);
+		row.setTimesheet(timesheetManager.find(timesheetId));		
+		row.setProject(projectManager.find(row.getProjectId()));
+		row.setWorkPackage(workPackageManager.find(
+			new WorkPackagePK(row.getWorkPackageId(), row.getProjectId())
+		));
+		
+		timesheetRowManager.persist(row);
+		return Response.created(URI.create("/timesheets/" + row.getTimesheetId() + "/rows/"
+			+ "project/" + row.getProjectId() + "/wp/" + row.getWorkPackageId()))
+				.entity(res)
+				.build();
+	}
+	
+	@GET
+    @Path("/{id}/rows")
+    @Produces("application/json")
+	// Gets a list of all timesheetrows for a timesheet
+	public Response getAllForTimesheet(@PathParam("id") UUID timesheetId) {
+		APIResponse res = new APIResponse();
+		List<TimesheetRow> timesheetRows = timesheetRowManager.getAllForTimesheet(timesheetId); 
+        if (timesheetRows == null) {
+            res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("timesheetRows", "No rows found for" + 
+            	"timesheet: " + timesheetId));
+             return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+        }
+        res.getData().put("timesheetRows", timesheetRows);
+        return Response.ok().entity(res).build();
 	}
 }

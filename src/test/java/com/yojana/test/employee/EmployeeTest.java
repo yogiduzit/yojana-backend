@@ -35,7 +35,6 @@ import com.yojana.test.Constants;
 public class EmployeeTest {
 
 	private static Client client;
-	private final static String API_URL = "http://localhost:8080/comp4911-pms-backend/api/employees";
 	
 	static ObjectMapper mapper;
 	static String location;
@@ -61,8 +60,8 @@ public class EmployeeTest {
 		employee.setFullName("Douge Mcfargis");
 
 		System.out.println("*** Create Employee ***");
-		Response response = client.target(API_URL)
-				.request()
+		Response response = client.target(Constants.EMPLOYEE_URL)
+				.request() 
 				.header("Authorization", "Bearer " + Constants.API_TEST_KEY)
 				.post(Entity.json(employee));
 
@@ -70,7 +69,7 @@ public class EmployeeTest {
 
 		location = response.getLocation().toString();
 		System.out.println("Location: " + location);
-		
+		 
 		response.close();
 		
 		System.out.println("*** GET Created Employee **");
@@ -84,37 +83,37 @@ public class EmployeeTest {
 		assertEquals(employee.getFullName(), testEmployee.getFullName());
 	}
 
-//	@Test
-//	@Order(2)
-//	public void testEditEmployee() throws Exception {
-//		testEmployee.setFullName("Twouge Mcfargis");
-//		System.out.println("Location: " + API_URL);
-//		Response response = client.target(API_URL)
-//				.request()
-//				.header("Authorization", "Bearer " + Constants.API_TEST_KEY)
-//				.put(Entity.json(testEmployee));
-//
-//		assertEquals(200, response.getStatus());
-//
-//		System.out.println(testEmployee);
-//		System.out.println("**** After Update ***");
-//		APIResponse getEmpResponse = client.target(location).request().get(APIResponse.class);
-//
-//		Employee employee = (Employee) getEmpResponse.getData().get("employee");
-//
-//		assertEquals(employee.getFullName(), testEmployee.getFullName());
-//	}
-//
-//	@Test
-//	@Order(3)
-//	public void testRemoveEmployee() throws Exception {
-//		System.out.println("*** Delete a Supplier ***");
-//		System.out.println(location);
-//		client.target(location).request().delete();
-//
-//		assertThrows(NotFoundException.class, () -> {
-//			client.target(location).request().get(APIResponse.class);
-//		});
-//
-//	}
+	@Test
+	@Order(2)
+	public void testEditEmployee() throws Exception {
+		testEmployee.setFullName("Twouge Mcfargis");
+		System.out.println("Location: " + Constants.EMPLOYEE_URL + "/" + testEmployee.getId());
+		client.target(Constants.EMPLOYEE_URL + "/" + testEmployee.getId())
+				.request()
+				.header("Authorization", "Bearer " + Constants.API_TEST_KEY)
+				.method("PATCH",Entity.json(testEmployee));
+
+
+		System.out.println(testEmployee);
+		System.out.println("**** After Update ***");
+		APIResponse getEmpResponse = client.target(location).request().get(APIResponse.class);
+
+		Employee employee = mapper.convertValue(getEmpResponse.getData().get("employee"), new TypeReference<Employee>() { });
+		assertEquals(employee.getFullName(), testEmployee.getFullName());
+	}
+
+	@Test
+	@Order(3)
+	public void testRemoveEmployee() throws Exception {
+		System.out.println("*** Delete a Supplier ***");
+		System.out.println(location);
+		client.target(location).request().delete();
+
+		assertThrows(NotFoundException.class, () -> {
+			client.target(location).request().header("Authorization", "Bearer " + Constants.API_TEST_KEY).get(APIResponse.class);
+		});
+
+	}
+	
+	
 }
