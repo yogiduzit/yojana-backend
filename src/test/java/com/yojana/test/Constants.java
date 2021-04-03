@@ -17,5 +17,6 @@ public class Constants {
 	public static String PAYGRADE_URL = Constants.API_BASE_URL + "/paygrades";
 	public static String PROJECT_URL = Constants.API_BASE_URL + "/projects";
 	public static String CREDENTIAL_URL = Constants.API_BASE_URL + "/credentials";
+	public static String LEAVEREQUEST_URL = Constants.API_BASE_URL + "/leaverequests";
 	public static String TEST_ID = "1";
 }

@@ -69,7 +69,8 @@ public class LeaveRequestService {
 		UUID uuid = UUID.randomUUID();
 		leave.setId(uuid.toString());
 		leaveManager.persist(leave);
-		return Response.created(URI.create("/leave/" + leave.getId())).entity(res).build();
+		res.getData().put("id", leave.getId());
+		return Response.created(URI.create("/leaverequests/" + leave.getId())).entity(res).build();
 	}
 
 	@GET
@@ -82,10 +83,10 @@ public class LeaveRequestService {
         }
 		List<LeaveRequest> projects = leaveManager.getAll();
 		if (projects == null) {
-			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("Leave Reuest", null));
+			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("Leave Request", null));
 			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
 		}
-		res.getData().put("leaveRequest", projects);
+		res.getData().put("leaveRequests", projects);
 		return Response.ok().entity(res).build();
 	}
 
@@ -113,7 +114,7 @@ public class LeaveRequestService {
 	@DELETE
 	@Path("/{id}")
 	@Produces("application/json")
-	public Response del(@PathParam("id") String id) {
+	public Response deleteLeaveRequestl(@PathParam("id") String id) {
 		APIResponse res = new APIResponse();
 		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
@@ -125,16 +126,14 @@ public class LeaveRequestService {
 	}
 	
 	@PATCH
-	@Path("/")
+	@Path("/{id}")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public Response change(LeaveRequest req) {
+	public Response change( @PathParam("id") String id, LeaveRequest req) {
 		APIResponse res = new APIResponse();
 		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr() && authEmployee.getId() != req.getEmpId()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
         }
-		req.getStartDate().setDate(req.getStartDate().getDate()+1);
-		req.getEndDate().setDate(req.getEndDate().getDate()+1);
 		if (req.getEmpId() > 0) {
 			final Employee emp = employeeManager.find(req.getEmpId());
 			if (emp == null) {
@@ -143,27 +142,27 @@ public class LeaveRequestService {
 			}
 			req.setEmployee(emp);
 		}
+		req.setId(id);
 		leaveManager.merge(req);
 		res.getData().put("leaveRequest", req);
 		return Response.ok().entity(res).build();
 	}
 	
 	@GET
-	@Consumes("application/json")
+	@Path("/type/{type}")
 	@Produces("application/json")
 	// Gets a list of all requests
-	public Response getByType(LeaveRequest req) {
+	public Response getByType(@PathParam("type") String type) {
 		final APIResponse res = new APIResponse();
 		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
         }
-		System.out.print(req.getType().toString());
-		List<LeaveRequest> projects = leaveManager.findByType(req.getType().toString());
+		List<LeaveRequest> projects = leaveManager.findByType(type);
 		if (projects == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("Leave Reuest", null));
 			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
 		}
-		res.getData().put("leaveRequest", projects);
+		res.getData().put("leaveRequests", projects);
 		return Response.ok().entity(res).build();
 	}
 
@@ -177,12 +176,12 @@ public class LeaveRequestService {
 		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
         }
-		List<LeaveRequest> projects = leaveManager.findByEmp(projectId);
-		if (projects == null) {
+		List<LeaveRequest> leaveRequests = leaveManager.findByEmp(projectId);
+		if (leaveRequests == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("Leave Reuest", null));
 			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
 		}
-		res.getData().put("leaveRequest", projects);
+		res.getData().put("leaveRequests", leaveRequests);
 		return Response.ok().entity(res).build();
 	}
 }
