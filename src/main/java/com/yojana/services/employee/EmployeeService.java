@@ -18,8 +18,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.yojana.access.EmployeeManager;
+import com.yojana.access.PayGradeManager;
 import com.yojana.access.TimesheetManager;
 import com.yojana.model.employee.Employee;
+import com.yojana.model.employee.PayGrade;
 import com.yojana.model.timesheet.Timesheet;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
@@ -41,6 +43,9 @@ public class EmployeeService {
     
     @Inject
     private TimesheetManager timesheetManager;
+    
+    @Inject
+    private PayGradeManager payGradeManager;
     
     @GET
     @Path("/{id}")
@@ -72,6 +77,15 @@ public class EmployeeService {
 		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
         }
+		PayGrade payGrade = payGradeManager.find(employee.getLabourGradeId());
+		employee.setLabourGrade(payGrade);
+		Employee currUser = employeeManager.find(authEmployee.getId());
+		employee.setCreatorId(currUser.getId());
+        employee.setCreator(currUser);
+        Employee manager = employeeManager.find(employee.getManagerId());
+        employee.setManager(manager);
+        Employee timeSheetApprover = employeeManager.find(employee.getTimesheetApproverId());
+        employee.setTimesheetApprover(timeSheetApprover);
 		employeeManager.persist(employee);
 		res.getData().put("id", employee.getId());
 		return Response
@@ -88,14 +102,21 @@ public class EmployeeService {
 	// Updates an existing employee
 	public Response merge(Employee employee, @PathParam("id") int empId) {
 	    APIResponse res = new APIResponse();
-	    System.out.println("!!!!!" + empId + " " + authEmployee.getId() + " !!!!!");
+	    System.out.println(employee);
 	    if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && authEmployee.getId() != empId && !authEmployee.isHr()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
         }
 		final Employee emp = employeeManager.find(empId);
-		if (employee.getFullName() != null) {
-			emp.setFullName(employee.getFullName());
-		}
+		emp.setFullName(employee.getFullName());
+        emp.setLabourGrade(payGradeManager.find(employee.getLabourGradeId()));
+        emp.setLabourGradeId(employee.getLabourGradeId());
+        emp.setManagerId(employee.getManagerId());
+        emp.setManager(employeeManager.find(employee.getManagerId()));
+        emp.setTimesheetApproverId(employee.getTimesheetApproverId());
+        emp.setTimesheetApprover(employeeManager.find(employee.getTimesheetApproverId()));
+        emp.setHr(employee.isHr());
+        emp.setAdmin(employee.isAdmin());
+        emp.setProjectManager(employee.isProjectManager());
 		employeeManager.merge(emp);
 		return Response.ok().entity(new APIResponse()).build();
 	}
@@ -103,7 +124,6 @@ public class EmployeeService {
 	@DELETE
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
 	// Deletes an existing employee
 	public Response remove(@PathParam("id") int empId) {
 	    APIResponse res = new APIResponse();
