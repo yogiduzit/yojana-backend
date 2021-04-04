@@ -43,6 +43,16 @@ public class EmployeeService {
     private TimesheetManager timesheetManager;
     
     @GET
+    @Path("/get/currentUser")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findCurrentUser() {
+    	APIResponse res = new APIResponse();
+    	Employee currentEmployee = employeeManager.find(authEmployee.getId());
+    	res.getData().put("employee", currentEmployee);
+    	return Response.ok().entity(res).build();
+    }
+    
+    @GET
     @Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	// Finds an employee
