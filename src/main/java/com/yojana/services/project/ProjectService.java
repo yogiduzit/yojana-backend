@@ -82,21 +82,24 @@ public class ProjectService {
 	}
 	
 	@GET
-	@Produces("application/json")
-	// Gets a list of all timesheets
-	public Response getAll() {
-		final APIResponse res = new APIResponse();
-		if(!authEmployee.isAdmin()) {
-            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+    @Produces("application/json")
+    // Gets a list of all timesheets
+    public Response getAll() {
+        final APIResponse res = new APIResponse();
+        List<Project> projects;
+        if(authEmployee.isAdmin() || authEmployee.isProjectManager()) {
+            projects = projectManager.getAll();
+        } else {
+            projects = projectManager.getAllForEmployee(authEmployee.getId());
         }
-		List<Project> projects = projectManager.getAll();
-		if (projects == null) {
-			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("project", null));
-			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
-		}
-		res.getData().put("projects", projects);
-		return Response.ok().entity(res).build();
-	}
+        
+        if (projects == null) {
+            res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("project", null));
+            return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+        }
+        res.getData().put("projects", projects);
+        return Response.ok().entity(res).build();
+    }
 
 	@GET
     @Path("/{id}")
