@@ -1,6 +1,3 @@
-///**
-// *
-// */
 //package com.yojana.test.credential;
 //
 //import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,6 +9,7 @@
 //import javax.ws.rs.client.ClientBuilder;
 //import javax.ws.rs.client.Entity;
 //import javax.ws.rs.core.Response;
+//
 //
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.AfterAll;
@@ -54,12 +52,85 @@
 //		client.close();
 //	}
 //
+
+ @Test
+    @Order(1)
+    public void testAddEmployee() throws Exception {
+        Credential credential = new Credential();
+
+	//http://localhost:8080/yojana-backend/api/credentials = API_URL
+        System.out.println("*** Create credential ***");
+        Response response = client.target(API_URL) 
+                .request()
+                .get(); //GET all Credentials
+
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        location = response.getLocation().toString();
+        System.out.println("Location: " + location);
+
+        response.close();
+
+        System.out.println("*** GET Created Credential **");
+        APIResponse newEmpResponse = client.target(location)
+                .request()
+                .get(APIResponse.class);
+	
+	//POJO Credential
+        testCredential = mapper.convertValue(newEmpResponse.getData().get("credential"), new TypeReference<Credential>() { });
+        System.out.println(testCredential.toString());
+    }
+	
+	//Please note comment (a) below
+	@Test
+	@Order(2)
+	public void testEditEmployee() throws Exception {
+		testEmployee.setFullName("Twouge Mcfargis");
+		// 8080/yojana-backend/api/employee/empID
+		System.out.println("Location: " + Constants.EMPLOYEE_URL + "/" + testEmployee.getId());
+		client.target(Constants.EMPLOYEE_URL + "/" + testEmployee.getId())
+				.request()
+				.header("Authorization", "Bearer " + Constants.API_TEST_KEY)
+				.method("PATCH",Entity.json(testEmployee));
+
+
+		System.out.println(testEmployee);
+		System.out.println("**** After Update ***");
+		APIResponse getEmpResponse = client.target(location).request().get(APIResponse.class);
+
+		Employee employee = mapper.convertValue(getEmpResponse.getData().get("employee"), new TypeReference<Employee>() { });
+		assertEquals(employee.getFullName(), testEmployee.getFullName());
+	}
+
+	@Test
+	@Order(3)
+	public void testRemoveEmployee() throws Exception {
+		System.out.println("*** Delete a Supplier ***");
+		System.out.println(location);
+		client.target(location).request().delete();
+
+		assertThrows(NotFoundException.class, () -> {
+			client.target(location).request()
+			.header("Authorization", "Bearer " + Constants.API_TEST_KEY)
+			.get(APIResponse.class);
+		});
+
+	}
+
+//--------------------------------------
+//	Nost used ones belwo
+//		(a) For test 2, please inquire about PATCH vs PUT
+//			- Also, Employee or Credential ?
+//-------------------------------------------
+//	Test 1
 //	@Test
 //	@Order(1)
 //	public void testAddEmployee() throws Exception {
+	//made a local employee
 //		Employee employee = new Employee();
 //		employee.setFullName("Douge Mcfargis");
 //
+//      //POST local employee
 //		System.out.println("*** Create Employee ***");
 //		Response response = client.target(Constants.EMPLOYEE_URL)
 //				.request() 
@@ -78,31 +149,36 @@
 //				.request()
 //				.header("Authorization", "Bearer " + Constants.API_TEST_KEY)
 //				.get(APIResponse.class);
-//		
+//		//Employee POJO
 //		testEmployee = mapper.convertValue(newEmpResponse.getData().get("employee"), new TypeReference<Employee>() { });
 //		System.out.println(testEmployee.toString());
 //		assertEquals(employee.getFullName(), testEmployee.getFullName());
 //	}
 //
+
+//	Test 2
 //	@Test
 //	@Order(2)
 //	public void testEditEmployee() throws Exception {
 //		testEmployee.setFullName("Twouge Mcfargis");
-//		System.out.println("Location: " + Constants.EMPLOYEE_URL + "/" + testEmployee.getId());
-//		client.target(Constants.EMPLOYEE_URL + "/" + testEmployee.getId())
+		//http://localhost:8080/yojana-backend/api/credentials = API_URL
+//		System.out.println("Location: " + API_URL);
+//		Response response = client.target(API_URL)
 //				.request()
 //				.header("Authorization", "Bearer " + Constants.API_TEST_KEY)
-//				.method("PATCH",Entity.json(testEmployee));
+//				.put(Entity.json(testEmployee));
 //
+//		assertEquals(200, response.getStatus());
 //
 //		System.out.println(testEmployee);
 //		System.out.println("**** After Update ***");
 //		APIResponse getEmpResponse = client.target(location).request().get(APIResponse.class);
 //
-//		Employee employee = mapper.convertValue(getEmpResponse.getData().get("employee"), new TypeReference<Employee>() { });
+//		Employee employee = (Employee) getEmpResponse.getData().get("employee");
+//
 //		assertEquals(employee.getFullName(), testEmployee.getFullName());
 //	}
-//
+
 //	@Test
 //	@Order(3)
 //	public void testRemoveEmployee() throws Exception {
@@ -111,7 +187,9 @@
 //		client.target(location).request().delete();
 //
 //		assertThrows(NotFoundException.class, () -> {
-//			client.target(location).request().header("Authorization", "Bearer " + Constants.API_TEST_KEY).get(APIResponse.class);
+//			client.target(location).request()
+			.header("Authorization", "Bearer " + Constants.API_TEST_KEY)
+			.get(APIResponse.class);
 //		});
 //
 //	}
