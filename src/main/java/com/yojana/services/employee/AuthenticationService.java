@@ -12,8 +12,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.yojana.access.CredentialManager;
+import com.yojana.access.EmployeeManager;
 import com.yojana.helpers.JWTHelper;
+import com.yojana.helpers.RoleHelper;
 import com.yojana.model.employee.Credential;
+import com.yojana.model.employee.Employee;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessage;
 
@@ -23,6 +26,9 @@ public class AuthenticationService {
     @Inject
     private CredentialManager credManager;
 
+    @Inject
+    private EmployeeManager empManager;
+    
     // Helper for password encryption
     private JWTHelper passwordHelper;
 
@@ -38,10 +44,11 @@ public class AuthenticationService {
     public Response authenticateUser(Credential auth) {
     	APIResponse res = new APIResponse();
         try {
-            authenticate(auth.getUsername(), auth.getPassword());
+            Employee authEmp = authenticate(auth.getUsername(), auth.getPassword());
 
             final String token = passwordHelper.encrypt(auth.getUsername());
             res.getData().put("token", token);
+            res.getData().put("roles", RoleHelper.getRolesForEmployee(authEmp));
             return Response.ok().entity(res).build();
         } catch (final AuthenticationException e) {
         	res.getErrors().add(new ErrorMessage(Response.Status.UNAUTHORIZED.getStatusCode(), "Unable to authenticate user", null));
@@ -51,7 +58,7 @@ public class AuthenticationService {
 
     // Helper for authentication
     // TODO: Implement JWT
-    private void authenticate(String username, String password) throws AuthenticationException {
+    private Employee authenticate(String username, String password) throws AuthenticationException {
         final Credential stored = credManager.find(username);
         if (stored == null) {
             throw new AuthenticationException("Cannot find user with the provided username");
@@ -59,5 +66,6 @@ public class AuthenticationService {
         if (!(password.contentEquals(stored.getPassword()))) {
             throw new AuthenticationException("Invalid password ! Please try again");
         }
+        return empManager.findByUsername(username);
     }
 }
