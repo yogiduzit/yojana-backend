@@ -81,7 +81,7 @@ import com.yojana.test.Constants;
              System.out.println((i+1) + ". Pay Grade:" + paygrades.get(i).getChargeRate());
              System.out.println(" ----------------------- ");
          }
-         assertNotEquals(paygrades.size(), 0);
+         assertNotEquals(paygrades.size(), 0); //check if not empty
      }
      
      /**GET PayGrades by LabourGrade. 
