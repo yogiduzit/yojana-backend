@@ -24,6 +24,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,7 +66,7 @@ import com.yojana.test.Constants;
          client.close();
      }
 
-     
+     /**GET all PayGrades. */
      @Test
      @Order(1)
      public void testGetPaygrades() throws Exception {
@@ -74,21 +76,33 @@ import com.yojana.test.Constants;
         		 .header("Authorization", "Bearer " + Constants.API_TEST_KEY)
         		 .get(APIResponse.class);
          List<PayGrade> paygrades = mapper.convertValue(response.getData().get("paygrades"), new TypeReference<List<PayGrade>>() { });
-         System.out.println(paygrades.get(0).getChargeRate());
-         assertNotEquals(paygrades.size(), 0);
+         for(int i = 0; i < paygrades.size(); i++) {
+             System.out.println((i+1) + ". Labour Grade: " + paygrades.get(i).getLabourGrade());
+             System.out.println((i+1) + ". Pay Grade:" + paygrades.get(i).getChargeRate());
+             System.out.println(" ----------------------- ");
+         }
+         assertNotEquals(paygrades.size(), 0); //check if not empty
      }
      
-     @Test
-     @Order(2)
-     public void testGetPaygrade() throws Exception {
-         String location = Constants.PAYGRADE_URL + "/PS";
-         System.out.println("location: " + location);
-         assertDoesNotThrow(() -> {
-             APIResponse response = client.target(location)
-                     .request()
-                     .header("Authorization", "Bearer " + Constants.API_TEST_KEY)
-                     .get(APIResponse.class);
-         });
-     }
-     
+     /**GET PayGrades by LabourGrade. 
+      * @param laboutGrade is the Labour Grade. (Primary Key)
+      * ParameterizedTest annotation runs test with parameters.
+      * 
+      * ValueSource is the exact string value itself that is the parameter.
+      * In this case, "PS" is a parameter going into the test method
+      * To add more parameters follow this format: @ ValueSource(strings = {"", "  "})
+      */
+       @ParameterizedTest
+       @ValueSource(strings = {"PS"} )
+       @Order(2)
+       public void testGetPaygrade(String labourGrade) throws Exception {
+           String location = Constants.PAYGRADE_URL + "/" + labourGrade;
+           System.out.println("location: " + location);
+           assertDoesNotThrow(() -> {
+               APIResponse response = client.target(location)
+                       .request()
+                       .header("Authorization", "Bearer " + Constants.API_TEST_KEY)
+                       .get(APIResponse.class);
+           });
+       }
  }
