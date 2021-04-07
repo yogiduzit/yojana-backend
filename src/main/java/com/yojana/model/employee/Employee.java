@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yojana.model.auditable.Audit;
 import com.yojana.model.auditable.AuditListener;
 import com.yojana.model.auditable.Auditable;
+import com.yojana.model.project.Project;
 import com.yojana.model.project.WorkPackage;
 
 /**
@@ -138,6 +139,10 @@ public class Employee implements Auditable, Serializable {
      */
     @Column(name = "IsProjectManager")
     private boolean isProjectManager;
+    
+    @ManyToMany(mappedBy = "employees", fetch = FetchType.LAZY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Set<Project> projects;
 //  
 //    @Lob
 //    @Basic(fetch = FetchType.LAZY)
@@ -362,7 +367,15 @@ public class Employee implements Auditable, Serializable {
         return isProjectManager;
     }
 
-    /**
+    public Set<Project> getProjects() {
+		return projects;
+	}
+
+	public void setProjects(Set<Project> projects) {
+		this.projects = projects;
+	}
+
+	/**
      * @param isProjectManager the isProjectManager to set
      */
     public void setProjectManager(boolean isProjectManager) {

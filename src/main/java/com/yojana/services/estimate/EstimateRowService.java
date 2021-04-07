@@ -37,13 +37,14 @@ public class EstimateRowService {
     @Inject
     private EstimateRowManager estimateRowManager;
     
+    @Path("/{id}/rows")
     @POST
     @Produces("application/json")
     @Consumes("application/json")
-    public Response persist(EstimateRow estimateRow) {
+    public Response persist(@PathParam("id") UUID id, EstimateRow estimateRow) {
         APIResponse res = new APIResponse();
-        Estimate estimate = estimateManager.find(estimateRow.getEstimateRowPk().getEstimateId());
-        PayGrade payGrade = payGradeManager.find(estimateRow.getEstimateRowPk().getPayGradeId());
+        Estimate estimate = estimateManager.find(id);
+        PayGrade payGrade = payGradeManager.find(estimateRow.getPaygradeId());
         if (estimate == null) {
             ErrorMessageBuilder.notFound("estimate", null);
             return Response.status(Response.Status.NOT_FOUND).entity(res).build();
@@ -56,16 +57,18 @@ public class EstimateRowService {
         estimateRow.setPayGrade(payGrade);
         estimateRowManager.persist(estimateRow);
         return Response.created(URI.create("/estimateRows/" + estimateRow.getEstimateRowPk().getEstimateId()
-        + "/" + estimateRow.getEstimateRowPk().getPayGradeId())).entity(res).build();
+        + "/" + estimateRow.getEstimateRowPk().getIndex())).entity(res).build();
     }
     
     @PATCH
+    @Path("/{id}/rows/{index}")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response merge(EstimateRow estimateRow) {
+    public Response merge(@PathParam("id") UUID id, @PathParam("index") int index,
+    		EstimateRow estimateRow) {
         APIResponse res = new APIResponse();
-        Estimate estimate = estimateManager.find(estimateRow.getEstimateRowPk().getEstimateId());
-        PayGrade payGrade = payGradeManager.find(estimateRow.getEstimateRowPk().getPayGradeId());
+        Estimate estimate = estimateManager.find(id);
+        PayGrade payGrade = payGradeManager.find(estimateRow.getPaygradeId());
         if (estimate == null) {
             ErrorMessageBuilder.notFound("estimate", null);
             return Response.status(Response.Status.NOT_FOUND).entity(res).build();
@@ -76,26 +79,26 @@ public class EstimateRowService {
         }
         estimateRow.setEstimate(estimate);
         estimateRow.setPayGrade(payGrade);
-        estimateRowManager.persist(estimateRow);
+        estimateRowManager.merge(estimateRow);
         return Response.created(URI.create("/estimateRows/" + estimateRow.getEstimateRowPk().getEstimateId()
-        + "/" + estimateRow.getEstimateRowPk().getPayGradeId())).entity(res).build();
+        + "/" + estimateRow.getEstimateRowPk().getIndex())).entity(res).build();
     }
     
     @DELETE
-    @Path("/{estimateId}/payGrades/{payGradeId}")
+    @Path("/{id}/rows/{index}")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response remove(@PathParam("estimateId") UUID estimateId,
-            @PathParam("payGradeId") String payGradeId) {
+    public Response remove(@PathParam("id") UUID estimateId,
+            @PathParam("index") int index) {
         APIResponse res = new APIResponse();
-        estimateRowManager.remove(new EstimateRowPK(estimateId, payGradeId));
+        estimateRowManager.remove(new EstimateRowPK(estimateId, index));
         return Response.ok().entity(res).build();
     }
     
     @GET
-    @Path("/{estimateId}/rows")
+    @Path("/{id}/rows")
     @Produces("application/json")
-    public Response getAllForEstimate(@PathParam("estimateId") UUID estimateId) {
+    public Response getAllForEstimate(@PathParam("id") UUID estimateId) {
         List<EstimateRow> estimateRows = estimateRowManager.getAllForEstimate(estimateId);
         APIResponse res = new APIResponse();
         if (estimateRows == null) {
@@ -107,16 +110,16 @@ public class EstimateRowService {
     }
     
     @GET
-    @Path("/{estimateId}/payGrades/{payGradeId}")
+    @Path("/{id}/rows/{index}")
     @Produces("application/json")
-    public Response find(@PathParam("estimateId") UUID estimateId,
-            @PathParam("payGradeId") String payGradeId) {
+    public Response find(@PathParam("id") UUID estimateId,
+            @PathParam("index") int index) {
         APIResponse res = new APIResponse();
-        EstimateRow estimateRow = estimateRowManager.find(new EstimateRowPK(estimateId, payGradeId));
+        EstimateRow estimateRow = estimateRowManager.find(new EstimateRowPK(estimateId, index));
         if (estimateRow == null) {
             res.getErrors().add(
                     ErrorMessageBuilder.notFoundSingle(
-                            "estimate row", estimateId.toString() + " " + payGradeId, null));
+                            "estimate row", estimateId.toString() + " " + index, null));
             return Response.status(Response.Status.NOT_FOUND).entity(res).build();
         }
         res.getData().put("estimateRow", estimateRow);
