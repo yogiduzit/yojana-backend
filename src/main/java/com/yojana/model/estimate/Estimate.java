@@ -1,6 +1,8 @@
 package com.yojana.model.estimate;
 
 import java.io.Serializable;
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
@@ -72,6 +74,12 @@ public class Estimate implements Auditable, Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "Type", columnDefinition = "enum")
     private EstimateType type;
+    
+//    @Column(name = "CreatedAt", insertable = false, updatable = false)
+//    private Timestamp createdAt;
+//    
+//    @Column(name = "UpdatedAt", insertable = false, updatable = false)
+//    private Timestamp updatedAt;
     
     @OneToMany(mappedBy = "estimate", fetch = FetchType.EAGER)
     private Set<EstimateRow> rows;
@@ -147,4 +155,25 @@ public class Estimate implements Auditable, Serializable {
 	public void setRows(Set<EstimateRow> rows) {
 		this.rows = rows;
 	}
+
+//	public Timestamp getCreatedAt() {
+//		return createdAt;
+//	}
+//
+//	public void setCreatedAt(Timestamp createdAt) {
+//		this.createdAt = createdAt;
+//	}
+//
+//	public Timestamp getUpdatedAt() {
+//		return updatedAt;
+//	}
+//
+//	public void setUpdatedAt(Timestamp updatedAt) {
+//		this.updatedAt = updatedAt;
+//	}
+
+	
+
+	
+	
 }
