@@ -6,11 +6,14 @@ import java.util.UUID;
 
 import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.PathParam;
 import javax.persistence.EntityManager;
 
+import com.yojana.model.project.WorkPackage;
+import com.yojana.model.project.WorkPackagePK;
 import com.yojana.model.timesheet.Timesheet;
 
 @Dependent
@@ -23,6 +26,9 @@ public class TimesheetManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@PersistenceContext(unitName="comp4911-pms-rest-jpa") EntityManager em;
+
+	@Inject
+	private WorkPackageManager wpManager;
 
 	
 	public TimesheetManager() {}
@@ -59,4 +65,12 @@ public class TimesheetManager implements Serializable {
 		query.setParameter("empId", empId);
         return query.getResultList();
     }
+	
+	/** get all timesheets. */
+	public List<Timesheet> getTimesheetsForWorkPackage(WorkPackagePK key) {
+		WorkPackage wp = wpManager.find(key);
+		int empID = wp.getResponsibleEngineer().getId();
+		return getAllForEmployee(UUID.fromString(String.valueOf(empID)));
+	}
+
 }

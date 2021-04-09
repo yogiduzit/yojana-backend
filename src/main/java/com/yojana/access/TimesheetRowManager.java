@@ -11,6 +11,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import com.yojana.model.project.WorkPackagePK;
 import com.yojana.model.timesheet.TimesheetRow;
 import com.yojana.model.timesheet.TimesheetRowPK;
 
@@ -24,6 +25,7 @@ public class TimesheetRowManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@PersistenceContext(unitName="comp4911-pms-rest-jpa") EntityManager em;
+	
 	
 	public TimesheetRowManager() {}
 	
@@ -58,6 +60,14 @@ public class TimesheetRowManager implements Serializable {
 	public List<TimesheetRow> getAllForTimesheet(UUID timesheetId) {
 	    TypedQuery<TimesheetRow> query = em.createQuery("select t from TimesheetRow t where t.timesheetId = :timesheetId", TimesheetRow.class);
         query.setParameter("timesheetId", timesheetId);
+        return query.getResultList();
+	}
+	
+	public List<TimesheetRow> getAllForWorkPackage(WorkPackagePK key) {
+//	    TypedQuery<TimesheetRow> query = em.createQuery("select t from TimesheetRow t where t.workPackageId = :workpackageID and t.projectId = :projectID", TimesheetRow.class);
+	    TypedQuery<TimesheetRow> query = em.createQuery("select t from TimesheetRow t where t.projectId = :projectID", TimesheetRow.class);
+//		query.setParameter("workpackageID", key.getId());
+        query.setParameter("projectID",key.getProjectID());
         return query.getResultList();
 	}
 }
