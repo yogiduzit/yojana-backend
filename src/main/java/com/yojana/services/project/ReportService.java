@@ -9,15 +9,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import com.yojana.access.ProjectManager;
-import com.yojana.access.TimesheetManager;
 import com.yojana.access.TimesheetRowManager;
 import com.yojana.access.WorkPackageManager;
 import com.yojana.model.project.EarnedValueReport;
 import com.yojana.model.project.Project;
 import com.yojana.model.project.WeeklyStatusReport;
 import com.yojana.model.project.WorkPackage;
-import com.yojana.model.project.WorkPackagePK;
-import com.yojana.model.timesheet.Timesheet;
 import com.yojana.model.timesheet.TimesheetRow;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
@@ -32,9 +29,6 @@ public class ReportService {
 	
 	@Inject
 	private ProjectManager projectManager;
-	
-	@Inject
-	private TimesheetManager timesheetManager;
 	
 	@Inject
 	private TimesheetRowManager timesheetrowManager;
@@ -77,13 +71,6 @@ public class ReportService {
 		report.setProjectId(project.getId());
         List<WorkPackage> data = wpManager.getAll(projectId); 
         report.setData(data);
-//        List<List<Timesheet>> timesheets = new ArrayList<List<Timesheet>>();
-//        for (int i = 0; i < data.size(); i++) {
-//        	List<Timesheet> k = timesheetManager.getTimesheetsForWorkPackage(data.get(i).getWorkPackagePk());
-//        	timesheets.add(k);
-//        }
-//        report.setTimesheets(timesheets);
-        
       List<List<TimesheetRow>> timesheetrows = new ArrayList<List<TimesheetRow>>();
       for (int i = 0; i < data.size(); i++) {
       	List<TimesheetRow> k = timesheetrowManager.getAllForWorkPackage(data.get(i).getWorkPackagePk());

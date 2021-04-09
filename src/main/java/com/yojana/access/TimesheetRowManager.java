@@ -64,9 +64,7 @@ public class TimesheetRowManager implements Serializable {
 	}
 	
 	public List<TimesheetRow> getAllForWorkPackage(WorkPackagePK key) {
-//	    TypedQuery<TimesheetRow> query = em.createQuery("select t from TimesheetRow t where t.workPackageId = :workpackageID and t.projectId = :projectID", TimesheetRow.class);
 	    TypedQuery<TimesheetRow> query = em.createQuery("select t from TimesheetRow t where t.projectId = :projectID", TimesheetRow.class);
-//		query.setParameter("workpackageID", key.getId());
         query.setParameter("projectID",key.getProjectID());
         return query.getResultList();
 	}
