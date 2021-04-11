@@ -48,7 +48,7 @@ public class ProjectManager implements Serializable {
     }
 	
 	public List<Project> getAll() {       
-		TypedQuery<Project> query = em.createQuery("select p from Project p",
+		TypedQuery<Project> query = em.createQuery("SELECT p FROM Project p",
                 Project.class); 
         List<Project> projects = query.getResultList();
         return projects;

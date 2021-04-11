@@ -17,63 +17,62 @@ public class EstimateRowPK implements Serializable {
     @Type(type="uuid-char")
     private UUID estimateId;
     
-    @Column(name = "PayGradeID", insertable = false, updatable = false)
-    private String payGradeId;
-
-    public UUID getEstimateId() {
-        return estimateId;
-    }
-
-    public void setEstimateId(UUID estimateId) {
-        this.estimateId = estimateId;
-    }
-
-    public String getPayGradeId() {
-        return payGradeId;
-    }
-
-    public void setPayGradeId(String payGradeId) {
-        this.payGradeId = payGradeId;
-    }
-    
-    public EstimateRowPK() {
-        
-    }
-    
-    public EstimateRowPK(UUID estimateId, String payGradeId) {
-        this.estimateId = estimateId;
-        this.payGradeId = payGradeId;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((estimateId == null) ? 0 : estimateId.hashCode());
-        result = prime * result + ((payGradeId == null) ? 0 : payGradeId.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (obj instanceof EstimateRowPK) {
-            EstimateRowPK temp = (EstimateRowPK) obj;
-            if (!temp.getEstimateId().equals(this.getEstimateId())) {
-                return false;
-            }
-            if (!temp.getPayGradeId().equals(this.getPayGradeId())) {
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
+    @Column(name = "RowIndex")
+    private int index;
     
     
-    
-    
+
+	public EstimateRowPK() {
+		super();
+	}
+
+	public EstimateRowPK(UUID estimateId, int index) {
+		super();
+		this.estimateId = estimateId;
+		this.index = index;
+	}
+
+	public UUID getEstimateId() {
+		return estimateId;
+	}
+
+	public void setEstimateId(UUID estimateId) {
+		this.estimateId = estimateId;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((estimateId == null) ? 0 : estimateId.hashCode());
+		result = prime * result + index;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EstimateRowPK other = (EstimateRowPK) obj;
+		if (estimateId == null) {
+			if (other.estimateId != null)
+				return false;
+		} else if (!estimateId.equals(other.estimateId))
+			return false;
+		if (index != other.index)
+			return false;
+		return true;
+	}    
 }

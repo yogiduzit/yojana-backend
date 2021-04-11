@@ -9,11 +9,15 @@ import java.lang.annotation.Target;
 
 import javax.ws.rs.NameBinding;
 
+import com.yojana.security.Role;
+
 @NameBinding
 @Retention(RUNTIME)
-@Target({TYPE, METHOD})
+@Target({ TYPE, METHOD })
 /**
  * @author yogeshverma
  *
  */
-public @interface Secured {}
+public @interface Secured {
+	Role[] value() default {};
+}

@@ -81,6 +81,8 @@ public class EstimateManager implements Serializable{
                 + " e.workPackageId = :workPackageId"
                 + " and e.projectId = :projectId",
                 Estimate.class); 
+        query.setParameter("workPackageId", workPackageId);
+        query.setParameter("projectId", projectId);
         List<Estimate> estimates = query.getResultList();
         return estimates;
     }

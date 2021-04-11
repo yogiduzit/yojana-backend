@@ -1,6 +1,7 @@
 package com.yojana.services.project;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -15,12 +16,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.hibernate.Hibernate;
+
 import com.yojana.access.EmployeeManager;
+import com.yojana.access.EstimateManager;
 import com.yojana.access.ProjectManager;
 import com.yojana.access.WorkPackageManager;
 import com.yojana.helpers.ProjectHelper;
 import com.yojana.helpers.WorkPackageHelper;
 import com.yojana.model.employee.Employee;
+import com.yojana.model.estimate.Estimate;
 import com.yojana.model.project.Project;
 import com.yojana.model.project.WorkPackage;
 import com.yojana.model.project.WorkPackagePK;
@@ -36,6 +41,9 @@ public class ProjectService {
 	@Inject
 	// Provides access to the employee table
 	private EmployeeManager employeeManager;
+	
+	@Inject
+	private EstimateManager estimateManager;
 	
 	@Inject
 	// Provides access to the project table
@@ -122,55 +130,6 @@ public class ProjectService {
         return Response.ok().entity(res).build();
 	}
 	
-	@POST
-	@Path("/{id}/workPackages")
-	@Consumes("application/json")
-	@Produces("application/json")
-	public Response addWP(@PathParam("id") String projectId, WorkPackage wp) {
-		APIResponse res = new APIResponse();
-		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
-            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
-        }
-		Project project = projectManager.find(projectId);
-		wp.setProject(project);
-		
-		wpManager.persist(wp);
-		res.getData().put("id", wp.getWorkPackagePk().getId());
-		return Response.created(URI.create("/projects/" + projectId + "/workPackages/" + wp.getWorkPackagePk()
-			.getId()))
-			.entity(res)
-			.build();
-	}
-	
-	@PATCH
-	@Path("/{id}/workPackages/{wpId}")
-	@Consumes("application/json")
-	@Produces("application/json")
-	public Response modifyWP(@PathParam("id") String projectId,
-			@PathParam("wpId") String wpId,
-			WorkPackage wp) {
-		APIResponse res = new APIResponse();
-		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
-            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
-        }
-		WorkPackage old = wpManager.find(new WorkPackagePK(wpId, projectId));
-		if (old == null) {
-			res.getErrors().add(ErrorMessageBuilder.notFoundSingle("workPackage",
-					wpId,
-					null
-					));
-			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
-		}
-		WorkPackageHelper.patchWorkPackage(wp, old);
-		Project project = projectManager.find(projectId);
-		old.setProject(project);
-		
-		wpManager.merge(old);
-		return Response.ok()
-			.entity(res)
-			.build();
-	}
-	
 	@GET
 	@Path("/{id}/workPackages")
 	@Produces("application/json")
@@ -197,20 +156,21 @@ public class ProjectService {
 		res.getData().put("workPackages", wps);
 		return Response.ok().entity(res).build();
 	}
-	
-	@GET
-	@Path("/{id}/workPackages/{wpId}")
-	@Produces("application/json")
-	public Response getWorkPackage(
-			@PathParam("id") String projectId, 
-			@PathParam("wpId") String wpId
-	) {
-		APIResponse res = new APIResponse();
-		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
-            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
+    
+    @GET
+    @Path("/projects/{projectId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllForProject(@PathParam("projectId") String projectId) {
+        final APIResponse res = new APIResponse();
+        List<Estimate> estimates = estimateManager.getAllForProject(projectId);
+        if (estimates == null) {
+            res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("estimate", null));
+            return Response.status(Response.Status.NOT_FOUND).entity(res).build();
         }
-		WorkPackage wp = wpManager.find(new WorkPackagePK(wpId, projectId));
-		res.getData().put("workPackage", wp);
-		return Response.ok().entity(res).build();
-	}
+        res.getData().put("estimates", estimates);
+        return Response.ok().entity(res).build();
+    }
+    
+    
+    
 }
