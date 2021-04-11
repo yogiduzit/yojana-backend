@@ -22,42 +22,60 @@ public class TimesheetRowManager implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	@PersistenceContext(unitName="comp4911-pms-rest-jpa") EntityManager em;
-	
-	public TimesheetRowManager() {}
-	
+
+	@PersistenceContext(unitName = "comp4911-pms-rest-jpa")
+	EntityManager em;
+
+	public TimesheetRowManager() {
+	}
+
 	/** find a timesheetrow with id. */
 	public TimesheetRow find(UUID timesheetId, int index) {
-        return em.find(TimesheetRow.class, new TimesheetRowPK(timesheetId, index));
-    }
-	
+		return em.find(TimesheetRow.class, new TimesheetRowPK(timesheetId, index));
+	}
+
 	/** add a timesheetrow. */
 	public void persist(TimesheetRow timesheetrow) {
-		Query query = em.createNativeQuery("INSERT INTO TimesheetRow (Notes, Hours, ProjectID, TimesheetID, WorkPackageID, RowIndex) VALUES (?,?,?,?,?,?)");
+		Query query = em.createNativeQuery(
+				"INSERT INTO TimesheetRow (Notes, Hours, ProjectID, TimesheetID, WorkPackageID, RowIndex) VALUES (?,?,?,?,?,?)");
 		query.setParameter(1, timesheetrow.getNotes());
 		query.setParameter(2, timesheetrow.getPackedHours());
 		query.setParameter(3, timesheetrow.getProjectId());
 		query.setParameter(4, timesheetrow.getTimesheetId().toString());
 		query.setParameter(5, timesheetrow.getWorkPackageId());
 		query.setParameter(6, timesheetrow.getIndex());
-        query.executeUpdate();
-    } 
-	
+		query.executeUpdate();
+	}
+
 	/** update a timesheetrow. */
 	public void merge(TimesheetRow timesheetrow) {
-        em.merge(timesheetrow);
-    }
-	
+		Query query = em.createNativeQuery(
+				"INSERT INTO TimesheetRow (Notes, Hours, ProjectID, TimesheetID, WorkPackageID, RowIndex)"
+						+ "VALUES (?, ?, ?, ?, ?, ?)"
+						+ "ON DUPLICATE KEY UPDATE Notes = ?, Hours = ?, ProjectID = ?, WorkPackageID = ?");
+		query.setParameter(1, timesheetrow.getNotes());
+		query.setParameter(2, timesheetrow.getPackedHours());
+		query.setParameter(3, timesheetrow.getProjectId());
+		query.setParameter(4, timesheetrow.getTimesheetId().toString());
+		query.setParameter(5, timesheetrow.getWorkPackageId());
+		query.setParameter(6, timesheetrow.getIndex());
+		query.setParameter(7, timesheetrow.getNotes());
+		query.setParameter(8, timesheetrow.getPackedHours());
+		query.setParameter(9, timesheetrow.getProjectId());
+		query.setParameter(10, timesheetrow.getWorkPackageId());
+		query.executeUpdate();
+	}
+
 	/** remove a timesheetrow. */
 	public void remove(TimesheetRow timesheetrow, UUID timesheetId, int rowIndex) {
-        timesheetrow = find(timesheetId, rowIndex); 
-        em.remove(timesheetrow);
-    }
-	
+		timesheetrow = find(timesheetId, rowIndex);
+		em.remove(timesheetrow);
+	}
+
 	public List<TimesheetRow> getAllForTimesheet(UUID timesheetId) {
-	    TypedQuery<TimesheetRow> query = em.createQuery("select t from TimesheetRow t where t.timesheetId = :timesheetId", TimesheetRow.class);
-        query.setParameter("timesheetId", timesheetId);
-        return query.getResultList();
+		TypedQuery<TimesheetRow> query = em
+				.createQuery("select t from TimesheetRow t where t.timesheetId = :timesheetId", TimesheetRow.class);
+		query.setParameter("timesheetId", timesheetId);
+		return query.getResultList();
 	}
 }

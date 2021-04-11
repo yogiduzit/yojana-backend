@@ -10,6 +10,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -32,24 +33,24 @@ import com.yojana.security.annotations.Secured;
 @Path("/timesheets")
 @Secured
 public class TimesheetService {
-	
+
 	@Inject
 	private ProjectManager projectManager;
 
 	@Inject
 	// Provides access to the employee table
 	private TimesheetManager timesheetManager;
-	
+
 	@Inject
 	private TimesheetRowManager timesheetRowManager;
-	
+
 	@Inject
 	private WorkPackageManager workPackageManager;
 
 	@Inject
 	// Provides access to the employee table
 	private EmployeeManager employeeManager;
-	
+
 	@Inject
 	@AuthenticatedEmployee
 	private Employee authEmployee;
@@ -63,7 +64,7 @@ public class TimesheetService {
 		APIResponse res = new APIResponse();
 		if (timesheet == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundSingle("timesheet", id.toString(), null));
-			 return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
 		}
 		res.getData().put("timesheet", timesheet);
 		return Response.ok().entity(res).build();
@@ -92,14 +93,15 @@ public class TimesheetService {
 	}
 
 	@PATCH
-	@Path("{id}")
+	@Path("/{id}")
 	@Consumes("application/json")
 	@Produces("application/json")
 	// Updates a existing timesheet
 	public Response merge(@PathParam("id") UUID id, Timesheet timesheet) {
 		APIResponse res = new APIResponse();
-		if (!id.equals(timesheet.getId())) { 
-			res.getErrors().add(ErrorMessageBuilder.badRequest("TimesheetID in route doesn't match timesheet id in body", null));
+		if (!id.equals(timesheet.getId())) {
+			res.getErrors().add(
+					ErrorMessageBuilder.badRequest("TimesheetID in route doesn't match timesheet id in body", null));
 			return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
 		}
 		final Timesheet old = timesheetManager.find(id);
@@ -137,42 +139,54 @@ public class TimesheetService {
 		res.getData().put("timesheets", timesheets);
 		return Response.ok().entity(res).build();
 	}
-	
+
 	@POST
 	@Path("/{id}/rows")
-    @Consumes("application/json")
+	@Consumes("application/json")
 	@Produces("application/json")
 	// Inserts a timesheetrow into the database
 	public Response addRow(@PathParam("id") UUID timesheetId, TimesheetRow row) {
 		final APIResponse res = new APIResponse();
-		
+
 		row.setTimesheetId(timesheetId);
-		row.setTimesheet(timesheetManager.find(timesheetId));		
+		row.setTimesheet(timesheetManager.find(timesheetId));
 		row.setProject(projectManager.find(row.getProjectId()));
-		row.setWorkPackage(workPackageManager.find(
-			new WorkPackagePK(row.getWorkPackageId(), row.getProjectId())
-		));
-		
+		row.setWorkPackage(workPackageManager.find(new WorkPackagePK(row.getWorkPackageId(), row.getProjectId())));
+
 		timesheetRowManager.persist(row);
-		return Response.created(URI.create("/timesheets/" + row.getTimesheetId() + "/rows/"
-			+ "project/" + row.getProjectId() + "/wp/" + row.getWorkPackageId()))
-				.entity(res)
-				.build();
+		return Response.created(URI.create("/timesheets/" + row.getTimesheetId() + "/rows/" + "project/"
+				+ row.getProjectId() + "/wp/" + row.getWorkPackageId())).entity(res).build();
 	}
-	
+
+	@PUT
+	@Path("/{id}/rows")
+	@Consumes("application/json")
+	@Produces("application/json")
+	// Updates a timesheetrow from the database
+	public Response updateRow(@PathParam("id") UUID timesheetId, TimesheetRow row) {
+		final APIResponse res = new APIResponse();
+
+		row.setProject(projectManager.find(row.getProjectId()));
+		row.setWorkPackage(workPackageManager.find(new WorkPackagePK(row.getWorkPackageId(), row.getProjectId())));
+
+		timesheetRowManager.merge(row);
+		return Response.created(URI.create("/timesheets/" + row.getTimesheetId() + "/rows/" + "project/"
+				+ row.getProjectId() + "/wp/" + row.getWorkPackageId())).entity(res).build();
+	}
+
 	@GET
-    @Path("/{id}/rows")
-    @Produces("application/json")
+	@Path("/{id}/rows")
+	@Produces("application/json")
 	// Gets a list of all timesheetrows for a timesheet
 	public Response getAllForTimesheet(@PathParam("id") UUID timesheetId) {
 		APIResponse res = new APIResponse();
-		List<TimesheetRow> timesheetRows = timesheetRowManager.getAllForTimesheet(timesheetId); 
-        if (timesheetRows == null) {
-            res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("timesheetRows", "No rows found for" + 
-            	"timesheet: " + timesheetId));
-             return Response.status(Response.Status.NOT_FOUND).entity(res).build();
-        }
-        res.getData().put("timesheetRows", timesheetRows);
-        return Response.ok().entity(res).build();
+		List<TimesheetRow> timesheetRows = timesheetRowManager.getAllForTimesheet(timesheetId);
+		if (timesheetRows == null) {
+			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("timesheetRows",
+					"No rows found for" + "timesheet: " + timesheetId));
+			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+		}
+		res.getData().put("timesheetRows", timesheetRows);
+		return Response.ok().entity(res).build();
 	}
 }
