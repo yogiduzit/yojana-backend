@@ -32,22 +32,11 @@ public class AuthenticationService {
     
     // Helper for password encryption
     private JWTHelper passwordHelper;
-    
-    @Inject
-    private CredentialManager credentialManager;
 
     // Provides authentication support
     public AuthenticationService() {
         passwordHelper = new JWTHelper();
     }
-    
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    public Response getAuthenticatedUser(Credential auth) {
-//    	APIResponse res = new APIResponse();
-//    	try 
-//    }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)

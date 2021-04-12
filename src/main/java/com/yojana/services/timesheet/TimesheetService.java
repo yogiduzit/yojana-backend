@@ -14,6 +14,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import com.yojana.access.EmployeeManager;
@@ -55,21 +56,6 @@ public class TimesheetService {
 	@Inject
 	@AuthenticatedEmployee
 	private Employee authEmployee;
-
-	@GET
-	@Path("/getall/submitted")
-	@Produces("application/json")
-	public Response getAllSubmittedTimesheets() {
-		APIResponse res = new APIResponse();
-		List<Timesheet> submittedTimesheets = timesheetManager.getAllSubmittedTimesheets();
-		if (submittedTimesheets == null) {
-			res.getErrors()
-					.add(ErrorMessageBuilder.notFoundMultiple("timesheet", "Could not get submitted timesheets"));
-			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
-		}
-		res.getData().put("submitted timesheets", submittedTimesheets);
-		return Response.ok().entity(res).build();
-	}
 
 	@GET
 	@Path("/{id}")
@@ -157,9 +143,14 @@ public class TimesheetService {
 	@GET
 	@Produces("application/json")
 	// Gets a list of all timesheets
-	public Response getAll() {
+	public Response getAll(@QueryParam("status") String status) {
 		final APIResponse res = new APIResponse();
-		List<Timesheet> timesheets = timesheetManager.getAll();
+		List<Timesheet> timesheets = null;
+		if (status != null && status.equals("submitted")) {
+			timesheets = timesheetManager.getAllSubmittedTimesheets();
+		} else {
+			timesheets = timesheetManager.getAll();
+		}
 		if (timesheets == null) {
 			res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("timesheet", null));
 			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
