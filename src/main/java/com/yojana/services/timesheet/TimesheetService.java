@@ -25,6 +25,7 @@ import com.yojana.model.employee.Employee;
 import com.yojana.model.project.WorkPackagePK;
 import com.yojana.model.timesheet.Timesheet;
 import com.yojana.model.timesheet.TimesheetRow;
+import com.yojana.model.timesheet.TimesheetStatus;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
 import com.yojana.security.annotations.AuthenticatedEmployee;
@@ -54,6 +55,21 @@ public class TimesheetService {
 	@Inject
 	@AuthenticatedEmployee
 	private Employee authEmployee;
+
+	@GET
+	@Path("/getall/submitted")
+	@Produces("application/json")
+	public Response getAllSubmittedTimesheets() {
+		APIResponse res = new APIResponse();
+		List<Timesheet> submittedTimesheets = timesheetManager.getAllSubmittedTimesheets();
+		if (submittedTimesheets == null) {
+			res.getErrors()
+					.add(ErrorMessageBuilder.notFoundMultiple("timesheet", "Could not get submitted timesheets"));
+			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+		}
+		res.getData().put("submitted timesheets", submittedTimesheets);
+		return Response.ok().entity(res).build();
+	}
 
 	@GET
 	@Path("/{id}")
@@ -110,9 +126,21 @@ public class TimesheetService {
 			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
 		}
 		if (timesheet.getOwnerId() > 0) {
-			timesheet.setEmployee(employeeManager.find(old.getOwnerId()));
+			old.setEmployee(employeeManager.find(timesheet.getOwnerId()));
 		}
-		timesheetManager.merge(timesheet);
+		old.setAudit(timesheet.getAudit());
+		old.setEmployee(timesheet.getEmployee());
+		old.setEndWeek(timesheet.getEndWeek());
+		old.setReviewer(timesheet.getReviewer());
+		old.setReviewerId(timesheet.getReviewerId());
+		old.setSignature(timesheet.getSignature());
+		old.setFeedback(timesheet.getFeedback());
+		old.setOvertime(timesheet.getOvertime());
+		old.setFlextime(timesheet.getFlextime());
+		old.setApprovedAt(timesheet.getApprovedAt());
+		old.setTimesheetRows(timesheet.getTimesheetRows());
+		old.setStatus(TimesheetStatus.valueOf(timesheet.getStatus()));
+		timesheetManager.merge(old);
 		return Response.ok().entity(res).build();
 	}
 
@@ -189,4 +217,5 @@ public class TimesheetService {
 		res.getData().put("timesheetRows", timesheetRows);
 		return Response.ok().entity(res).build();
 	}
+
 }

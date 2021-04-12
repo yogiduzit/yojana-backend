@@ -4,6 +4,7 @@ package com.yojana.services.employee;
 import javax.inject.Inject;
 import javax.naming.AuthenticationException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -31,11 +32,22 @@ public class AuthenticationService {
     
     // Helper for password encryption
     private JWTHelper passwordHelper;
+    
+    @Inject
+    private CredentialManager credentialManager;
 
     // Provides authentication support
     public AuthenticationService() {
         passwordHelper = new JWTHelper();
     }
+    
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public Response getAuthenticatedUser(Credential auth) {
+//    	APIResponse res = new APIResponse();
+//    	try 
+//    }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -49,6 +61,7 @@ public class AuthenticationService {
             final String token = passwordHelper.encrypt(auth.getUsername());
             res.getData().put("token", token);
             res.getData().put("roles", RoleHelper.getRolesForEmployee(authEmp));
+            res.getData().put("authEmp", authEmp);
             return Response.ok().entity(res).build();
         } catch (final AuthenticationException e) {
         	res.getErrors().add(new ErrorMessage(Response.Status.UNAUTHORIZED.getStatusCode(), "Unable to authenticate user", null));
