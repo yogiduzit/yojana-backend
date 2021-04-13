@@ -20,6 +20,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.hibernate.Hibernate;
 
+import org.hibernate.Hibernate;
+
 import com.yojana.access.EmployeeManager;
 import com.yojana.access.EstimateManager;
 import com.yojana.access.ProjectManager;
@@ -172,8 +174,4 @@ public class ProjectService {
         res.getData().put("estimates", estimates);
         return Response.ok().entity(res).build();
     }
-    
-
-    
-    
 }

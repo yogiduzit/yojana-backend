@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -24,6 +25,7 @@ import com.yojana.model.auditable.AuditListener;
 import com.yojana.model.auditable.Auditable;
 import com.yojana.model.project.Project;
 import com.yojana.model.project.WorkPackage;
+import com.yojana.model.timesheet.Timesheet;
 
 /**
  * Represents an employee.
@@ -143,6 +145,13 @@ public class Employee implements Auditable, Serializable {
     @ManyToMany(mappedBy = "employees", fetch = FetchType.LAZY)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<Project> projects;
+<<<<<<< src/main/java/com/yojana/model/employee/Employee.java
+=======
+    
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Set<Timesheet> timesheets;
+>>>>>>> src/main/java/com/yojana/model/employee/Employee.java
 //  
 //    @Lob
 //    @Basic(fetch = FetchType.LAZY)
@@ -382,7 +391,15 @@ public class Employee implements Auditable, Serializable {
         this.isProjectManager = isProjectManager;
     }
 
-    @Override
+    public Set<Timesheet> getTimesheets() {
+		return timesheets;
+	}
+
+	public void setTimesheets(Set<Timesheet> timesheets) {
+		this.timesheets = timesheets;
+	}
+
+	@Override
     public String toString() {
         return "Employee [audit=" + audit + ", id=" + id + ", fullName=" + fullName + ", credential=" + credential
                 + ", creator=" + creator + ", creatorId=" + creatorId + ", manager=" + manager + ", managerId="
