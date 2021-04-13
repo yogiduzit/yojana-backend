@@ -328,14 +328,14 @@ public class Employee implements Auditable, Serializable {
     /**
      * @return the isTimesheetApprover
      */
-    public boolean getIsTimesheetApprover() {
+    public boolean isTimesheetApprover() {
         return isTimesheetApprover;
     }
 
     /**
      * @param isTimesheetApprover the isTimesheetApprover to set
      */
-    public void setIsTimesheetApprover(boolean isTimesheetApprover) {
+    public void setTimesheetApprover(boolean isTimesheetApprover) {
         this.isTimesheetApprover = isTimesheetApprover;
     }
 
