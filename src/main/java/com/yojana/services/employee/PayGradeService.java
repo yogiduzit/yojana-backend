@@ -38,7 +38,7 @@ public class PayGradeService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll() throws SQLException {
         APIResponse res = new APIResponse();
-        if(!authEmployee.isAdmin() && !authEmployee.isProjectManager()) {
+        if(!authEmployee.isAdmin() || !authEmployee.isProjectManager()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
         }
         List<PayGrade> payGrades = payGradeManager.getAll();

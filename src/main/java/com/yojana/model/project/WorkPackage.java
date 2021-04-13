@@ -19,6 +19,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -32,7 +33,7 @@ import com.yojana.model.employee.Employee;
 @Entity
 @Table(name = "WorkPackage")
 @EntityListeners(AuditListener.class)
-public class WorkPackage implements Auditable, Serializable {
+public class WorkPackage implements Auditable, Serializable, Comparable<WorkPackage> {
 	
 	/**
 	 * 
@@ -70,6 +71,9 @@ public class WorkPackage implements Auditable, Serializable {
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Employee responsibleEngineer;
 	
+	@Column(name = "ResponsibleEngineerID", insertable = false, updatable = false)
+	private Integer responsibleEngineerId;
+	
 	@Column(name = "WorkPackageName")
 	private String workPackageName;
 	
@@ -81,6 +85,9 @@ public class WorkPackage implements Auditable, Serializable {
 	
 	@Column(name = "Budget")
 	private Float budget;
+	
+	@Column(name = "EngineerPlanned")
+	private Float planned;
 	
 	@Column(name = "AllocatedBudget")
 	private Float allocatedBudget;
@@ -286,6 +293,80 @@ public class WorkPackage implements Auditable, Serializable {
 
 	public void setHierarchyLevel(int hierarchyLevel) {
 		this.hierarchyLevel = hierarchyLevel;
+	}
+
+	public Boolean getIsLowestLevel() {
+		return isLowestLevel;
+	}
+
+	public void setIsLowestLevel(Boolean isLowestLevel) {
+		this.isLowestLevel = isLowestLevel;
+	}
+
+	public Float getPlanned() {
+		return planned;
+	}
+
+	public void setPlanned(Float planned) {
+		this.planned = planned;
+	}
+	
+	@PrePersist
+	public void initialize() {
+	    if (initialEstimate == null) {
+	    	initialEstimate = 0.0f;
+	    }
+	    if (allocatedInitialEstimate == null) {
+	    	allocatedInitialEstimate = 0.0f;
+	    }
+	    if (budget == null) {
+	    	budget = 0.0f;
+	    }
+	    if (allocatedBudget == null) {
+	    	allocatedBudget = 0.0f;
+	    }
+	    if (charged == null) {
+	    	charged = 0.0f;
+	    }
+	    if (costAtCompletion == null) {
+	    	costAtCompletion = 0.0f;
+	    }
+	    if (planned == null) {
+	    	planned = 0.0f;
+	    }
+	}
+
+	public Integer getResponsibleEngineerId() {
+		return responsibleEngineerId;
+	}
+
+	public void setResponsibleEngineerId(Integer responsibleEngineerId) {
+		this.responsibleEngineerId = responsibleEngineerId;
+	}
+
+	@Override
+	public int compareTo(WorkPackage wp) {
+		if (!this.workPackagePk.getProjectID().equals(wp.getWorkPackagePk().getProjectID())) {
+			return this.workPackagePk.getProjectID().compareTo(wp.getWorkPackagePk().getProjectID());
+		}
+		String id1 = this.getWorkPackagePk().getId().substring(2);
+		String id2 = wp.getWorkPackagePk().getId().substring(2);
+		int lesser = (id1.length() > id2.length()) ? id1.length() : id2.length();
+		
+		if (this.getHierarchyLevel() == wp.getHierarchyLevel()
+				&& this.getHierarchyLevel() == 0) {
+			return Integer.parseInt(id1) - Integer.parseInt(id2);
+		}
+			
+		for (int i = 0; i < lesser; i += 2) {
+			if (id1.charAt(i) == id2.charAt(i)) continue;
+			if (id1.charAt(i) < id2.charAt(i)) {
+				return 1;
+			} else {
+				return -1;
+			}
+		}
+		return 0;
 	}
 
 }

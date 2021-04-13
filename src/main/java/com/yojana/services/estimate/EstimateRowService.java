@@ -55,7 +55,9 @@ public class EstimateRowService {
         }
         estimateRow.setEstimate(estimate);
         estimateRow.setPayGrade(payGrade);
+        estimateRow.getEstimateRowPk().setEstimateId(id);
         estimateRowManager.persist(estimateRow);
+        res.getData().put("id", estimateRow.getEstimateRowPk());
         return Response.created(URI.create("/estimateRows/" + estimateRow.getEstimateRowPk().getEstimateId()
         + "/" + estimateRow.getEstimateRowPk().getIndex())).entity(res).build();
     }

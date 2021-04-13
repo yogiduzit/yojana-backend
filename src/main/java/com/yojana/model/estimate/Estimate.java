@@ -55,10 +55,10 @@ public class Estimate implements Auditable, Serializable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private WorkPackage workPackage;
     
-    @Column(name = "WorkPackageID", insertable = false, updatable = false)
+    @Column(name = "WorkPackageID")
     private String workPackageId;
     
-    @Column(name = "ProjectID", insertable = false, updatable = false)
+    @Column(name = "ProjectID")
     private String projectId;
     
     @Column(name = "EstimateToComplete")

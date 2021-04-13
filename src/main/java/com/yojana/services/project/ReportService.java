@@ -19,7 +19,7 @@ import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
 import com.yojana.security.annotations.AuthenticatedEmployee;
 import com.yojana.security.annotations.Secured;
-import java.util.List;
+import java.util.Set;
 
 @Secured
 @Path("/reports")
@@ -54,7 +54,7 @@ public class ReportService {
         report.setFrame("weekly");
         report.setReportCreatedAt(project.getAudit().getCreatedAt());
         report.setProjectId(project.getId());
-        List<WorkPackage> data = wpManager.getAll(projectId); 
+        Set<WorkPackage> data = wpManager.getAll(projectId); 
         report.setData(data);
         res.getData().put("report", report);
         return Response.ok().entity(res).build();

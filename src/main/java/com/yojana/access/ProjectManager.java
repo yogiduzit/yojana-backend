@@ -1,12 +1,14 @@
 package com.yojana.access;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
@@ -60,6 +62,24 @@ public class ProjectManager implements Serializable {
 		query.setParameter("empId", empId);
         List<Project> projects = query.getResultList();
         return projects;
+    }
+	
+	public Double getAllocatedInitialEstimate(String projectId) {       
+		Query query = em.createQuery("SELECT SUM(wp.initialEstimate) FROM WorkPackage wp" 
+				+ " WHERE wp.workPackagePk.projectID = :projectId"
+				+ " AND wp.hierarchyLevel = 0"); 
+		query.setParameter("projectId", projectId);
+        
+        return (Double) query.getSingleResult();
+    }
+	
+	public Double getAllocatedBudget(String projectId) {       
+		Query query = em.createQuery("SELECT SUM(wp.budget) FROM WorkPackage wp" 
+				+ " WHERE wp.workPackagePk.projectID = :projectId"
+				+ " AND wp.hierarchyLevel = 0"); 
+		query.setParameter("projectId", projectId);
+        
+        return (Double) query.getSingleResult();
     }
 
 }
