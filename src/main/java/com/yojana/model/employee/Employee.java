@@ -145,13 +145,11 @@ public class Employee implements Auditable, Serializable {
     @ManyToMany(mappedBy = "employees", fetch = FetchType.LAZY)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<Project> projects;
-<<<<<<< src/main/java/com/yojana/model/employee/Employee.java
-=======
+
     
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<Timesheet> timesheets;
->>>>>>> src/main/java/com/yojana/model/employee/Employee.java
 //  
 //    @Lob
 //    @Basic(fetch = FetchType.LAZY)
