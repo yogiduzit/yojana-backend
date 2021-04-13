@@ -55,11 +55,10 @@ public class ProjectManager implements Serializable {
     }
 	
 	public List<Project> getAllForEmployee(int empId) {       
-		TypedQuery<Project> query = em.createQuery("SELECT DISTINCT p FROM Project p JOIN FETCH" 
-				+ " p.employees e where e.id = :empId", Project.class); 
-		query.setParameter("empId", empId);
+        TypedQuery<Project> query = em.createQuery("SELECT DISTINCT p FROM Project p JOIN FETCH" 
+                + " p.employees e where e.id = :empId", Project.class); 
+        query.setParameter("empId", empId);
         List<Project> projects = query.getResultList();
         return projects;
     }
-
 }
