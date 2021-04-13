@@ -24,6 +24,7 @@ import com.yojana.model.auditable.Audit;
 import com.yojana.model.auditable.AuditListener;
 import com.yojana.model.auditable.Auditable;
 import com.yojana.model.project.Project;
+import com.yojana.model.project.WorkPackage;
 import com.yojana.model.timesheet.Timesheet;
 
 /**
@@ -144,10 +145,13 @@ public class Employee implements Auditable, Serializable {
     @ManyToMany(mappedBy = "employees", fetch = FetchType.LAZY)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<Project> projects;
+<<<<<<< src/main/java/com/yojana/model/employee/Employee.java
+=======
     
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<Timesheet> timesheets;
+>>>>>>> src/main/java/com/yojana/model/employee/Employee.java
 //  
 //    @Lob
 //    @Basic(fetch = FetchType.LAZY)
