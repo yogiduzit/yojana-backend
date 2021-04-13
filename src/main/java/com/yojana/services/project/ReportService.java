@@ -1,6 +1,5 @@
 package com.yojana.services.project;
 
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.Produces;
 import javax.inject.Inject;
@@ -75,5 +74,4 @@ public class ReportService {
         
         return Response.ok().entity(res).build();
     }
-    
 }

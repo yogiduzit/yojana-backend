@@ -3,9 +3,9 @@ package com.yojana.model.project;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.yojana.model.timesheet.Timesheet;
 import com.yojana.model.timesheet.TimesheetRow;
 
 public class WeeklyStatusReport implements Serializable {
@@ -28,7 +28,7 @@ public class WeeklyStatusReport implements Serializable {
 	private String projectId;
 	
 	@JsonProperty("Data")
-	List<WorkPackage> data;
+	Set<WorkPackage> data;
 	
 	
 	@JsonProperty("TimesheetRows")
@@ -75,11 +75,11 @@ public class WeeklyStatusReport implements Serializable {
 		this.reportCreatedAt = reportCreatedAt;
 	}
 	
-	public List<WorkPackage> getData() {
+	public Set<WorkPackage> getData() {
 		return data;
 	}
 
-	public void setData(List<WorkPackage> data) {
+	public void setData(Set<WorkPackage> data) {
 		this.data = data;
 	}
 	

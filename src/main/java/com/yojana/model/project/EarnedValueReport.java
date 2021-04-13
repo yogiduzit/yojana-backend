@@ -2,7 +2,7 @@ package com.yojana.model.project;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Embedded;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -31,7 +31,7 @@ public class EarnedValueReport implements Serializable {
 	private String projectId;
 	
 	@JsonProperty("Data")
-	List<WorkPackage> data;
+	Set<WorkPackage> data;
 	
 	
 	public EarnedValueReport() {
@@ -56,11 +56,11 @@ public class EarnedValueReport implements Serializable {
 		this.reportCreatedAt = reportCreatedAt;
 	}
 	
-	public List<WorkPackage> getData() {
+	public Set<WorkPackage> getData() {
 		return data;
 	}
 
-	public void setData(List<WorkPackage> data) {
+	public void setData(Set<WorkPackage> data) {
 		this.data = data;
 	}
 	
