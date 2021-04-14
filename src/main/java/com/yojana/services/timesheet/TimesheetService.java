@@ -114,8 +114,10 @@ public class TimesheetService {
 		if (timesheet.getOwnerId() > 0) {
 			old.setEmployee(employeeManager.find(timesheet.getOwnerId()));
 		}
+		old.setId(timesheet.getId());
 		old.setAudit(timesheet.getAudit());
-		old.setEmployee(timesheet.getEmployee());
+		old.setEmployee(employeeManager.find(timesheet.getOwnerId()));
+		old.setOwnerId(timesheet.getOwnerId());
 		old.setEndWeek(timesheet.getEndWeek());
 		old.setReviewer(timesheet.getReviewer());
 		old.setReviewerId(timesheet.getReviewerId());
@@ -143,11 +145,13 @@ public class TimesheetService {
 	@GET
 	@Produces("application/json")
 	// Gets a list of all timesheets
-	public Response getAll(@QueryParam("status") String status) {
+	public Response getAll(@QueryParam("status") String status, @QueryParam("empId") Integer empId, @QueryParam("admin") Boolean admin) {
 		final APIResponse res = new APIResponse();
 		List<Timesheet> timesheets = null;
 		if (status != null && status.equals("submitted")) {
 			timesheets = timesheetManager.getAllSubmittedTimesheets();
+		} else if (empId != null) {
+			timesheets = timesheetManager.getAllForEmployee(empId);
 		} else {
 			timesheets = timesheetManager.getAll();
 		}
@@ -185,10 +189,29 @@ public class TimesheetService {
 	public Response updateRow(@PathParam("id") UUID timesheetId, TimesheetRow row) {
 		final APIResponse res = new APIResponse();
 
-		row.setProject(projectManager.find(row.getProjectId()));
-		row.setWorkPackage(workPackageManager.find(new WorkPackagePK(row.getWorkPackageId(), row.getProjectId())));
+		TimesheetRow old = timesheetRowManager.find(timesheetId, row.getIndex());
+		boolean isNewRow = false;
+		if (old == null) {
+			old = new TimesheetRow();
+			isNewRow = true;
+		}
+		
+		old.setProject(projectManager.find(row.getProjectId()));
+		old.setWorkPackage(workPackageManager.find(new WorkPackagePK(row.getWorkPackageId(), row.getProjectId())));
+		
+		old.setHours(row.getHours());
+		old.setIndex(row.getIndex());
+		old.setNotes(row.getNotes());
+		old.setProjectId(row.getProjectId());
+		old.setTimesheet(timesheetManager.find(timesheetId));
+		old.setTimesheetId(timesheetId);
+		old.setWorkPackageId(row.getWorkPackageId());
 
-		timesheetRowManager.merge(row);
+		if (isNewRow) {
+			timesheetRowManager.persist(old);
+		} else {
+			timesheetRowManager.merge(old);
+		}
 		return Response.created(URI.create("/timesheets/" + row.getTimesheetId() + "/rows/" + "project/"
 				+ row.getProjectId() + "/wp/" + row.getWorkPackageId())).entity(res).build();
 	}
