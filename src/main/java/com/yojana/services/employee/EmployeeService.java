@@ -164,7 +164,7 @@ public class EmployeeService {
 	@Path("/{id}/timesheets")
 	@Produces("application/json")
 	// Gets a list of all timesheets for an id
-	public Response getAllTimesheetsForEmployee(@PathParam("id") int empId) {
+	public Response getAllTimesheetsForEmployee(@PathParam("id") Integer empId) {
 		final APIResponse res = new APIResponse();
 		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
