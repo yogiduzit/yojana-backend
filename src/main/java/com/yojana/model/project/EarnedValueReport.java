@@ -10,15 +10,13 @@ import com.yojana.model.auditable.Audit;
 import com.yojana.model.auditable.Auditable;
 
 
-public class Report implements Auditable, Serializable {
+public class EarnedValueReport implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Embedded
-	private Audit audit;
 	
 	@JsonProperty("Type")
 	private String type;
@@ -36,17 +34,11 @@ public class Report implements Auditable, Serializable {
 	List<WorkPackage> data;
 	
 	
-	public Report() {}
-
-	@Override
-	public Audit getAudit() {
-		return audit;
+	public EarnedValueReport() {
+		this.type = "Earned Value";
+		this.frame = "Monthly";
 	}
 
-	@Override
-	public void setAudit(Audit audit) {
-		this.audit = audit;
-	}
 	
 	public String getProjectId() {
 		return projectId;

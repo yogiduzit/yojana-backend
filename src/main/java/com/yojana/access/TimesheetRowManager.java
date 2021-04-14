@@ -1,3 +1,4 @@
+
 package com.yojana.access;
 
 import java.io.Serializable;
@@ -13,6 +14,7 @@ import javax.persistence.TypedQuery;
 
 import com.yojana.model.timesheet.TimesheetRow;
 import com.yojana.model.timesheet.TimesheetRowPK;
+import com.yojana.model.project.WorkPackagePK;
 
 @Dependent
 @Stateless
@@ -78,4 +80,11 @@ public class TimesheetRowManager implements Serializable {
 		query.setParameter("timesheetId", timesheetId);
 		return query.getResultList();
 	}
+
+	public List<TimesheetRow> getAllForWorkPackage(WorkPackagePK key) {
+	    TypedQuery<TimesheetRow> query = em.createQuery("select t from TimesheetRow t where t.projectId = :projectID", TimesheetRow.class);
+        query.setParameter("projectID",key.getProjectID());
+        return query.getResultList();
+	}
 }
+

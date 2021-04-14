@@ -13,6 +13,7 @@ import javax.ws.rs.PathParam;
 import javax.persistence.EntityManager;
 
 import com.yojana.model.timesheet.Timesheet;
+import com.yojana.model.project.WorkPackagePK;
 
 @Dependent
 @Stateless
@@ -65,5 +66,12 @@ public class TimesheetManager implements Serializable {
 	public List<Timesheet> getAllSubmittedTimesheets() {
 		TypedQuery<Timesheet> query = em.createQuery("select t from Timesheet t where Status = 'submitted'", Timesheet.class);
 		return query.getResultList();
+	}
+
+	/** get all timesheets. */
+	public List<Timesheet> getTimesheetsForWorkPackage(WorkPackagePK key) {
+		WorkPackage wp = wpManager.find(key);
+		int empID = wp.getResponsibleEngineer().getId();
+		return getAllForEmployee(UUID.fromString(String.valueOf(empID)));
 	}
 }
