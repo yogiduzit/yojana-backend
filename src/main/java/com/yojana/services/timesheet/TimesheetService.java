@@ -145,11 +145,14 @@ public class TimesheetService {
 	@GET
 	@Produces("application/json")
 	// Gets a list of all timesheets
-	public Response getAll(@QueryParam("status") String status, @QueryParam("empId") Integer empId, @QueryParam("admin") Boolean admin) {
+	public Response getAll(@QueryParam("status") String status, @QueryParam("getAll") Boolean getAll,
+			@QueryParam("empId") Integer empId) {
 		final APIResponse res = new APIResponse();
 		List<Timesheet> timesheets = null;
-		if (status != null && status.equals("submitted")) {
+		if (status != null && status.equals("submitted") && getAll != null && getAll) {
 			timesheets = timesheetManager.getAllSubmittedTimesheets();
+		} else if (status != null && status.equals("submitted")) {
+			timesheets = timesheetManager.getAllSubmittedTimesheetsForApprover(authEmployee.getId());
 		} else if (empId != null) {
 			timesheets = timesheetManager.getAllForEmployee(empId);
 		} else {
@@ -195,10 +198,10 @@ public class TimesheetService {
 			old = new TimesheetRow();
 			isNewRow = true;
 		}
-		
+
 		old.setProject(projectManager.find(row.getProjectId()));
 		old.setWorkPackage(workPackageManager.find(new WorkPackagePK(row.getWorkPackageId(), row.getProjectId())));
-		
+
 		old.setHours(row.getHours());
 		old.setIndex(row.getIndex());
 		old.setNotes(row.getNotes());
