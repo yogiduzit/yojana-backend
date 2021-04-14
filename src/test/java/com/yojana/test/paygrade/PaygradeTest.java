@@ -24,8 +24,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -92,8 +90,7 @@ import com.yojana.test.Constants;
       * In this case, "PS" is a parameter going into the test method
       * To add more parameters follow this format: @ ValueSource(strings = {"", "  "})
       */
-       @ParameterizedTest
-       @ValueSource(strings = {"PS"} )
+
        @Order(2)
        public void testGetPaygrade(String labourGrade) throws Exception {
            String location = Constants.PAYGRADE_URL + "/" + labourGrade;
