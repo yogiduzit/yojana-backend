@@ -257,6 +257,14 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
 	public void setHierarchyLevel(int hierarchyLevel) {
 		this.hierarchyLevel = hierarchyLevel;
 	}
+
+	public Boolean getIsLowestLevel() {
+		return isLowestLevel;
+	}
+
+	public void setIsLowestLevel(Boolean isLowestLevel) {
+		this.isLowestLevel = isLowestLevel;
+	}
 	
 	public Double getBudget() {
 		return budget;
@@ -266,10 +274,30 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
 		this.budget = budget;
 	}
 
+	public Double getPlanned() {
+		return planned;
+	}
+
 	public void setPlanned(Double planned) {
 		this.planned = planned;
 	}
+	
+	public Set<TimesheetRow> getRows() {
+		return rows;
+	}
 
+	public void setRows(Set<TimesheetRow> rows) {
+		this.rows = rows;
+	}
+
+	public Set<Estimate> getEstimates() {
+		return estimates;
+	}
+
+	public void setEstimates(Set<Estimate> estimates) {
+		this.estimates = estimates;
+	}
+	
 	public Double getAllocatedBudget() {
 		return allocatedBudget;
 	}
@@ -301,7 +329,7 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
 	public void setCharged(Double charged) {
 		this.charged = charged;
 	}
-
+	
 	public Double getCostAtCompletion() {
 		return costAtCompletion;
 	}
@@ -309,35 +337,7 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
 	public void setCostAtCompletion(Double costAtCompletion) {
 		this.costAtCompletion = costAtCompletion;
 	}
-	
-	public Set<TimesheetRow> getRows() {
-		return rows;
-	}
 
-	public void setRows(Set<TimesheetRow> rows) {
-		this.rows = rows;
-	}
-
-	public Set<Estimate> getEstimates() {
-		return estimates;
-	}
-
-	public void setEstimates(Set<Estimate> estimates) {
-		this.estimates = estimates;
-	}
-
-	public Boolean getIsLowestLevel() {
-		return isLowestLevel;
-	}
-
-	public void setIsLowestLevel(Boolean isLowestLevel) {
-		this.isLowestLevel = isLowestLevel;
-	}
-
-	public Double getPlanned() {
-		return planned;
-	}
-	
 	@PrePersist
 	public void initialize() {
 	    if (initialEstimate == null) {
