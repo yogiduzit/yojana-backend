@@ -2,6 +2,7 @@ package com.yojana.services.employee;
 
 import java.net.URI;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -153,7 +154,7 @@ public class EmployeeService {
 	}
 	
 	@GET
-	@Path("//{id}")
+	@Path("/{id}/timesheets")
 	@Produces("application/json")
 	// Gets a list of all timesheets for an id
 	public Response getAllTimesheetsForEmployee(@PathParam("id") UUID empId) {
@@ -167,6 +168,18 @@ public class EmployeeService {
 			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
 		}
 		res.getData().put("timesheets", timesheets);
+		return Response.ok().entity(res).build();
+	}
+	
+	@GET
+	@Path("/hours/{endWeek}")
+	@Produces("application/json")  
+	// Gets a list of all timesheets for an id
+	public Response getWeekHours(@PathParam("endWeek") String date) {
+		LocalDate endWeek = LocalDate.parse(date);
+		final APIResponse res = new APIResponse();
+		double hours = employeeManager.getHoursForWeek(authEmployee.getId(), endWeek);
+		res.getData().put("hours", hours);
 		return Response.ok().entity(res).build();
 	}
 }

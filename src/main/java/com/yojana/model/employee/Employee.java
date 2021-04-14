@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -22,7 +23,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yojana.model.auditable.Audit;
 import com.yojana.model.auditable.AuditListener;
 import com.yojana.model.auditable.Auditable;
+import com.yojana.model.project.Project;
 import com.yojana.model.project.WorkPackage;
+import com.yojana.model.timesheet.Timesheet;
 
 /**
  * Represents an employee.
@@ -138,6 +141,15 @@ public class Employee implements Auditable, Serializable {
      */
     @Column(name = "IsProjectManager")
     private boolean isProjectManager;
+    
+    @ManyToMany(mappedBy = "employees", fetch = FetchType.LAZY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Set<Project> projects;
+
+    
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Set<Timesheet> timesheets;
 //  
 //    @Lob
 //    @Basic(fetch = FetchType.LAZY)
@@ -316,14 +328,14 @@ public class Employee implements Auditable, Serializable {
     /**
      * @return the isTimesheetApprover
      */
-    public boolean isTimesheetApprover() {
+    public boolean getIsTimesheetApprover() {
         return isTimesheetApprover;
     }
 
     /**
      * @param isTimesheetApprover the isTimesheetApprover to set
      */
-    public void setTimesheetApprover(boolean isTimesheetApprover) {
+    public void setIsTimesheetApprover(boolean isTimesheetApprover) {
         this.isTimesheetApprover = isTimesheetApprover;
     }
 
@@ -362,14 +374,30 @@ public class Employee implements Auditable, Serializable {
         return isProjectManager;
     }
 
-    /**
+    public Set<Project> getProjects() {
+		return projects;
+	}
+
+	public void setProjects(Set<Project> projects) {
+		this.projects = projects;
+	}
+
+	/**
      * @param isProjectManager the isProjectManager to set
      */
     public void setProjectManager(boolean isProjectManager) {
         this.isProjectManager = isProjectManager;
     }
 
-    @Override
+    public Set<Timesheet> getTimesheets() {
+		return timesheets;
+	}
+
+	public void setTimesheets(Set<Timesheet> timesheets) {
+		this.timesheets = timesheets;
+	}
+
+	@Override
     public String toString() {
         return "Employee [audit=" + audit + ", id=" + id + ", fullName=" + fullName + ", credential=" + credential
                 + ", creator=" + creator + ", creatorId=" + creatorId + ", manager=" + manager + ", managerId="

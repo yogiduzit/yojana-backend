@@ -82,7 +82,9 @@ CREATE TABLE Timesheet(
     	FOREIGN KEY (EmpID) 
     		REFERENCES Employee(EmpID)
 			ON UPDATE CASCADE
-        	ON DELETE CASCADE
+        	ON DELETE CASCADE,
+    CONSTRAINT UQ_Emp_EndWk
+		UNIQUE (EmpID, EndWeek)
 );
 
 
@@ -138,19 +140,6 @@ CREATE TABLE ProjectEmployee(
         	ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS Report;
-CREATE TABLE Report(
-	ReportID VARCHAR(255) NOT NULL,
-	ProjectID VARCHAR(20),
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Info JSON,
-	CONSTRAINT PKReport
-		PRIMARY KEY(ReportID),
-	CONSTRAINT FKReportProjectID 
-		FOREIGN KEY (ProjectID) REFERENCES Project(ProjectID)
-			ON UPDATE CASCADE
-            ON DELETE CASCADE
-);
 
 DROP TABLE IF EXISTS WorkPackage;
 CREATE TABLE WorkPackage(
@@ -210,6 +199,8 @@ CREATE TABLE Estimate(
     WorkPackageID VARCHAR(20) NOT NULL,
 	ProjectID VARCHAR(20) NOT NULL,
     EstimateToComplete FLOAT(14,2),
+    ForWeek DATE NOT NULL,
+    Type ENUM('initial', 'planned', 'weekly') NOT NULL,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT PKEstimate
@@ -223,11 +214,12 @@ CREATE TABLE Estimate(
 DROP TABLE IF EXISTS EstimateRow;
 CREATE TABLE EstimateRow(
 	EstimateID VARCHAR(255) NOT NULL,
+	RowIndex INT NOT NULL DEFAULT 0,
     PayGradeID VARCHAR(4) NOT NULL,
 	EmpDays FLOAT(4,2),
     EmpCount INT,
 	CONSTRAINT PKEstimateRow
-		PRIMARY KEY(EstimateID, PayGradeID),
+		PRIMARY KEY(EstimateID, RowIndex),
 	CONSTRAINT FKEstimateRowPayGradeID 
 		FOREIGN KEY (PayGradeID) REFERENCES PayGrade(LabourGrade)
 			ON UPDATE CASCADE,
@@ -286,11 +278,6 @@ INSERT INTO ProjectEmployee VALUES("PR123", 2);
 
 INSERT INTO EmployeePackage VALUES("WP1",  "PR123", 2);
 
-INSERT INTO Estimate (EstimateID, WorkPackageID, ProjectID) VALUES ("83400000-0000-0000-0000-000000000000", "WP1", "PR123");
+INSERT INTO Estimate (EstimateID, WorkPackageID, ProjectID, ForWeek, EstimateToComplete, Type) VALUES ("83400000-0000-0000-0000-000000000000", "WP1", "PR123", DATE '2000/3/24', 100.00, 'initial');
 
-INSERT INTO EstimateRow VALUES("83400000-0000-0000-0000-000000000000", "PS", 2.5, 50);
-
-
-INSERT INTO Report (ReportID, ProjectID, Info) VALUES("13400090-0000-0000-0000-000000000000", "PR123", '{
-"StatusReport":{ "Type":"weekly", "Date":"2021/2/12", "data":{"EmpID": "32000000-0000-0000-0000-000000000000",
- "ProjectID":"PR123", "WorkPackage":"WP1.1", "Hours":"12"}}}');
+INSERT INTO EstimateRow (EstimateID, PaygradeID, EmpDays, EmpCount)VALUES("83400000-0000-0000-0000-000000000000", "PS", 2.5, 50);

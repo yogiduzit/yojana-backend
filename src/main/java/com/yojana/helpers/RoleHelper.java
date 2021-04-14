@@ -26,7 +26,7 @@ public class RoleHelper {
 		if (emp.isProjectManager()) {
 			roles.add(Role.PROJECT_MANAGER);
 		}
-		if (emp.isTimesheetApprover()) {
+		if (emp.getIsTimesheetApprover()) {
 			roles.add(Role.TIMESHEET_APPROVER);
 		}
 		return roles;
