@@ -23,6 +23,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yojana.model.auditable.Audit;
@@ -83,26 +84,26 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
 	@Column(name = "IsLowestLevel")
 	private Boolean isLowestLevel;
 	
-	@Column(name = "Budget")
-	private Float budget;
+	@Column(name = "Budget", columnDefinition = "FLOAT(14,2)")
+	private Double budget;
 	
-	@Column(name = "EngineerPlanned")
-	private Float planned;
+	@Column(name = "EngineerPlanned", columnDefinition = "FLOAT(14,2)")
+	private Double planned;
 	
-	@Column(name = "AllocatedBudget")
-	private Float allocatedBudget;
+	@Column(name = "AllocatedBudget", columnDefinition = "FLOAT(14,2)")
+	private Double allocatedBudget;
 	
-	@Column(name = "InitialEstimate")
-	private Float initialEstimate;
+	@Column(name = "InitialEstimate", columnDefinition = "FLOAT(14,2)")
+	private Double initialEstimate;
 	
-	@Column(name = "AllocatedInitialEstimate")
-	private Float allocatedInitialEstimate;
+	@Column(name = "AllocatedInitialEstimate", columnDefinition = "FLOAT(14,2)")
+	private Double allocatedInitialEstimate;
 	
-	@Column(name = "Charged")
-	private Float charged;
+	@Transient
+	private Double charged;
 	
-	@Column(name = "CostAtCompletion")
-	private Float costAtCompletion;
+	@Column(name = "CostAtCompletion", columnDefinition = "FLOAT(14,2)")
+	private Double costAtCompletion;
 	
 	@Temporal(TemporalType.DATE)
     @Column(name = "DueAt")
@@ -215,38 +216,6 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
 		this.isLowestLevel = isLowestLevel;
 	}
 
-	public Float getAllocatedBudget() {
-		return allocatedBudget;
-	}
-
-	public void setAllocatedBudget(Float allocatedBudget) {
-		this.allocatedBudget = allocatedBudget;
-	}
-
-	public Float getInitialEstimate() {
-		return initialEstimate;
-	}
-
-	public void setInitialEstimate(Float initialEstimate) {
-		this.initialEstimate = initialEstimate;
-	}
-
-	public Float getCharged() {
-		return charged;
-	}
-
-	public void setCharged(Float charged) {
-		this.charged = charged;
-	}
-
-	public Float getCostAtCompletion() {
-		return costAtCompletion;
-	}
-
-	public void setCostAtCompletion(Float costAtCompletion) {
-		this.costAtCompletion = costAtCompletion;
-	}
-
 	public Date getDueAt() {
 		return dueAt;
 	}
@@ -271,22 +240,6 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
 		this.employees = employees;
 	}
 
-	public Float getBudget() {
-		return budget;
-	}
-
-	public void setBudget(Float budget) {
-		this.budget = budget;
-	}
-
-	public Float getAllocatedInitialEstimate() {
-		return allocatedInitialEstimate;
-	}
-
-	public void setAllocatedInitialEstimate(Float allocatedInitialEstimate) {
-		this.allocatedInitialEstimate = allocatedInitialEstimate;
-	}
-
 	public int getHierarchyLevel() {
 		return hierarchyLevel;
 	}
@@ -302,37 +255,85 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
 	public void setIsLowestLevel(Boolean isLowestLevel) {
 		this.isLowestLevel = isLowestLevel;
 	}
+	
+	public Double getBudget() {
+		return budget;
+	}
 
-	public Float getPlanned() {
+	public void setBudget(Double budget) {
+		this.budget = budget;
+	}
+
+	public Double getPlanned() {
 		return planned;
 	}
 
-	public void setPlanned(Float planned) {
+	public void setPlanned(Double planned) {
 		this.planned = planned;
 	}
-	
+
+	public Double getAllocatedBudget() {
+		return allocatedBudget;
+	}
+
+	public void setAllocatedBudget(Double allocatedBudget) {
+		this.allocatedBudget = allocatedBudget;
+	}
+
+	public Double getInitialEstimate() {
+		return initialEstimate;
+	}
+
+	public void setInitialEstimate(Double initialEstimate) {
+		this.initialEstimate = initialEstimate;
+	}
+
+	public Double getAllocatedInitialEstimate() {
+		return allocatedInitialEstimate;
+	}
+
+	public void setAllocatedInitialEstimate(Double allocatedInitialEstimate) {
+		this.allocatedInitialEstimate = allocatedInitialEstimate;
+	}
+
+	public Double getCharged() {
+		return charged;
+	}
+
+	public void setCharged(Double charged) {
+		this.charged = charged;
+	}
+
+	public Double getCostAtCompletion() {
+		return costAtCompletion;
+	}
+
+	public void setCostAtCompletion(Double costAtCompletion) {
+		this.costAtCompletion = costAtCompletion;
+	}
+
 	@PrePersist
 	public void initialize() {
 	    if (initialEstimate == null) {
-	    	initialEstimate = 0.0f;
+	    	initialEstimate = 0.0;
 	    }
 	    if (allocatedInitialEstimate == null) {
-	    	allocatedInitialEstimate = 0.0f;
+	    	allocatedInitialEstimate = 0.0;
 	    }
 	    if (budget == null) {
-	    	budget = 0.0f;
+	    	budget = 0.0;
 	    }
 	    if (allocatedBudget == null) {
-	    	allocatedBudget = 0.0f;
+	    	allocatedBudget = 0.0;
 	    }
 	    if (charged == null) {
-	    	charged = 0.0f;
+	    	charged = 0.0;
 	    }
 	    if (costAtCompletion == null) {
-	    	costAtCompletion = 0.0f;
+	    	costAtCompletion = 0.0;
 	    }
 	    if (planned == null) {
-	    	planned = 0.0f;
+	    	planned = 0.0;
 	    }
 	}
 

@@ -17,9 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.yojana.access.EstimateManager;
-import com.yojana.access.WorkPackageManager;
 import com.yojana.model.estimate.Estimate;
-import com.yojana.model.project.WorkPackagePK;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
 import com.yojana.security.annotations.Secured;
@@ -31,8 +29,6 @@ public class EstimateService {
     @Inject
     private EstimateManager estimateManager;
     
-    @Inject
-    private WorkPackageManager wpManager;
     
     @POST
     @Produces(MediaType.APPLICATION_JSON)

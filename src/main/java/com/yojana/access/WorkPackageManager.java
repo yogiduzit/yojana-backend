@@ -1,7 +1,10 @@
 package com.yojana.access;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -14,11 +17,10 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import com.yojana.helpers.FloatHelper;
-import com.yojana.helpers.ProxyHelper;
 //import com.yojana.helpers.FloatHelper;
-import com.yojana.model.project.Project;
 import com.yojana.model.project.WorkPackage;
 import com.yojana.model.project.WorkPackagePK;
+import com.yojana.model.timesheet.TimesheetRow;
 
 @Dependent
 @Stateless
@@ -57,9 +59,9 @@ public class WorkPackageManager implements Serializable {
 		if (!(workPackage.getParentWPId() == null || workPackage.getParentWPId().isBlank())) {
 			WorkPackage parent = find(new WorkPackagePK(workPackage.getParentWPId(), 
 					workPackage.getWorkPackagePk().getProjectID()));
-			parent.setAllocatedBudget(FloatHelper.add(parent.getAllocatedBudget(), workPackage.getBudget()));
-			parent.setAllocatedInitialEstimate(FloatHelper.add(parent.getAllocatedInitialEstimate(),
-					 workPackage.getInitialEstimate()));
+			parent.setAllocatedBudget(parent.getAllocatedBudget() + workPackage.getBudget());
+			parent.setAllocatedInitialEstimate(parent.getAllocatedInitialEstimate() +
+					 workPackage.getInitialEstimate());
 			parent.setLowestLevel(false);
 			workPackage.setParentWP(parent);
 			workPackage.setHierarchyLevel(parent.getHierarchyLevel() + 1);
@@ -75,9 +77,8 @@ public class WorkPackageManager implements Serializable {
 		if (workPackage.getParentWPId() != null) {
 			WorkPackage parent = find(new WorkPackagePK(workPackage.getParentWPId(), 
 					workPackage.getWorkPackagePk().getProjectID()));
-			parent = ProxyHelper.unproxy(parent);
-			float parentBudgetAllocation = parent.getAllocatedBudget() - old.getBudget() + workPackage.getBudget();
-			float parentEstimateAllocation = parent.getAllocatedInitialEstimate() - old.getInitialEstimate() + workPackage.getInitialEstimate();
+			double parentBudgetAllocation = parent.getAllocatedBudget() - old.getBudget() + workPackage.getBudget();
+			double parentEstimateAllocation = parent.getAllocatedInitialEstimate() - old.getInitialEstimate() + workPackage.getInitialEstimate();
 			parent.setAllocatedBudget(parentBudgetAllocation);
 			parent.setAllocatedInitialEstimate(parentEstimateAllocation);
 			parent.setLowestLevel(false);
@@ -136,5 +137,37 @@ public class WorkPackageManager implements Serializable {
         List<WorkPackage> workPackages = query.getResultList();
         return new TreeSet<WorkPackage>(workPackages);
     }
-
+	
+	public double getCharge(String projectId, String id) {
+		TypedQuery<TimesheetRow> query = em.createQuery("select tr from TimesheetRow tr where tr.workPackageId = :id and tr.projectId = :projectId", TimesheetRow.class);
+		query.setParameter("id", id);
+		query.setParameter("projectId", projectId);
+		
+		List<TimesheetRow> rows = query.getResultList();
+		
+		double charges = 0;
+		for (TimesheetRow row: rows) {
+			charges += row.getSum();
+		}
+		return charges;
+	}
+	
+	public Map<LocalDate, Double> getWeeklyCharges(String projectId, String id) {
+		TypedQuery<TimesheetRow> query = em.createQuery("select tr from TimesheetRow tr JOIN FETCH tr.timesheet t where tr.workPackageId = :id and tr.projectId = :projectId", TimesheetRow.class);
+		query.setParameter("id", id);
+		query.setParameter("projectId", projectId);
+		
+		List<TimesheetRow> rows = query.getResultList();
+		
+		Map<LocalDate, Double> weeklyCharges = new HashMap<LocalDate, Double>();
+		for (TimesheetRow row: rows) {
+			LocalDate key = row.getTimesheet().getEndWeek();
+			if (weeklyCharges.containsKey(key)) {
+				weeklyCharges.put(key, weeklyCharges.get(key) + row.getSum());
+			} else {
+				weeklyCharges.put(key, (double) row.getSum());
+			}
+		}
+		return weeklyCharges;
+	}
 }

@@ -153,7 +153,6 @@ CREATE TABLE WorkPackage(
     AllocatedBudget FLOAT(14,2) DEFAULT 0,
     InitialEstimate FLOAT(14,2) DEFAULT 0,
     AllocatedInitialEstimate FLOAT(14, 2) DEFAULT 0,
-    Charged FLOAT(14,2) DEFAULT 0,
     CostAtCompletion FLOAT(14,2) DEFAULT 0,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

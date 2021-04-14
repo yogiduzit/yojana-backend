@@ -54,7 +54,7 @@ public class EstimateManager implements Serializable{
     	case weekly:
     		wp.setCostAtCompletion(estimate.getEstimateToComplete());
     	}
-    	wpManager.merge(wp);
+    	em.merge(wp);
         em.persist(estimate);
     }
     
@@ -76,7 +76,7 @@ public class EstimateManager implements Serializable{
     	case weekly:
     		wp.setCostAtCompletion(estimate.getEstimateToComplete());
     	}
-    	wpManager.merge(wp);
+    	em.merge(wp);
         em.merge(estimate);
     }
     
@@ -112,6 +112,24 @@ public class EstimateManager implements Serializable{
         TypedQuery<Estimate> query = em.createQuery("select e from Estimate e where"
                 + " e.workPackageId = :workPackageId"
                 + " and e.projectId = :projectId",
+                Estimate.class); 
+        query.setParameter("workPackageId", workPackageId);
+        query.setParameter("projectId", projectId);
+        List<Estimate> estimates = query.getResultList();
+        return estimates;
+    }
+    
+    /**
+     * get all estimates for a work package
+     * @param workPackageId
+     * @param projectId
+     * @return a list of estimates of that work package
+     */
+    public List<Estimate> getPlannedEstimateForWorkPackage(String workPackageId, String projectId) {
+        TypedQuery<Estimate> query = em.createQuery("select e from Estimate e where"
+                + " e.workPackageId = :workPackageId"
+                + " and e.projectId = :projectId"
+                + " and e.type = 'planned'",
                 Estimate.class); 
         query.setParameter("workPackageId", workPackageId);
         query.setParameter("projectId", projectId);

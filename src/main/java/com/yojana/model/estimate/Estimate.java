@@ -61,8 +61,8 @@ public class Estimate implements Auditable, Serializable {
     @Column(name = "ProjectID")
     private String projectId;
     
-    @Column(name = "EstimateToComplete")
-    private float estimateToComplete;
+    @Column(name = "EstimateToComplete", columnDefinition = "FLOAT(14,2)")
+    private Double estimateToComplete;
     
     @JsonDeserialize(using = LocalDateDeserializer.class)  
 	@JsonSerialize(using = LocalDateSerializer.class)  
@@ -116,11 +116,11 @@ public class Estimate implements Auditable, Serializable {
         this.projectId = projectId;
     }
 
-    public float getEstimateToComplete() {
+    public double getEstimateToComplete() {
         return estimateToComplete;
     }
 
-    public void setEstimateToComplete(float estimateToComplete) {
+    public void setEstimateToComplete(double estimateToComplete) {
         this.estimateToComplete = estimateToComplete;
     }
 
