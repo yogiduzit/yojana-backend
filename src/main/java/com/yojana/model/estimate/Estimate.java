@@ -1,8 +1,6 @@
 package com.yojana.model.estimate;
 
 import java.io.Serializable;
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
@@ -149,7 +147,6 @@ public class Estimate implements Auditable, Serializable, Comparable<Estimate> {
 	public void setRows(Set<EstimateRow> rows) {
 		this.rows = rows;
 	}
-
 
 	@Override
 	public int compareTo(Estimate o) {
