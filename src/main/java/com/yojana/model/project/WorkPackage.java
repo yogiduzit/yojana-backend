@@ -281,7 +281,7 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
 	public void setPlanned(Double planned) {
 		this.planned = planned;
 	}
-
+	
 	public Double getAllocatedBudget() {
 		return allocatedBudget;
 	}
@@ -313,7 +313,7 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
 	public void setCharged(Double charged) {
 		this.charged = charged;
 	}
-
+	
 	public Double getCostAtCompletion() {
 		return costAtCompletion;
 	}

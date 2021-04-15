@@ -29,7 +29,6 @@ public class EstimateService {
     @Inject
     private EstimateManager estimateManager;
     
-    
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)

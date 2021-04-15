@@ -62,7 +62,6 @@ public class ProjectManager implements Serializable {
         List<Project> projects = query.getResultList();
         return projects;
     }
-
 	
 	public List<Project> getAllForProjectManager(int empId) {       
 		TypedQuery<Project> query = em.createQuery("SELECT p FROM Project p WHERE p.projectManagerId = :empId", Project.class); 
@@ -88,5 +87,4 @@ public class ProjectManager implements Serializable {
         
         return (Double) query.getSingleResult();
     }
-
 }
