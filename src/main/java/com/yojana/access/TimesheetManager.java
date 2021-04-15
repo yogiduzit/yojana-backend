@@ -8,7 +8,6 @@ import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.PathParam;
 import javax.persistence.EntityManager;
@@ -73,9 +72,17 @@ public class TimesheetManager implements Serializable {
 
 	/** get all timesheets. */
 	public List<Timesheet> getTimesheetsForWorkPackage(WorkPackagePK key) {
-		
         WorkPackage wp = wpManager.find(key);
 		int empID = wp.getResponsibleEngineer().getId();
 		return getAllForEmployee(empID);
+	}
+
+	/** get all submitted timesheets. **/
+	public List<Timesheet> getAllSubmittedTimesheetsForApprover(Integer empId) {
+		TypedQuery<Timesheet> query = em.createQuery(
+				"SELECT t FROM Timesheet t JOIN t.employee e WHERE e.timesheetApproverId = :empId AND t.status = 'submitted'",
+				Timesheet.class);
+		query.setParameter("empId", empId);
+		return query.getResultList();
 	}
 }
