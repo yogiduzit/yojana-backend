@@ -112,9 +112,16 @@ public class EmployeeService {
         emp.setLabourGrade(payGradeManager.find(employee.getLabourGradeId()));
         emp.setLabourGradeId(employee.getLabourGradeId());
         emp.setManagerId(employee.getManagerId());
-        emp.setManager(employeeManager.find(employee.getManagerId()));
+        
+        if (employee.getManagerId() != null) {
+        	Employee manager = employeeManager.find(employee.getManagerId());
+            emp.setManager(manager);
+        }
         emp.setTimesheetApproverId(employee.getTimesheetApproverId());
-        emp.setTimesheetApprover(employeeManager.find(employee.getTimesheetApproverId()));
+        
+        if (emp.getTimesheetApproverId() != null) {
+        	emp.setTimesheetApprover(employeeManager.find(employee.getTimesheetApproverId()));
+        }
         emp.setHr(employee.isHr());
         emp.setAdmin(employee.isAdmin());
         emp.setProjectManager(employee.isProjectManager());

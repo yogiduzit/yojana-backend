@@ -29,14 +29,17 @@ public class EstimateService {
     @Inject
     private EstimateManager estimateManager;
     
+    
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response persist(Estimate estimate) {
         APIResponse res = new APIResponse();
         UUID uuid = UUID.randomUUID();
+        
         estimate.setEstimateId(uuid);
         estimateManager.persist(estimate);
+        res.getData().put("id", estimate.getEstimateId());
         return Response.created(URI.create("/estimates/" + estimate.getEstimateId())).entity(res).build();
     }
     

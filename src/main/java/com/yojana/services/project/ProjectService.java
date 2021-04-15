@@ -1,8 +1,8 @@
 package com.yojana.services.project;
 
 import java.net.URI;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.print.attribute.standard.Media;
@@ -20,19 +20,16 @@ import javax.ws.rs.core.Response.Status;
 
 import org.hibernate.Hibernate;
 
-import org.hibernate.Hibernate;
 
 import com.yojana.access.EmployeeManager;
 import com.yojana.access.EstimateManager;
 import com.yojana.access.ProjectManager;
 import com.yojana.access.WorkPackageManager;
 import com.yojana.helpers.ProjectHelper;
-import com.yojana.helpers.WorkPackageHelper;
 import com.yojana.model.employee.Employee;
 import com.yojana.model.estimate.Estimate;
 import com.yojana.model.project.Project;
 import com.yojana.model.project.WorkPackage;
-import com.yojana.model.project.WorkPackagePK;
 import com.yojana.response.APIResponse;
 import com.yojana.response.errors.ErrorMessageBuilder;
 import com.yojana.security.annotations.AuthenticatedEmployee;
@@ -130,6 +127,11 @@ public class ProjectService {
 					));
 			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
 		}
+		Double allocatedBudget = projectManager.getAllocatedBudget(id);
+		Double allocatedEstimate = projectManager.getAllocatedInitialEstimate(id);
+		
+		project.setAllocatedBudget(allocatedBudget);
+		project.setAllocatedInitialEstimate(allocatedEstimate);
         res.getData().put("project", project);
         return Response.ok().entity(res).build();
 	}
@@ -140,7 +142,7 @@ public class ProjectService {
 	public Response getWorkPackages(@PathParam("id") String projectId,
 			@QueryParam("hierarchyLevel") Integer hierarchyLevel) {
 		APIResponse res = new APIResponse();
-		List<WorkPackage> wps;
+		Set<WorkPackage> wps;
 		if (hierarchyLevel == null) {
 			wps = wpManager.getAll(projectId);
 		} else {
@@ -156,7 +158,7 @@ public class ProjectService {
 	public Response getChildWPs(@PathParam("id") String projectId, 
 			@PathParam("wpId") String wpId) {
 		APIResponse res = new APIResponse();
-		List<WorkPackage> wps = wpManager.getChildWPs(projectId, wpId);
+		Set<WorkPackage> wps = wpManager.getChildWPs(projectId, wpId);
 		res.getData().put("workPackages", wps);
 		return Response.ok().entity(res).build();
 	}
@@ -174,4 +176,19 @@ public class ProjectService {
         res.getData().put("estimates", estimates);
         return Response.ok().entity(res).build();
     }
+
+    @GET
+    @Path("/get/respEng")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllWPsForResponsibleEngineer() {
+        final APIResponse res = new APIResponse();
+        Set<WorkPackage> wps = wpManager.getAllForResponsibleEngineer(authEmployee.getId());
+        if (wps == null) {
+            res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("work package", null));
+            return Response.status(Response.Status.NOT_FOUND).entity(res).build();
+        }
+        res.getData().put("workPackages", wps);
+        return Response.ok().entity(res).build();
+    }
+    
 }

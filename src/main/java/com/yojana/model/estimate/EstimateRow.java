@@ -88,5 +88,9 @@ public class EstimateRow implements Serializable {
 	public void setPaygradeId(String paygradeId) {
 		this.paygradeId = paygradeId;
 	}
+	
+	public float getTotalCost() {
+		return empDays * 8 * payGrade.getChargeRate() * empCount;
+	}
     
 }

@@ -19,8 +19,6 @@ public class EstimateRowPK implements Serializable {
     
     @Column(name = "RowIndex")
     private int index;
-    
-    
 
 	public EstimateRowPK() {
 		super();

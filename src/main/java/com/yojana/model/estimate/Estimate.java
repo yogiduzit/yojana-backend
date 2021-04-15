@@ -37,7 +37,7 @@ import com.yojana.model.timesheet.LocalDateSerializer;
 @Entity
 @Table(name = "Estimate")
 @EntityListeners(AuditListener.class)
-public class Estimate implements Auditable, Serializable {
+public class Estimate implements Auditable, Serializable, Comparable<Estimate> {
     
     private static final long serialVersionUID = -8709713671106036600L;
     
@@ -57,14 +57,14 @@ public class Estimate implements Auditable, Serializable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private WorkPackage workPackage;
     
-    @Column(name = "WorkPackageID", insertable = false, updatable = false)
+    @Column(name = "WorkPackageID")
     private String workPackageId;
     
-    @Column(name = "ProjectID", insertable = false, updatable = false)
+    @Column(name = "ProjectID")
     private String projectId;
     
-    @Column(name = "EstimateToComplete")
-    private float estimateToComplete;
+    @Column(name = "EstimateToComplete", columnDefinition = "FLOAT(14,2)")
+    private Double estimateToComplete;
     
     @JsonDeserialize(using = LocalDateDeserializer.class)  
 	@JsonSerialize(using = LocalDateSerializer.class)  
@@ -118,11 +118,11 @@ public class Estimate implements Auditable, Serializable {
         this.projectId = projectId;
     }
 
-    public float getEstimateToComplete() {
+    public double getEstimateToComplete() {
         return estimateToComplete;
     }
 
-    public void setEstimateToComplete(float estimateToComplete) {
+    public void setEstimateToComplete(double estimateToComplete) {
         this.estimateToComplete = estimateToComplete;
     }
 
@@ -150,4 +150,9 @@ public class Estimate implements Auditable, Serializable {
 		this.rows = rows;
 	}
 
+
+	@Override
+	public int compareTo(Estimate o) {
+		return this.audit.getCreatedAt().compareTo(o.getAudit().getCreatedAt());
+	}
 }
