@@ -82,7 +82,9 @@ CREATE TABLE Timesheet(
     	FOREIGN KEY (EmpID) 
     		REFERENCES Employee(EmpID)
 			ON UPDATE CASCADE
-        	ON DELETE CASCADE
+        	ON DELETE CASCADE,
+    CONSTRAINT UQ_Emp_EndWk
+		UNIQUE (EmpID, EndWeek)
 );
 
 
@@ -108,9 +110,7 @@ CREATE TABLE Project(
 	ProjectManagerID INT NOT NULL,
     ProjectName VARCHAR(100),
     Budget FLOAT(14,2) DEFAULT 0,
-    AllocatedBudget FLOAT(14,2) DEFAULT 0,
     InitialEstimate FLOAT(14,2) DEFAULT 0,
-    AllocatedInitialEstimate FLOAT(14, 2) DEFAULT 0,
     Status ENUM('pending', 'submitted', 'open', 'closed') NOT NULL DEFAULT 'pending',
     Description TEXT,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -138,19 +138,6 @@ CREATE TABLE ProjectEmployee(
         	ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS Report;
-CREATE TABLE Report(
-	ReportID VARCHAR(255) NOT NULL,
-	ProjectID VARCHAR(20),
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Info JSON,
-	CONSTRAINT PKReport
-		PRIMARY KEY(ReportID),
-	CONSTRAINT FKReportProjectID 
-		FOREIGN KEY (ProjectID) REFERENCES Project(ProjectID)
-			ON UPDATE CASCADE
-            ON DELETE CASCADE
-);
 
 DROP TABLE IF EXISTS WorkPackage;
 CREATE TABLE WorkPackage(
@@ -162,10 +149,10 @@ CREATE TABLE WorkPackage(
     Descrip TEXT,
     IsLowestLevel BOOLEAN DEFAULT true,
     Budget FLOAT(14,2) DEFAULT 0,
+    EngineerPlanned FLOAT(14, 2) DEFAULT 0,
     AllocatedBudget FLOAT(14,2) DEFAULT 0,
     InitialEstimate FLOAT(14,2) DEFAULT 0,
     AllocatedInitialEstimate FLOAT(14, 2) DEFAULT 0,
-    Charged FLOAT(14,2) DEFAULT 0,
     CostAtCompletion FLOAT(14,2) DEFAULT 0,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -210,6 +197,8 @@ CREATE TABLE Estimate(
     WorkPackageID VARCHAR(20) NOT NULL,
 	ProjectID VARCHAR(20) NOT NULL,
     EstimateToComplete FLOAT(14,2),
+    ForWeek DATE NOT NULL,
+    Type ENUM('initial', 'planned', 'weekly') NOT NULL,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT PKEstimate
@@ -223,11 +212,12 @@ CREATE TABLE Estimate(
 DROP TABLE IF EXISTS EstimateRow;
 CREATE TABLE EstimateRow(
 	EstimateID VARCHAR(255) NOT NULL,
+	RowIndex INT NOT NULL DEFAULT 0,
     PayGradeID VARCHAR(4) NOT NULL,
 	EmpDays FLOAT(4,2),
     EmpCount INT,
 	CONSTRAINT PKEstimateRow
-		PRIMARY KEY(EstimateID, PayGradeID),
+		PRIMARY KEY(EstimateID, RowIndex),
 	CONSTRAINT FKEstimateRowPayGradeID 
 		FOREIGN KEY (PayGradeID) REFERENCES PayGrade(LabourGrade)
 			ON UPDATE CASCADE,
@@ -264,7 +254,7 @@ INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
 INSERT INTO Employee (EmpID, EmpName, LabourGrade, TimesheetApproverID, IsHR, IsAdmin, IsProjectManager, IsTimesheetApprover)
  VALUES (1, "Bruce Link",  "PS", NULL, TRUE, TRUE, TRUE, TRUE);
 INSERT INTO Employee (EmpID, EmpName, LabourGrade, ManagedBy, TimesheetApproverID, IsHR, IsAdmin, IsProjectManager, IsTimesheetApprover)
- VALUES (2, "Yogesh Verma",  "PS", 1, 1, TRUE, FALSE, FALSE, TRUE);
+ VALUES (2, "Yogesh Verma",  "PS", 1, 1, TRUE, FALSE, FALSE, FALSE);
 
 INSERT INTO Credential (EmpID, EmpUserName, EmpPassword) VALUES (1, "bdlink", "bruce");
 INSERT INTO Credential (EmpID, EmpUserName, EmpPassword) VALUES (2, "yogiduzit", "yogesh");
@@ -275,9 +265,12 @@ INSERT INTO Timesheet (TimesheetID, EmpID, EndWeek) VALUES ("45700000-0000-0000-
 
 INSERT INTO LeaveRequest VALUES ("31324000-0000-0000-0000-000000000000", 1, DATE '2021/3/10', DATE '2021/4/18', "Medical", "Going to the dentist");
 
-INSERT INTO Project (ProjectID, ProjectManagerID, ProjectName, Budget, AllocatedBudget, InitialEstimate, AllocatedInitialEstimate, Description, Status) VALUES ("PR123", 1, "Stormfront", 100000.00, 100.00, 90000.00, 89.00, "A really cool project that should get an A", 'pending');
+INSERT INTO Project (ProjectID, ProjectManagerID, ProjectName, Budget, InitialEstimate, Description, Status) VALUES ("PR123", 1, "Stormfront", 100000.00, 90000.00, "A really cool project that should get an A", 'pending');
 
 INSERT INTO WorkPackage (WorkPackageID, ProjectID, ResponsibleEngineerID, WorkPackageName, Descrip, IsLowestLevel, Budget, InitialEstimate, DueAt, Stat) VALUES ("WP1", "PR123", 2, "DDL Creation", "Make a ddl", TRUE, 100.00, 89.00, DATE '2021/5/21', 'open');
+INSERT INTO WorkPackage (WorkPackageID, ProjectID, ResponsibleEngineerID, WorkPackageName, Descrip, IsLowestLevel, Budget, InitialEstimate, DueAt, Stat) VALUES ("WP2", "PR123", 1, "DDL Creation", "Make a ddl", TRUE, 100.00, 89.00, DATE '2021/5/21', 'open');
+INSERT INTO WorkPackage (WorkPackageID, ProjectID, ResponsibleEngineerID, WorkPackageName, Descrip, IsLowestLevel, Budget, InitialEstimate, DueAt, Stat) VALUES ("WP3", "PR123", 1, "DDL Creation", "Make a ddl", TRUE, 100.00, 89.00, DATE '2021/5/21', 'open');
+INSERT INTO WorkPackage (WorkPackageID, ProjectID, ResponsibleEngineerID, WorkPackageName, Descrip, IsLowestLevel, Budget, InitialEstimate, DueAt, Stat) VALUES ("WP4", "PR123", 2, "DDL Creation", "Make a ddl", TRUE, 100.00, 89.00, DATE '2021/5/21', 'open');
 
 INSERT INTO TimesheetRow (TimesheetID, ProjectID, WorkPackageID, Notes, Hours) VALUES ("45700000-0000-0000-0000-000000000000", "PR123", "WP1", "Sample notes", 1000);
 
@@ -286,11 +279,6 @@ INSERT INTO ProjectEmployee VALUES("PR123", 2);
 
 INSERT INTO EmployeePackage VALUES("WP1",  "PR123", 2);
 
-INSERT INTO Estimate (EstimateID, WorkPackageID, ProjectID) VALUES ("83400000-0000-0000-0000-000000000000", "WP1", "PR123");
+INSERT INTO Estimate (EstimateID, WorkPackageID, ProjectID, ForWeek, EstimateToComplete, Type) VALUES ("83400000-0000-0000-0000-000000000000", "WP1", "PR123", DATE '2000/3/24', 100.00, 'initial');
 
-INSERT INTO EstimateRow VALUES("83400000-0000-0000-0000-000000000000", "PS", 2.5, 50);
-
-
-INSERT INTO Report (ReportID, ProjectID, Info) VALUES("13400090-0000-0000-0000-000000000000", "PR123", '{
-"StatusReport":{ "Type":"weekly", "Date":"2021/2/12", "data":{"EmpID": "32000000-0000-0000-0000-000000000000",
- "ProjectID":"PR123", "WorkPackage":"WP1.1", "Hours":"12"}}}');
+INSERT INTO EstimateRow (EstimateID, PaygradeID, EmpDays, EmpCount)VALUES("83400000-0000-0000-0000-000000000000", "PS", 2.5, 50);

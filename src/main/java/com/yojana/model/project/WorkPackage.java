@@ -19,20 +19,24 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yojana.model.auditable.Audit;
 import com.yojana.model.auditable.AuditListener;
 import com.yojana.model.auditable.Auditable;
 import com.yojana.model.employee.Employee;
+import com.yojana.model.estimate.Estimate;
+import com.yojana.model.timesheet.TimesheetRow;
 
 @Entity
 @Table(name = "WorkPackage")
 @EntityListeners(AuditListener.class)
-public class WorkPackage implements Auditable, Serializable {
+public class WorkPackage implements Auditable, Serializable, Comparable<WorkPackage> {
 	
 	/**
 	 * 
@@ -70,6 +74,9 @@ public class WorkPackage implements Auditable, Serializable {
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Employee responsibleEngineer;
 	
+	@Column(name = "ResponsibleEngineerID", insertable = false, updatable = false)
+	private Integer responsibleEngineerId;
+	
 	@Column(name = "WorkPackageName")
 	private String workPackageName;
 	
@@ -79,23 +86,26 @@ public class WorkPackage implements Auditable, Serializable {
 	@Column(name = "IsLowestLevel")
 	private Boolean isLowestLevel;
 	
-	@Column(name = "Budget")
-	private Float budget;
+	@Column(name = "Budget", columnDefinition = "FLOAT(14,2)")
+	private Double budget;
 	
-	@Column(name = "AllocatedBudget")
-	private Float allocatedBudget;
+	@Column(name = "EngineerPlanned", columnDefinition = "FLOAT(14,2)")
+	private Double planned;
 	
-	@Column(name = "InitialEstimate")
-	private Float initialEstimate;
+	@Column(name = "AllocatedBudget", columnDefinition = "FLOAT(14,2)")
+	private Double allocatedBudget;
 	
-	@Column(name = "AllocatedInitialEstimate")
-	private Float allocatedInitialEstimate;
+	@Column(name = "InitialEstimate", columnDefinition = "FLOAT(14,2)")
+	private Double initialEstimate;
 	
-	@Column(name = "Charged")
-	private Float charged;
+	@Column(name = "AllocatedInitialEstimate", columnDefinition = "FLOAT(14,2)")
+	private Double allocatedInitialEstimate;
 	
-	@Column(name = "CostAtCompletion")
-	private Float costAtCompletion;
+	@Transient
+	private Double charged;
+	
+	@Column(name = "CostAtCompletion", columnDefinition = "FLOAT(14,2)")
+	private Double costAtCompletion;
 	
 	@Temporal(TemporalType.DATE)
     @Column(name = "DueAt")
@@ -116,6 +126,14 @@ public class WorkPackage implements Auditable, Serializable {
         inverseJoinColumns = { @JoinColumn(name = "EmpID", referencedColumnName = "EmpID") }
     )
     private Set<Employee> employees;
+	
+	@OneToMany(mappedBy = "workPackage", fetch = FetchType.LAZY)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private Set<TimesheetRow> rows;
+	
+	@OneToMany(mappedBy = "workPackage", fetch = FetchType.LAZY)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private Set<Estimate> estimates;
 	
 	/**
 	 * Represents the nesting / hierarchy level of the work package
@@ -208,38 +226,6 @@ public class WorkPackage implements Auditable, Serializable {
 		this.isLowestLevel = isLowestLevel;
 	}
 
-	public Float getAllocatedBudget() {
-		return allocatedBudget;
-	}
-
-	public void setAllocatedBudget(Float allocatedBudget) {
-		this.allocatedBudget = allocatedBudget;
-	}
-
-	public Float getInitialEstimate() {
-		return initialEstimate;
-	}
-
-	public void setInitialEstimate(Float initialEstimate) {
-		this.initialEstimate = initialEstimate;
-	}
-
-	public Float getCharged() {
-		return charged;
-	}
-
-	public void setCharged(Float charged) {
-		this.charged = charged;
-	}
-
-	public Float getCostAtCompletion() {
-		return costAtCompletion;
-	}
-
-	public void setCostAtCompletion(Float costAtCompletion) {
-		this.costAtCompletion = costAtCompletion;
-	}
-
 	public Date getDueAt() {
 		return dueAt;
 	}
@@ -264,28 +250,156 @@ public class WorkPackage implements Auditable, Serializable {
 		this.employees = employees;
 	}
 
-	public Float getBudget() {
-		return budget;
-	}
-
-	public void setBudget(Float budget) {
-		this.budget = budget;
-	}
-
-	public Float getAllocatedInitialEstimate() {
-		return allocatedInitialEstimate;
-	}
-
-	public void setAllocatedInitialEstimate(Float allocatedInitialEstimate) {
-		this.allocatedInitialEstimate = allocatedInitialEstimate;
-	}
-
 	public int getHierarchyLevel() {
 		return hierarchyLevel;
 	}
 
 	public void setHierarchyLevel(int hierarchyLevel) {
 		this.hierarchyLevel = hierarchyLevel;
+	}
+
+	public Boolean getIsLowestLevel() {
+		return isLowestLevel;
+	}
+
+	public void setIsLowestLevel(Boolean isLowestLevel) {
+		this.isLowestLevel = isLowestLevel;
+	}
+	
+	public Double getBudget() {
+		return budget;
+	}
+
+	public void setBudget(Double budget) {
+		this.budget = budget;
+	}
+
+	public Double getPlanned() {
+		return planned;
+	}
+
+	public void setPlanned(Double planned) {
+		this.planned = planned;
+	}
+	
+	public Double getAllocatedBudget() {
+		return allocatedBudget;
+	}
+
+	public void setAllocatedBudget(Double allocatedBudget) {
+		this.allocatedBudget = allocatedBudget;
+	}
+
+	public Double getInitialEstimate() {
+		return initialEstimate;
+	}
+
+	public void setInitialEstimate(Double initialEstimate) {
+		this.initialEstimate = initialEstimate;
+	}
+
+	public Double getAllocatedInitialEstimate() {
+		return allocatedInitialEstimate;
+	}
+
+	public void setAllocatedInitialEstimate(Double allocatedInitialEstimate) {
+		this.allocatedInitialEstimate = allocatedInitialEstimate;
+	}
+
+	public Double getCharged() {
+		return charged;
+	}
+
+	public void setCharged(Double charged) {
+		this.charged = charged;
+	}
+	
+	public Double getCostAtCompletion() {
+		return costAtCompletion;
+	}
+
+	public void setCostAtCompletion(Double costAtCompletion) {
+		this.costAtCompletion = costAtCompletion;
+	}
+
+	public Integer getResponsibleEngineerId() {
+		return responsibleEngineerId;
+	}
+
+	public void setResponsibleEngineerId(Integer responsibleEngineerId) {
+		this.responsibleEngineerId = responsibleEngineerId;
+	}
+	
+	public Set<TimesheetRow> getRows() {
+		return rows;
+	}
+
+	public void setRows(Set<TimesheetRow> rows) {
+		this.rows = rows;
+	}
+
+	public Set<Estimate> getEstimates() {
+		return estimates;
+	}
+
+	public void setEstimates(Set<Estimate> estimates) {
+		this.estimates = estimates;
+	}
+
+	@PrePersist
+	public void initialize() {
+	    if (initialEstimate == null) {
+	    	initialEstimate = 0.0;
+	    }
+	    if (allocatedInitialEstimate == null) {
+	    	allocatedInitialEstimate = 0.0;
+	    }
+	    if (budget == null) {
+	    	budget = 0.0;
+	    }
+	    if (allocatedBudget == null) {
+	    	allocatedBudget = 0.0;
+	    }
+	    if (charged == null) {
+	    	charged = 0.0;
+	    }
+	    if (costAtCompletion == null) {
+	    	costAtCompletion = 0.0;
+	    }
+	    if (planned == null) {
+	    	planned = 0.0;
+	    }
+	}
+
+	@Override
+	public int compareTo(WorkPackage wp) {
+		if (!this.workPackagePk.getProjectID().equals(wp.getWorkPackagePk().getProjectID())) {
+			return this.workPackagePk.getProjectID().compareTo(wp.getWorkPackagePk().getProjectID());
+		}
+		String id1 = this.getWorkPackagePk().getId().substring(2);
+		String id2 = wp.getWorkPackagePk().getId().substring(2);
+		int lesser = (id1.length() > id2.length()) ? id2.length() : id1.length();
+		
+		if (this.getHierarchyLevel() == wp.getHierarchyLevel()
+				&& this.getHierarchyLevel() == 0) {
+			return Integer.parseInt(id1) - Integer.parseInt(id2);
+		}
+			
+		for (int i = 0; i < lesser; i += 2) {
+			if (i >= id1.length()) {
+				return 1;
+			}
+			if (i >= id2.length()) {
+				return -1;
+			}
+			if (id1.charAt(i) == id2.charAt(i)) continue;
+			if (id1.charAt(i) < id2.charAt(i)) {
+				return 1;
+			} else {
+				return -1;
+			}
+		}
+		return 0;
 	}
 
 }

@@ -17,6 +17,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yojana.model.auditable.Audit;
@@ -47,14 +48,14 @@ public class Project  implements Auditable, Serializable {
 	@Column(name = "Budget")
 	private Float budget;
 	
-	@Column(name = "AllocatedBudget")
-	private Float allocatedBudget;
+	@Transient
+	private Double allocatedBudget;
 	
 	@Column(name = "InitialEstimate")
 	private Float initialEstimate;
 	
-	@Column(name = "AllocatedInitialEstimate")
-	private Float allocatedInitialEstimate;
+	@Transient
+	private Double allocatedInitialEstimate;
 	
 	
 	@Column(name = "Description", columnDefinition="TEXT")
@@ -163,19 +164,19 @@ public class Project  implements Auditable, Serializable {
 		this.employees = employees;
 	}
 
-	public Float getAllocatedBudget() {
+	public Double getAllocatedBudget() {
 		return allocatedBudget;
 	}
 
-	public void setAllocatedBudget(Float allocatedBudget) {
+	public void setAllocatedBudget(Double allocatedBudget) {
 		this.allocatedBudget = allocatedBudget;
 	}
 
-	public Float getAllocatedInitialEstimate() {
+	public Double getAllocatedInitialEstimate() {
 		return allocatedInitialEstimate;
 	}
 
-	public void setAllocatedInitialEstimate(Float allocatedInitialEstimate) {
+	public void setAllocatedInitialEstimate(Double allocatedInitialEstimate) {
 		this.allocatedInitialEstimate = allocatedInitialEstimate;
 	}
 

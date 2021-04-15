@@ -2,6 +2,7 @@ package com.yojana.services.employee;
 
 import java.net.URI;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -111,9 +112,16 @@ public class EmployeeService {
         emp.setLabourGrade(payGradeManager.find(employee.getLabourGradeId()));
         emp.setLabourGradeId(employee.getLabourGradeId());
         emp.setManagerId(employee.getManagerId());
-        emp.setManager(employeeManager.find(employee.getManagerId()));
+        
+        if (employee.getManagerId() != null) {
+        	Employee manager = employeeManager.find(employee.getManagerId());
+            emp.setManager(manager);
+        }
         emp.setTimesheetApproverId(employee.getTimesheetApproverId());
-        emp.setTimesheetApprover(employeeManager.find(employee.getTimesheetApproverId()));
+        
+        if (emp.getTimesheetApproverId() != null) {
+        	emp.setTimesheetApprover(employeeManager.find(employee.getTimesheetApproverId()));
+        }
         emp.setHr(employee.isHr());
         emp.setAdmin(employee.isAdmin());
         emp.setProjectManager(employee.isProjectManager());
@@ -153,10 +161,10 @@ public class EmployeeService {
 	}
 	
 	@GET
-	@Path("//{id}")
+	@Path("/{id}/timesheets")
 	@Produces("application/json")
 	// Gets a list of all timesheets for an id
-	public Response getAllTimesheetsForEmployee(@PathParam("id") UUID empId) {
+	public Response getAllTimesheetsForEmployee(@PathParam("id") Integer empId) {
 		final APIResponse res = new APIResponse();
 		if(!authEmployee.isAdmin() && !authEmployee.isProjectManager() && !authEmployee.isHr()) {
             return Response.status(Response.Status.FORBIDDEN).entity(res).build();
@@ -167,6 +175,18 @@ public class EmployeeService {
 			return Response.status(Response.Status.NOT_FOUND).entity(res).build();
 		}
 		res.getData().put("timesheets", timesheets);
+		return Response.ok().entity(res).build();
+	}
+	
+	@GET
+	@Path("/hours/{endWeek}")
+	@Produces("application/json")  
+	// Gets a list of all timesheets for an id
+	public Response getWeekHours(@PathParam("endWeek") String date) {
+		LocalDate endWeek = LocalDate.parse(date);
+		final APIResponse res = new APIResponse();
+		double hours = employeeManager.getHoursForWeek(authEmployee.getId(), endWeek);
+		res.getData().put("hours", hours);
 		return Response.ok().entity(res).build();
 	}
 }

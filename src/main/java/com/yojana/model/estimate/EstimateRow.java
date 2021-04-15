@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yojana.model.employee.PayGrade;
 
 @Entity
@@ -22,13 +23,17 @@ public class EstimateRow implements Serializable {
     @EmbeddedId
     private EstimateRowPK estimateRowPk;
     
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE})
     @JoinColumn(name = "EstimateID", referencedColumnName = "EstimateID", insertable = false, updatable = false)
     private Estimate estimate;
     
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE})
-    @JoinColumn(name = "PayGradeID", referencedColumnName = "LabourGrade", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE})
+    @JoinColumn(name = "PayGradeID", referencedColumnName = "LabourGrade")
     private PayGrade payGrade;
+    
+    @Column(name = "PayGradeID", insertable = false, updatable = false)
+    private String paygradeId;
     
     @Column(name = "EmpDays")
     private float empDays;
@@ -75,6 +80,17 @@ public class EstimateRow implements Serializable {
     public void setEmpCount(int empCount) {
         this.empCount = empCount;
     }
-    
+
+	public String getPaygradeId() {
+		return paygradeId;
+	}
+
+	public void setPaygradeId(String paygradeId) {
+		this.paygradeId = paygradeId;
+	}
+	
+	public float getTotalCost() {
+		return empDays * 8 * payGrade.getChargeRate() * empCount;
+	}
     
 }

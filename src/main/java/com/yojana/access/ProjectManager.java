@@ -7,6 +7,7 @@ import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
@@ -48,10 +49,42 @@ public class ProjectManager implements Serializable {
     }
 	
 	public List<Project> getAll() {       
-		TypedQuery<Project> query = em.createQuery("select p from Project p",
+		TypedQuery<Project> query = em.createQuery("SELECT p FROM Project p",
                 Project.class); 
         List<Project> projects = query.getResultList();
         return projects;
     }
-
+	
+	public List<Project> getAllForEmployee(int empId) {       
+        TypedQuery<Project> query = em.createQuery("SELECT DISTINCT p FROM Project p JOIN FETCH" 
+                + " p.employees e where e.id = :empId", Project.class); 
+        query.setParameter("empId", empId);
+        List<Project> projects = query.getResultList();
+        return projects;
+    }
+	
+	public List<Project> getAllForProjectManager(int empId) {       
+		TypedQuery<Project> query = em.createQuery("SELECT p FROM Project p WHERE p.projectManagerId = :empId", Project.class); 
+		query.setParameter("empId", empId);
+        List<Project> projects = query.getResultList();
+        return projects;
+    }
+	
+	public Double getAllocatedInitialEstimate(String projectId) {       
+		Query query = em.createQuery("SELECT SUM(wp.initialEstimate) FROM WorkPackage wp" 
+				+ " WHERE wp.workPackagePk.projectID = :projectId"
+				+ " AND wp.hierarchyLevel = 0"); 
+		query.setParameter("projectId", projectId);
+        
+        return (Double) query.getSingleResult();
+    }
+	
+	public Double getAllocatedBudget(String projectId) {       
+		Query query = em.createQuery("SELECT SUM(wp.budget) FROM WorkPackage wp" 
+				+ " WHERE wp.workPackagePk.projectID = :projectId"
+				+ " AND wp.hierarchyLevel = 0"); 
+		query.setParameter("projectId", projectId);
+        
+        return (Double) query.getSingleResult();
+    }
 }

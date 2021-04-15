@@ -35,8 +35,10 @@ public class EstimateService {
     public Response persist(Estimate estimate) {
         APIResponse res = new APIResponse();
         UUID uuid = UUID.randomUUID();
+        
         estimate.setEstimateId(uuid);
         estimateManager.persist(estimate);
+        res.getData().put("id", estimate.getEstimateId());
         return Response.created(URI.create("/estimates/" + estimate.getEstimateId())).entity(res).build();
     }
     
@@ -88,35 +90,6 @@ public class EstimateService {
     public Response getAll() {
         final APIResponse res = new APIResponse();
         List<Estimate> estimates = estimateManager.getAll();
-        if (estimates == null) {
-            res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("estimate", null));
-            return Response.status(Response.Status.NOT_FOUND).entity(res).build();
-        }
-        res.getData().put("estimates", estimates);
-        return Response.ok().entity(res).build();
-    }
-    
-    @GET
-    @Path("/projects/{projectId}/workPackages/{wpId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllForWorkPackage(@PathParam("projectId") String projectId, 
-            @PathParam("wpId") String workPackageId) {
-        final APIResponse res = new APIResponse();
-        List<Estimate> estimates = estimateManager.getAllForWorkPackage(workPackageId, projectId);
-        if (estimates == null) {
-            res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("estimate", null));
-            return Response.status(Response.Status.NOT_FOUND).entity(res).build();
-        }
-        res.getData().put("estimates", estimates);
-        return Response.ok().entity(res).build();
-    }
-    
-    @GET
-    @Path("/projects/{projectId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllForProject(@PathParam("projectId") String projectId) {
-        final APIResponse res = new APIResponse();
-        List<Estimate> estimates = estimateManager.getAllForProject(projectId);
         if (estimates == null) {
             res.getErrors().add(ErrorMessageBuilder.notFoundMultiple("estimate", null));
             return Response.status(Response.Status.NOT_FOUND).entity(res).build();
