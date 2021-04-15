@@ -111,7 +111,8 @@ public class EstimateManager implements Serializable{
     public List<Estimate> getAllForWorkPackage(String workPackageId, String projectId) {
         TypedQuery<Estimate> query = em.createQuery("select e from Estimate e where"
                 + " e.workPackageId = :workPackageId"
-                + " and e.projectId = :projectId",
+                + " and e.projectId = :projectId"
+                + " ORDER BY e.type, e.forWeek",
                 Estimate.class); 
         query.setParameter("workPackageId", workPackageId);
         query.setParameter("projectId", projectId);

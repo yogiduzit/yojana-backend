@@ -30,6 +30,8 @@ import com.yojana.model.auditable.Audit;
 import com.yojana.model.auditable.AuditListener;
 import com.yojana.model.auditable.Auditable;
 import com.yojana.model.employee.Employee;
+import com.yojana.model.estimate.Estimate;
+import com.yojana.model.timesheet.TimesheetRow;
 
 @Entity
 @Table(name = "WorkPackage")
@@ -124,6 +126,14 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
         inverseJoinColumns = { @JoinColumn(name = "EmpID", referencedColumnName = "EmpID") }
     )
     private Set<Employee> employees;
+	
+	@OneToMany(mappedBy = "workPackage", fetch = FetchType.LAZY)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private Set<TimesheetRow> rows;
+	
+	@OneToMany(mappedBy = "workPackage", fetch = FetchType.LAZY)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private Set<Estimate> estimates;
 	
 	/**
 	 * Represents the nesting / hierarchy level of the work package
@@ -312,6 +322,30 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
 		this.costAtCompletion = costAtCompletion;
 	}
 
+	public Integer getResponsibleEngineerId() {
+		return responsibleEngineerId;
+	}
+
+	public void setResponsibleEngineerId(Integer responsibleEngineerId) {
+		this.responsibleEngineerId = responsibleEngineerId;
+	}
+	
+	public Set<TimesheetRow> getRows() {
+		return rows;
+	}
+
+	public void setRows(Set<TimesheetRow> rows) {
+		this.rows = rows;
+	}
+
+	public Set<Estimate> getEstimates() {
+		return estimates;
+	}
+
+	public void setEstimates(Set<Estimate> estimates) {
+		this.estimates = estimates;
+	}
+
 	@PrePersist
 	public void initialize() {
 	    if (initialEstimate == null) {
@@ -337,14 +371,6 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
 	    }
 	}
 
-	public Integer getResponsibleEngineerId() {
-		return responsibleEngineerId;
-	}
-
-	public void setResponsibleEngineerId(Integer responsibleEngineerId) {
-		this.responsibleEngineerId = responsibleEngineerId;
-	}
-
 	@Override
 	public int compareTo(WorkPackage wp) {
 		if (!this.workPackagePk.getProjectID().equals(wp.getWorkPackagePk().getProjectID())) {
@@ -352,7 +378,7 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
 		}
 		String id1 = this.getWorkPackagePk().getId().substring(2);
 		String id2 = wp.getWorkPackagePk().getId().substring(2);
-		int lesser = (id1.length() > id2.length()) ? id1.length() : id2.length();
+		int lesser = (id1.length() > id2.length()) ? id2.length() : id1.length();
 		
 		if (this.getHierarchyLevel() == wp.getHierarchyLevel()
 				&& this.getHierarchyLevel() == 0) {
@@ -360,6 +386,12 @@ public class WorkPackage implements Auditable, Serializable, Comparable<WorkPack
 		}
 			
 		for (int i = 0; i < lesser; i += 2) {
+			if (i >= id1.length()) {
+				return 1;
+			}
+			if (i >= id2.length()) {
+				return -1;
+			}
 			if (id1.charAt(i) == id2.charAt(i)) continue;
 			if (id1.charAt(i) < id2.charAt(i)) {
 				return 1;

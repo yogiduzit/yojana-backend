@@ -76,7 +76,7 @@ public class Employee implements Auditable, Serializable {
   /**
      * Represents the ID of the timesheet approver of this employee
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "LabourGrade")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private PayGrade labourGrade;

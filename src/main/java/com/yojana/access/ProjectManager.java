@@ -1,7 +1,6 @@
 package com.yojana.access;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -59,6 +58,13 @@ public class ProjectManager implements Serializable {
 	public List<Project> getAllForEmployee(int empId) {       
 		TypedQuery<Project> query = em.createQuery("SELECT DISTINCT p FROM Project p JOIN FETCH" 
 				+ " p.employees e where e.id = :empId", Project.class); 
+		query.setParameter("empId", empId);
+        List<Project> projects = query.getResultList();
+        return projects;
+    }
+	
+	public List<Project> getAllForProjectManager(int empId) {       
+		TypedQuery<Project> query = em.createQuery("SELECT p FROM Project p WHERE p.projectManagerId = :empId", Project.class); 
 		query.setParameter("empId", empId);
         List<Project> projects = query.getResultList();
         return projects;

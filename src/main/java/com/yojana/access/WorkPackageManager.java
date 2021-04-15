@@ -10,14 +10,11 @@ import java.util.TreeSet;
 
 import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
-import com.yojana.helpers.FloatHelper;
-//import com.yojana.helpers.FloatHelper;
 import com.yojana.model.project.WorkPackage;
 import com.yojana.model.project.WorkPackagePK;
 import com.yojana.model.timesheet.TimesheetRow;

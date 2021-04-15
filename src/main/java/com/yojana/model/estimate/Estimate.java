@@ -35,7 +35,7 @@ import com.yojana.model.timesheet.LocalDateSerializer;
 @Entity
 @Table(name = "Estimate")
 @EntityListeners(AuditListener.class)
-public class Estimate implements Auditable, Serializable {
+public class Estimate implements Auditable, Serializable, Comparable<Estimate> {
     
     private static final long serialVersionUID = -8709713671106036600L;
     
@@ -146,5 +146,10 @@ public class Estimate implements Auditable, Serializable {
 
 	public void setRows(Set<EstimateRow> rows) {
 		this.rows = rows;
+	}
+
+	@Override
+	public int compareTo(Estimate o) {
+		return this.audit.getCreatedAt().compareTo(o.getAudit().getCreatedAt());
 	}
 }
