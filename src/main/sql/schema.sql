@@ -254,7 +254,7 @@ INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
 INSERT INTO Employee (EmpID, EmpName, LabourGrade, TimesheetApproverID, IsHR, IsAdmin, IsProjectManager, IsTimesheetApprover)
  VALUES (1, "Bruce Link",  "PS", NULL, TRUE, TRUE, TRUE, TRUE);
 INSERT INTO Employee (EmpID, EmpName, LabourGrade, ManagedBy, TimesheetApproverID, IsHR, IsAdmin, IsProjectManager, IsTimesheetApprover)
- VALUES (2, "Yogesh Verma",  "PS", 1, 1, TRUE, FALSE, FALSE, TRUE);
+ VALUES (2, "Yogesh Verma",  "PS", 1, 1, TRUE, FALSE, FALSE, FALSE);
 
 INSERT INTO Credential (EmpID, EmpUserName, EmpPassword) VALUES (1, "bdlink", "bruce");
 INSERT INTO Credential (EmpID, EmpUserName, EmpPassword) VALUES (2, "yogiduzit", "yogesh");
