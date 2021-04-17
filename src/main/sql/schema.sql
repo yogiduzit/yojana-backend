@@ -249,12 +249,19 @@ CREATE TABLE TimesheetRow(
 		UNIQUE (WorkPackageID, ProjectID, TimesheetID)
 );
 
-INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("PS", 3.50);
+INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("JS", 20.50);
+INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("DS", 12.50);
+INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("P1", 25.50);
+INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("P2", 30.50);
+INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("P3", 36.50);
+INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("P4", 7.50);
+INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("P5", 9.50);
+INSERT INTO PayGrade (LabourGrade, ChargeRate) VALUES ("P6", 10.50);
 
 INSERT INTO Employee (EmpID, EmpName, LabourGrade, TimesheetApproverID, IsHR, IsAdmin, IsProjectManager, IsTimesheetApprover)
- VALUES (1, "Bruce Link",  "PS", NULL, TRUE, TRUE, TRUE, TRUE);
+ VALUES (1, "Bruce Link",  "P5", NULL, TRUE, TRUE, TRUE, TRUE);
 INSERT INTO Employee (EmpID, EmpName, LabourGrade, ManagedBy, TimesheetApproverID, IsHR, IsAdmin, IsProjectManager, IsTimesheetApprover)
- VALUES (2, "Yogesh Verma",  "PS", 1, 1, TRUE, FALSE, FALSE, FALSE);
+ VALUES (2, "Yogesh Verma",  "P1", 1, 1, TRUE, FALSE, FALSE, FALSE);
 
 INSERT INTO Credential (EmpID, EmpUserName, EmpPassword) VALUES (1, "bdlink", "bruce");
 INSERT INTO Credential (EmpID, EmpUserName, EmpPassword) VALUES (2, "yogiduzit", "yogesh");
@@ -268,8 +275,8 @@ INSERT INTO LeaveRequest VALUES ("31324000-0000-0000-0000-000000000000", 1, DATE
 INSERT INTO Project (ProjectID, ProjectManagerID, ProjectName, Budget, InitialEstimate, Description, Status) VALUES ("PR123", 1, "Stormfront", 100000.00, 90000.00, "A really cool project that should get an A", 'pending');
 
 INSERT INTO WorkPackage (WorkPackageID, ProjectID, ResponsibleEngineerID, WorkPackageName, Descrip, IsLowestLevel, Budget, InitialEstimate, DueAt, Stat) VALUES ("WP1", "PR123", 2, "DDL Creation", "Make a ddl", TRUE, 100.00, 89.00, DATE '2021/5/21', 'open');
-INSERT INTO WorkPackage (WorkPackageID, ProjectID, ResponsibleEngineerID, WorkPackageName, Descrip, IsLowestLevel, Budget, InitialEstimate, DueAt, Stat) VALUES ("WP2", "PR123", 1, "DDL Creation", "Make a ddl", TRUE, 100.00, 89.00, DATE '2021/5/21', 'open');
-INSERT INTO WorkPackage (WorkPackageID, ProjectID, ResponsibleEngineerID, WorkPackageName, Descrip, IsLowestLevel, Budget, InitialEstimate, DueAt, Stat) VALUES ("WP3", "PR123", 1, "DDL Creation", "Make a ddl", TRUE, 100.00, 89.00, DATE '2021/5/21', 'open');
+INSERT INTO WorkPackage (WorkPackageID, ProjectID, ResponsibleEngineerID, WorkPackageName, Descrip, IsLowestLevel, Budget, InitialEstimate, DueAt, Stat) VALUES ("WP2", "PR123", 2, "DDL Creation", "Make a ddl", TRUE, 100.00, 89.00, DATE '2021/5/21', 'open');
+INSERT INTO WorkPackage (WorkPackageID, ProjectID, ResponsibleEngineerID, WorkPackageName, Descrip, IsLowestLevel, Budget, InitialEstimate, DueAt, Stat) VALUES ("WP3", "PR123", 2, "DDL Creation", "Make a ddl", TRUE, 100.00, 89.00, DATE '2021/5/21', 'open');
 INSERT INTO WorkPackage (WorkPackageID, ProjectID, ResponsibleEngineerID, WorkPackageName, Descrip, IsLowestLevel, Budget, InitialEstimate, DueAt, Stat) VALUES ("WP4", "PR123", 2, "DDL Creation", "Make a ddl", TRUE, 100.00, 89.00, DATE '2021/5/21', 'open');
 
 INSERT INTO TimesheetRow (TimesheetID, ProjectID, WorkPackageID, Notes, Hours) VALUES ("45700000-0000-0000-0000-000000000000", "PR123", "WP1", "Sample notes", 1000);
@@ -281,4 +288,4 @@ INSERT INTO EmployeePackage VALUES("WP1",  "PR123", 2);
 
 INSERT INTO Estimate (EstimateID, WorkPackageID, ProjectID, ForWeek, EstimateToComplete, Type) VALUES ("83400000-0000-0000-0000-000000000000", "WP1", "PR123", DATE '2000/3/24', 100.00, 'initial');
 
-INSERT INTO EstimateRow (EstimateID, PaygradeID, EmpDays, EmpCount)VALUES("83400000-0000-0000-0000-000000000000", "PS", 2.5, 50);
+INSERT INTO EstimateRow (EstimateID, PaygradeID, EmpDays, EmpCount)VALUES("83400000-0000-0000-0000-000000000000", "P1", 2.5, 50);
