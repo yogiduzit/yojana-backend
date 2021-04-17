@@ -38,16 +38,12 @@ public class PayGradeService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll() throws SQLException {
         APIResponse res = new APIResponse();
-        if(!authEmployee.isAdmin() || !authEmployee.isProjectManager()) {
-            return Response.status(Response.Status.FORBIDDEN).entity(res).build();
-        }
         List<PayGrade> payGrades = payGradeManager.getAll();
         if (payGrades == null) {
             throw new WebApplicationException("There are no pay grades at the moment", Response.Status.NOT_FOUND);
         }
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("paygrades", payGrades);
-        return Response.ok().entity(new APIResponse(data)).build();
+        res.getData().put("paygrades", payGrades);
+        return Response.ok().entity(res).build();
     }
     
     @GET
